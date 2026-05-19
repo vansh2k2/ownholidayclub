@@ -4,22 +4,18 @@ const heroSlideSchema = new mongoose.Schema(
   {
     subtitle: {
       type: String,
-      required: true,
       default: "Welcome to Luxury",
     },
     title1: {
       type: String,
-      required: true,
       default: "Stay & Celebration",
     },
     title2: {
       type: String,
-      required: true,
       default: "on Earth",
     },
     description: {
       type: String,
-      required: true,
       default: "Experience the pinnacle of luxury with our exclusive members-only holiday packages.",
     },
     image: {
@@ -32,27 +28,27 @@ const heroSlideSchema = new mongoose.Schema(
     },
     button1Text: {
       type: String,
-      default: "Book Holiday",
+      default: "",
     },
     button1Link: {
       type: String,
-      default: "/",
+      default: "",
     },
     button2Text: {
       type: String,
-      default: "Memberships",
+      default: "",
     },
     button2Link: {
       type: String,
-      default: "/membership",
+      default: "",
     },
     button3Text: {
       type: String,
-      default: "Plan Event",
+      default: "",
     },
     button3Link: {
       type: String,
-      default: "/services",
+      default: "",
     },
     order: {
       type: Number,

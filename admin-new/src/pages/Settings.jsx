@@ -42,6 +42,9 @@ const Settings = () => {
         topBarPhone: "+91 98765 43210",
         topBarMarquee: [],
         footerContact: [],
+        membershipQuoteTitle: "",
+        membershipQuoteMain: "",
+        membershipQuoteDescription: "",
     });
 
     useEffect(() => {
@@ -517,6 +520,45 @@ const Settings = () => {
                                     placeholder='Paste <iframe src="..." ...></iframe> here'
                                 />
                                 <p className="mt-1 text-[9px] text-gray-400 font-bold uppercase tracking-widest italic">Go to Google Maps → Share → Embed a map → Copy HTML</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* SECTION: MEMBERSHIP SIGNATURE QUOTE */}
+                    <div className="bg-white border-2 border-gray-100 shadow-sm rounded-none overflow-hidden">
+                        <div className="px-6 py-4 bg-amber-600 text-white flex items-center gap-2">
+                            <FileText size={18} className="text-white" />
+                            <h2 className="text-xs font-bold uppercase tracking-widest text-white">Membership Page Signature Quote</h2>
+                        </div>
+                        <div className="p-8 space-y-6">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Quote Title</label>
+                                <input
+                                    type="text"
+                                    value={settings.membershipQuoteTitle || ""}
+                                    onChange={(e) => setSettings({ ...settings, membershipQuoteTitle: e.target.value })}
+                                    className="w-full px-4 py-2 border-2 border-gray-200 focus:border-amber-600 outline-none text-sm font-bold bg-white rounded-none"
+                                    placeholder="Signature Thought"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Quote Main Text</label>
+                                <input
+                                    type="text"
+                                    value={settings.membershipQuoteMain || ""}
+                                    onChange={(e) => setSettings({ ...settings, membershipQuoteMain: e.target.value })}
+                                    className="w-full px-4 py-2 border-2 border-gray-200 focus:border-amber-600 outline-none text-sm font-bold bg-white rounded-none"
+                                    placeholder="Babumoshai zindagi badi honi chahiye, lambi nahi..."
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Quote Description / Subtext</label>
+                                <textarea
+                                    value={settings.membershipQuoteDescription || ""}
+                                    onChange={(e) => setSettings({ ...settings, membershipQuoteDescription: e.target.value })}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 focus:border-amber-600 outline-none text-sm font-medium rounded-none h-24 bg-white transition-all"
+                                    placeholder="Surely yes, and to make your life king-size..."
+                                />
                             </div>
                         </div>
                     </div>

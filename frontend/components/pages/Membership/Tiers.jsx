@@ -187,11 +187,11 @@ export default function Tiers({
                     <p
                       style={{
                         fontFamily: "'Inter', sans-serif",
-                        fontSize: "11px", fontWeight: 700,
+                        fontSize: "14px", fontWeight: 700,
                         color: "#f1f5f9",
                         textTransform: "uppercase",
-                        letterSpacing: "0.16em",
-                        margin: "0 0 5px",
+                        letterSpacing: "0.12em",
+                        margin: "0 0 6px",
                       }}
                     >
                       {tier.name}
@@ -201,7 +201,7 @@ export default function Tiers({
                     <p
                       style={{
                         fontFamily: "'Inter', sans-serif",
-                        fontSize: "11px", color: "#475569",
+                        fontSize: "11px", color: "#ffffff",
                         lineHeight: 1.65,
                         margin: "0 0 16px",
                         minHeight: "36px",
@@ -241,14 +241,14 @@ export default function Tiers({
                           style={{
                             width: "3px", height: "3px",
                             borderRadius: "50%",
-                            background: "#475569",
+                            background: "#94a3b8",
                             flexShrink: 0,
                           }}
                         />
                         <span
                           style={{
                             fontFamily: "'Inter', sans-serif",
-                            fontSize: "10px", color: "#475569",
+                            fontSize: "10px", color: "#ffffff",
                             letterSpacing: "0.04em",
                           }}
                         >

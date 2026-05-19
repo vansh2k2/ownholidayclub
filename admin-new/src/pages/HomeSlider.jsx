@@ -27,12 +27,12 @@ const HomeSlider = () => {
         description: 'Experience the pinnacle of luxury with our exclusive members-only holiday packages.',
         image: '',
         altText: '',
-        button1Text: 'Book Holiday',
-        button1Link: '/',
-        button2Text: 'Memberships',
-        button2Link: '/membership',
-        button3Text: 'Plan Event',
-        button3Link: '/services',
+        button1Text: '',
+        button1Link: '',
+        button2Text: '',
+        button2Link: '',
+        button3Text: '',
+        button3Link: '',
         order: 0,
         isActive: true
     });
@@ -98,8 +98,8 @@ const HomeSlider = () => {
     };
 
     const handleAddOrUpdate = async () => {
-        if (!form.subtitle || !form.title1 || !form.image) {
-            Swal.fire('Error', 'Subtitle, Title 1, and Image are required', 'warning');
+        if (!form.image) {
+            Swal.fire('Error', 'Image is required', 'warning');
             return;
         }
 
@@ -222,12 +222,12 @@ const HomeSlider = () => {
             description: 'Experience the pinnacle of luxury with our exclusive members-only holiday packages.',
             image: '',
             altText: '',
-            button1Text: 'Book Holiday',
-            button1Link: '/',
-            button2Text: 'Memberships',
-            button2Link: '/membership',
-            button3Text: 'Plan Event',
-            button3Link: '/services',
+            button1Text: '',
+            button1Link: '',
+            button2Text: '',
+            button2Link: '',
+            button3Text: '',
+            button3Link: '',
             order: 0,
             isActive: true
         });

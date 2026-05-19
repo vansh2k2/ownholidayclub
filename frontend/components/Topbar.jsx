@@ -28,7 +28,7 @@ const Topbar = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081"}/api/settings`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081"}/api/settings`);
         const data = await res.json();
         if (data.success) {
           setSettings(data.data);
@@ -67,8 +67,8 @@ const Topbar = () => {
       <div
         style={{
           height: "36px",
-          background: isHome ? "transparent" : "linear-gradient(90deg,#1a0500 0%,#2b0d00 55%,#1a0500 100%)",
-          borderBottom: isHome ? "1px solid rgba(255,255,255,0.15)" : "1px solid rgba(200,16,46,0.45)",
+          background: "linear-gradient(90deg,#1a0500 0%,#2b0d00 55%,#1a0500 100%)",
+          borderBottom: "1px solid rgba(200,16,46,0.45)",
         }}
       >
         <div

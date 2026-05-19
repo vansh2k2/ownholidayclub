@@ -70,7 +70,7 @@ export default function Navbar({ onLoginClick }) {
   // Always start as transparent on all pages as per user request
   const isTransparentPage = true; 
 
-  const shouldBeWhite = isScrolled;
+  const shouldBeWhite = true;
 
   const profileImage =
     currentUser?.documents?.profileImage?.url ||
@@ -80,7 +80,7 @@ export default function Navbar({ onLoginClick }) {
     currentUser?.name || currentUser?.membershipId || "Profile";
 
   return (
-    <nav className={`fixed left-0 w-full z-[100] transition-all duration-500 ease-in-out font-sans ${isScrolled ? "top-0 py-2 bg-white shadow-[0_6px_24px_rgba(15,23,42,0.12)] border-b border-slate-200" : "top-[36px] py-4 bg-transparent"} ${shouldBeWhite ? "text-black" : "text-white"}`}>
+    <nav className={`fixed left-0 w-full z-[100] transition-all duration-500 ease-in-out font-sans bg-white border-b border-slate-200 text-black ${isScrolled ? "top-0 py-1 shadow-[0_6px_24px_rgba(15,23,42,0.12)]" : "top-[36px] py-2 shadow-sm"}`}>
 
       <div className="site-width mx-auto ">
         <div className="flex justify-between items-center">
@@ -90,7 +90,7 @@ export default function Navbar({ onLoginClick }) {
               className={`text-2xl font-black tracking-tighter transition-colors duration-300 flex items-center gap-2
                 ${shouldBeWhite ? "text-black" : "text-white"}`}
             >
-              <Link href="/" className={`flex items-center gap-2 px-5 py-1.5 rounded-2xl transition-all duration-300 ${(isTransparentPage && !isScrolled) ? "bg-white shadow-lg" : "bg-transparent"}`}>
+              <Link href="/" className="flex items-center gap-2 px-5 py-1 rounded-2xl transition-all duration-300 bg-transparent">
                 <img src={logo} className="w-40" alt="Own Holiday Club Logo" />
               </Link>
             </div>

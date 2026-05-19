@@ -71,13 +71,19 @@ const sendOtpSms = async (mobile, otp) => {
     throw createHttpError(400, "A valid 10-digit mobile number is required.");
   }
 
+  const indiaMobile = normalizedMobile.startsWith("91")
+    ? normalizedMobile
+    : `91${normalizedMobile}`;
+
   const config = getSmsConfig();
   const message = buildOtpMessage(config.messageTemplate, otp);
+
+  // Trying JSON POST body as many modern gateways prefer this
   const payload = {
     apikey: config.apiKey,
     senderid: config.senderId,
-    number: normalizedMobile,
-    message,
+    number: indiaMobile,
+    message: message,
   };
 
   let response;
@@ -85,8 +91,8 @@ const sendOtpSms = async (mobile, otp) => {
   try {
     response = await axios.post(config.url, payload, {
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
       timeout:
         Number.isFinite(config.timeoutMs) && config.timeoutMs > 0

@@ -56,6 +56,19 @@ const settingsSchema = new mongoose.Schema(
         { label: "New Delhi Office", content: "Rigel Hospitality Services Pvt. Ltd. 27 C, Block A, Kailash Colony, Extension, New Delhi – 110048" },
         { label: "24/7 Concierge", content: "+91-9871984074" }
       ]
+    },
+    // Membership Page Quote Settings
+    membershipQuoteTitle: {
+      type: String,
+      default: "Signature Thought"
+    },
+    membershipQuoteMain: {
+      type: String,
+      default: "Babumoshai zindagi badi honi chahiye, lambi nahi..."
+    },
+    membershipQuoteDescription: {
+      type: String,
+      default: "Surely yes, and to make your life king-size, Own Holiday Club is right here. The less stress, the more life — this is exactly what we believe in."
     }
   },
   { timestamps: true }
