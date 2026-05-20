@@ -65,12 +65,12 @@ export const menuItems = [
   //   icon: Info,
   //   path: "/about-us",
   // },
-  // {
-  //   type: "item",
-  //   label: "Why Choose Us",
-  //   icon: HelpCircle,
-  //   path: "/why-choose-us",
-  // },
+  {
+    type: "item",
+    label: "Why Choose Us",
+    icon: HelpCircle,
+    path: "/why-choose-us",
+  },
   // {
   //   type: "item",
   //   label: "Stats Counter",

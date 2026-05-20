@@ -110,7 +110,7 @@ export default function Spotlight({ onImageError, featuredDestination }) {
                   );
                 })}
               </div>
-              <Link href={`/destinations/${featuredDestination.id}`}>
+              <Link href={`/destinations/${featuredDestination.slug || featuredDestination._id || featuredDestination.id}`}>
                 <button className="group flex items-center gap-4 bg-transparent text-slate-900 hover:text-amber-600 transition-colors font-sans">
                   <span className="text-sm font-black uppercase tracking-[0.2em] border-b-2 border-amber-500 pb-1">
                     View Itineraries

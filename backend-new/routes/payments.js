@@ -13,7 +13,7 @@ const {
   uploadMemberDocuments,
 } = require("../utils/cloudinary");
 const { generateMembershipInvoicePdf } = require("../utils/invoice");
-const { sendWelcomePasswordEmail } = require("../utils/email");
+const { sendWelcomePasswordEmail, sendLeadNotificationEmail } = require("../utils/email");
 const {
   buildMembershipId,
   buildMembershipFromTier,
@@ -766,6 +766,28 @@ router.post(
     } catch (error) {
       emailDeliveryMessage =
         " Payment was successful, but the password email with invoice could not be sent right now.";
+    }
+
+    try {
+      await sendLeadNotificationEmail({
+        leadType: "Membership Purchase",
+        leadDetails: {
+          "Membership ID": membershipId,
+          "Plan Name": tier.name,
+          "Price Paid": tier.price,
+          "Admin Fee": tier.adminFee,
+          "Name": fullName,
+          "Email": email,
+          "Phone": mobile,
+          "State": residenceAddress.state,
+          "City": residenceAddress.city,
+          "Transaction ID": paymentId,
+          "Order ID": orderId,
+        },
+        message: `A new member has purchased the ${tier.name} membership. Account created and welcome credentials dispatched.`,
+      });
+    } catch (mailErr) {
+      console.error("Failed to send membership purchase lead notification email:", mailErr);
     }
 
     return res.status(200).json({

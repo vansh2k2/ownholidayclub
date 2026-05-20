@@ -80,6 +80,8 @@ const normalizeTier = (tier = {}, index = 0) => ({
   id: tier.id || `tier-${index + 1}`,
   name: tier.name || "",
   price: tier.price || "",
+  priceType: tier.priceType || "regular",
+  actuallyPrice: tier.actuallyPrice || "",
   adminFee: tier.adminFee || "",
   bonusYears: Number(tier.bonusYears || 0) || 0,
   period: tier.period || "",

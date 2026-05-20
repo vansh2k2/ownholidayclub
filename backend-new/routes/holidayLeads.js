@@ -3,6 +3,7 @@ const express = require("express");
 const HolidayLead = require("../models/HolidayLead");
 const asyncHandler = require("../utils/asyncHandler");
 const { normaliseEmail, normaliseMobile } = require("../utils/security");
+const { sendLeadNotificationEmail } = require("../utils/email");
 
 const router = express.Router();
 
@@ -119,6 +120,26 @@ router.post(
       source,
       status: "new",
     });
+
+    try {
+      await sendLeadNotificationEmail({
+        leadType: contextType === 'callback-request' ? "Callback Request" : "Holiday Lead",
+        leadDetails: {
+          "Name": name,
+          "Email": email,
+          "Phone": phone,
+          "Source": source,
+          "Context": contextName || contextType,
+          "Adults": adults,
+          "Kids": kids,
+          "Check In": checkIn ? checkIn.toLocaleDateString() : "",
+          "Check Out": checkOut ? checkOut.toLocaleDateString() : "",
+        },
+        message: message,
+      });
+    } catch (mailErr) {
+      console.error("Failed to send lead email:", mailErr);
+    }
 
     return res.status(201).json({
       message: "Lead submitted successfully.",

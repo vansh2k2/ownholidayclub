@@ -1,4 +1,5 @@
 const ContactEnquiry = require("../models/ContactEnquiry");
+const { sendLeadNotificationEmail } = require("../utils/email");
 
 // @desc    Submit a contact enquiry
 // @route   POST /api/contact-enquiries
@@ -6,6 +7,22 @@ const ContactEnquiry = require("../models/ContactEnquiry");
 exports.submitEnquiry = async (req, res) => {
   try {
     const enquiry = await ContactEnquiry.create(req.body);
+
+    try {
+      await sendLeadNotificationEmail({
+        leadType: "Contact Enquiry",
+        leadDetails: {
+          "Name": enquiry.name,
+          "Email": enquiry.email,
+          "Phone": enquiry.phone,
+          "Subject": enquiry.subject || "Contact Us Inquiry",
+        },
+        message: enquiry.message,
+      });
+    } catch (mailErr) {
+      console.error("Failed to send contact enquiry lead email:", mailErr);
+    }
+
     res.status(201).json({
       success: true,
       data: enquiry,

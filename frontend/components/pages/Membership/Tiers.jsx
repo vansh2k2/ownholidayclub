@@ -32,6 +32,18 @@ export default function Tiers({
   onPurchaseTier,
   processingTierId = "",
 }) {
+  const formatPrice = (val) => {
+    if (!val) return "";
+    const str = String(val).trim();
+    if (str.startsWith("₹") || str.toLowerCase().startsWith("rs")) {
+      if (str.toLowerCase().startsWith("rs")) {
+        return `₹ ${str.slice(2).trim()}`;
+      }
+      return str;
+    }
+    return `₹ ${str}`;
+  };
+
   return (
     <section
       id="tiers"
@@ -122,6 +134,7 @@ export default function Tiers({
             const cfg = TIER_CONFIG[idx % TIER_CONFIG.length];
             const { Icon } = cfg;
             const isProcessing = processingTierId === tier.id;
+            const hasOffer = tier.priceType === 'offer' && tier.actuallyPrice;
 
             return (
               <ScrollAnimate
@@ -210,7 +223,7 @@ export default function Tiers({
                       {tier.description}
                     </p>
 
-                    {/* ── Price block — Inter for ₹ symbol ── */}
+                    {/* ── Price block ── */}
                     <div
                       style={{
                         marginBottom: "16px",
@@ -218,24 +231,126 @@ export default function Tiers({
                         borderBottom: "0.5px solid rgba(255,255,255,0.06)",
                       }}
                     >
-                      {/* Price: Inter so ₹ renders cleanly */}
-                      <p
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: "22px", fontWeight: 700,
-                          color: cfg.color,
-                          lineHeight: 1,
-                          margin: "0 0 5px",
-                          letterSpacing: "-0.02em",
-                        }}
-                      >
-                        {tier.price}
-                      </p>
+                      {hasOffer ? (
+                        /* ── OFFER layout ── */
+                        <div>
+                          {/* "Limited Offer" tag */}
+                          <div
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              background: "rgba(239,68,68,0.12)",
+                              border: "0.5px solid rgba(239,68,68,0.3)",
+                              borderRadius: "4px",
+                              padding: "2px 8px",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            <span
+                              style={{
+                                width: "5px", height: "5px",
+                                borderRadius: "50%",
+                                background: "#ef4444",
+                                display: "inline-block",
+                                flexShrink: 0,
+                              }}
+                            />
+                            <span
+                              style={{
+                                fontFamily: "'Inter', sans-serif",
+                                fontSize: "9px", fontWeight: 700,
+                                color: "#ef4444",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.1em",
+                              }}
+                            >
+                              Limited Offer
+                            </span>
+                          </div>
+
+                          {/* Actual (MRP) price — small, muted, struck */}
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              marginBottom: "4px",
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontFamily: "'Inter', sans-serif",
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                color: "#64748b",
+                                textDecoration: "line-through",
+                                textDecorationColor: "#ef4444",
+                                textDecorationThickness: "1.5px",
+                              }}
+                            >
+                              {formatPrice(tier.actuallyPrice)}
+                            </span>
+                            {/* Savings badge */}
+                            {(() => {
+                              const mrp = parseFloat(String(tier.actuallyPrice).replace(/[^\d.]/g, ""));
+                              const offer = parseFloat(String(tier.price).replace(/[^\d.]/g, ""));
+                              if (mrp && offer && mrp > offer) {
+                                const pct = Math.round(((mrp - offer) / mrp) * 100);
+                                return (
+                                  <span
+                                    style={{
+                                      fontFamily: "'Inter', sans-serif",
+                                      fontSize: "9px", fontWeight: 700,
+                                      color: "#10b981",
+                                      background: "rgba(16,185,129,0.1)",
+                                      border: "0.5px solid rgba(16,185,129,0.25)",
+                                      borderRadius: "4px",
+                                      padding: "1px 6px",
+                                    }}
+                                  >
+                                    {pct}% OFF
+                                  </span>
+                                );
+                              }
+                              return null;
+                            })()}
+                          </div>
+
+                          {/* Offer price — big, bold, accent colour */}
+                          <div
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: "30px",
+                              fontWeight: 800,
+                              color: cfg.color,
+                              lineHeight: 1,
+                              letterSpacing: "-0.03em",
+                            }}
+                          >
+                            {formatPrice(tier.price)}
+                          </div>
+                        </div>
+                      ) : (
+                        /* ── NORMAL price layout ── */
+                        <div
+                          style={{
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: "30px",
+                            fontWeight: 800,
+                            color: cfg.color,
+                            lineHeight: 1,
+                            letterSpacing: "-0.03em",
+                          }}
+                        >
+                          {formatPrice(tier.price)}
+                        </div>
+                      )}
 
                       {/* Admin fee row */}
                       <div
                         className="flex items-center gap-1.5"
-                        style={{ marginTop: "4px" }}
+                        style={{ marginTop: "8px" }}
                       >
                         <div
                           style={{
@@ -252,7 +367,7 @@ export default function Tiers({
                             letterSpacing: "0.04em",
                           }}
                         >
-                          Admin Fee: {tier.adminFee || "₹5,789"}
+                          Admin Fee: {formatPrice(tier.adminFee || "₹5,789")}
                         </span>
                       </div>
                     </div>

@@ -331,12 +331,12 @@ export default function PrivacyPolicy() {
                             membership@ownholidayclub.com
                           </a>
                           <br />
-                          <a
+                          {/* <a
                             href="mailto:DataGrievanceOfficer@mahindraholidays.com"
                             className="text-white hover:text-amber-300 transition-colors text-sm"
                           >
                             DataGrievanceOfficer@mahindraholidays.com
-                          </a>
+                          </a> */}
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
@@ -348,7 +348,8 @@ export default function PrivacyPolicy() {
                           <p className="text-sm text-slate-400 uppercase tracking-wider font-bold mb-1">
                             Phone
                           </p>
-                          <p className="text-white">+91-96675 52445</p>
+                          <p className="text-white">+91 9871984074
+</p>
                           <p className="text-xs text-slate-400 mt-1">
                             Mon - Sat: 9.30 AM to 6.30 PM
                             <br />
@@ -368,13 +369,7 @@ export default function PrivacyPolicy() {
                           Address
                         </p>
                         <p className="text-white leading-relaxed">
-                          Grievance Redressal Team
-                          <br />
-                          27 C, Block A, Kailash Colony,
-                          <br />
-                          Extension, New Delhi,
-                          <br />
-                          Delhi - 110048, India
+                       Second floor, estate, MR- 01, Altf Mohan estate, room no, plot no A. 26, Saidabad, Block B, Mohan Cooperative Industrial Estate, New Delhi, Delhi 110044
                         </p>
                       </div>
                     </div>

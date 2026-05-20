@@ -267,13 +267,7 @@ export default function RefundPolicy() {
                           Send Address
                         </p>
                         <p className="text-white text-sm leading-relaxed">
-                          Rigel Hospitality Services Pvt.Ltd.
-                          <br />
-                          27 C, Block A, Kailash Colony,
-                          <br />
-                          Extension, New Delhi,
-                          <br />
-                          Delhi - 110048, India
+                        Second floor, estate, MR- 01, Altf Mohan estate, room no, plot no A. 26, Saidabad, Block B, Mohan Cooperative Industrial Estate, New Delhi, Delhi 110044
                         </p>
                       </div>
                     </div>

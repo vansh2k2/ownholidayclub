@@ -262,7 +262,7 @@ export default function Hero() {
 
       <section
         id="home"
-        className="relative flex aspect-[43/24] items-center justify-center overflow-hidden bg-slate-900 sm:min-h-[75vh] sm:aspect-auto md:min-h-screen"
+        className="relative flex min-h-[580px] aspect-auto items-center justify-center overflow-hidden bg-slate-900 pt-28 pb-20 sm:min-h-[75vh] sm:aspect-auto sm:pt-0 sm:pb-0 md:min-h-screen"
       >
         <div className="absolute inset-0 z-0 ">
           <AnimatePresence mode="wait">
@@ -308,7 +308,7 @@ export default function Hero() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -20, opacity: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="font-sans text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.5em] text-amber-500 mb-6"
+                className="font-sans text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.5em] text-amber-500 mb-4 sm:mb-6"
               >
                 {activeSlide?.subtitle}
               </motion.div>
@@ -318,7 +318,7 @@ export default function Hero() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -30, opacity: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="mb-6 font-sans text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white tracking-tight uppercase"
+                className="mb-4 sm:mb-6 font-sans text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white tracking-tight uppercase"
               >
                 <span className="block mb-2" dangerouslySetInnerHTML={{ __html: activeSlide?.title1 || activeSlide?.title?.[0] }}></span>
                 <span className="block text-white/80 font-medium" dangerouslySetInnerHTML={{ __html: activeSlide?.title2 || activeSlide?.title?.[1] }}></span>
@@ -329,7 +329,7 @@ export default function Hero() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -20, opacity: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
-                className="max-w-xl text-white/70 text-xs md:text-sm mb-10 leading-relaxed mx-auto"
+                className="max-w-xl text-white/70 text-xs md:text-sm mb-6 sm:mb-8 md:mb-10 leading-relaxed mx-auto"
                 dangerouslySetInnerHTML={{ __html: activeSlide?.description }}
               />
 

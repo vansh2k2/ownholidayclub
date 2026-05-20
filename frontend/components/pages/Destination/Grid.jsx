@@ -101,12 +101,12 @@ export default function Grid({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {currentDestinations.map((dest, idx) => (
             <ScrollAnimate
-              key={dest.id}
+              key={dest.slug || dest._id || dest.id || idx}
               animation="fade-up"
               delay={(idx % 3) * 150}
               className="group cursor-pointer"
             >
-              <Link href={`/destinations/${dest.id}`} className="block">
+              <Link href={`/destinations/${dest.slug || dest._id || dest.id}`} className="block">
                 <div className="relative h-[480px] rounded-[2.5rem] overflow-hidden bg-slate-900 shadow-xl shadow-slate-200/50 group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-700">
                   {/* Image Background */}
                   <img

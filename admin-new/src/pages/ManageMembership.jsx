@@ -37,6 +37,8 @@ const formatPeriodLabel = (period) => {
 const DEFAULT_PLAN = {
     name: "",
     price: "",
+    priceType: "regular",
+    actuallyPrice: "",
     adminFee: "Rs3,789",
     bonusYears: 0,
     period: "",
@@ -139,6 +141,8 @@ const ManageMembership = () => {
         setIsEditing(plan.id);
         setPlanForm({
             ...plan,
+            priceType: plan.priceType || 'regular',
+            actuallyPrice: plan.actuallyPrice || '',
             features: plan.features.length > 0 ? plan.features : [""],
             invoiceTerms: plan.invoiceTerms?.length === 4 ? plan.invoiceTerms : ["", "", "", ""]
         });
@@ -201,27 +205,75 @@ const ManageMembership = () => {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Price</label>
-                                            <input
-                                                type="text"
-                                                value={planForm.price}
-                                                onChange={(e) => setPlanForm({ ...planForm, price: e.target.value })}
-                                                className="w-full px-3 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none text-sm font-semibold rounded-none bg-white transition-all"
-                                                placeholder="Rs50,000"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Admin Fee</label>
-                                            <input
-                                                type="text"
-                                                value={planForm.adminFee}
-                                                onChange={(e) => setPlanForm({ ...planForm, adminFee: e.target.value })}
-                                                className="w-full px-3 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none text-sm font-semibold rounded-none bg-white transition-all"
-                                            />
-                                        </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Price Type</label>
+                                        <select
+                                            value={planForm.priceType || 'regular'}
+                                            onChange={(e) => setPlanForm({ ...planForm, priceType: e.target.value })}
+                                            className="w-full px-3 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none text-sm font-semibold rounded-none bg-white transition-all"
+                                        >
+                                            <option value="regular">Regular Price</option>
+                                            <option value="offer">Offer / Discounted Price</option>
+                                        </select>
                                     </div>
+
+                                    {planForm.priceType !== 'offer' ? (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Price</label>
+                                                <input
+                                                    type="text"
+                                                    value={planForm.price}
+                                                    onChange={(e) => setPlanForm({ ...planForm, price: e.target.value })}
+                                                    className="w-full px-3 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none text-sm font-semibold rounded-none bg-white transition-all"
+                                                    placeholder="Rs50,000"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Admin Fee</label>
+                                                <input
+                                                    type="text"
+                                                    value={planForm.adminFee}
+                                                    onChange={(e) => setPlanForm({ ...planForm, adminFee: e.target.value })}
+                                                    className="w-full px-3 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none text-sm font-semibold rounded-none bg-white transition-all"
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-red-500 uppercase mb-1">Original Price (Strike)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={planForm.actuallyPrice}
+                                                        onChange={(e) => setPlanForm({ ...planForm, actuallyPrice: e.target.value })}
+                                                        className="w-full px-3 py-2 border-2 border-red-300 focus:border-[#C8102E] outline-none text-sm font-semibold rounded-none bg-white transition-all"
+                                                        placeholder="e.g. Rs80,000"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-emerald-600 uppercase mb-1">Offer Price</label>
+                                                    <input
+                                                        type="text"
+                                                        value={planForm.price}
+                                                        onChange={(e) => setPlanForm({ ...planForm, price: e.target.value })}
+                                                        className="w-full px-3 py-2 border-2 border-emerald-300 focus:border-[#C8102E] outline-none text-sm font-semibold rounded-none bg-white transition-all"
+                                                        placeholder="e.g. Rs50,000"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Admin Fee</label>
+                                                <input
+                                                    type="text"
+                                                    value={planForm.adminFee}
+                                                    onChange={(e) => setPlanForm({ ...planForm, adminFee: e.target.value })}
+                                                    className="w-full px-3 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none text-sm font-semibold rounded-none bg-white transition-all"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
@@ -437,7 +489,14 @@ const ManageMembership = () => {
                                                         </td>
                                                         <td className="px-6 py-4">
                                                             <div className="flex flex-col">
-                                                                <span className="text-sm font-bold text-gray-900 tracking-tight">{plan.price}</span>
+                                                                {plan.priceType === 'offer' && plan.actuallyPrice ? (
+                                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                                        <span className="text-xs font-semibold text-red-500 line-through tracking-tight">{plan.actuallyPrice}</span>
+                                                                        <span className="text-sm font-bold text-emerald-600 tracking-tight">{plan.price}</span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <span className="text-sm font-bold text-gray-900 tracking-tight">{plan.price}</span>
+                                                                )}
                                                                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">
                                                                     {plan.period}
                                                                 </span>

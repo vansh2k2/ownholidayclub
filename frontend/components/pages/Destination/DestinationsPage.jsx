@@ -97,8 +97,12 @@ export default function Destinations() {
       <Spotlight
         onImageError={handleImageError}
         featuredDestination={
-          enrichedDestinations.find((destination) => destination.id === "maldives") ||
-          enrichedDestinations[0]
+          enrichedDestinations.find(
+            (destination) =>
+              destination.slug === "maldives" ||
+              destination._id === "maldives" ||
+              destination.id === "maldives"
+          ) || enrichedDestinations[0]
         }
       />
       <Experience onImageError={handleImageError} />

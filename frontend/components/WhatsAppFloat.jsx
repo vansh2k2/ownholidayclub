@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import CallFloat from "./CallFloat";
 import { api } from "@/lib/api";
 
 const WhatsAppFloat = () => {
@@ -38,9 +37,6 @@ const WhatsAppFloat = () => {
   // Render on the left, as per user's preference
   return (
     <div className="fixed left-4 bottom-6 z-[100] flex flex-col items-center gap-3">
-      {/* Call Button */}
-      <CallFloat />
-
       {/* WhatsApp Button - Only if number exists */}
       {phoneNumber && (
         <a

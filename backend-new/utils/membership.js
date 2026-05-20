@@ -143,6 +143,8 @@ const normalizeTier = (tier = {}, index = 0) => ({
   id: slugifyValue(tier.id || tier.name) || `tier-${index + 1}`,
   name: String(tier.name || "").trim(),
   price: String(tier.price || "").trim(),
+  priceType: String(tier.priceType || "regular").trim().toLowerCase(),
+  actuallyPrice: String(tier.actuallyPrice || "").trim(),
   adminFee: String(tier.adminFee || "").trim(),
   bonusYears: Math.max(0, Number(tier.bonusYears || 0) || 0),
   period: String(tier.period || "").trim(),

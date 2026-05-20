@@ -131,7 +131,7 @@ export default function Modal({
                   )
                   .map((prop) => (
                     <div
-                      key={`modal-${prop.id}`}
+                      key={`modal-${prop._id || prop.id}`}
                       onClick={() =>
                         setActiveModal({ type: "property", data: prop })
                       }

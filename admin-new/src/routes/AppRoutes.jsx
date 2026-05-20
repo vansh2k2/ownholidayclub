@@ -23,6 +23,7 @@ import DestinationEnquiries from "../pages/DestinationEnquiries";
 import ContactEnquiries from "../pages/ContactEnquiries";
 import Settings from "../pages/Settings";
 import FaqManagement from "../pages/FaqManagement";
+import WhyChooseUsManagement from "../pages/WhyChooseUsManagement";
 import ServiceEnquiries from "../pages/ServiceEnquiries";
 import CallbackRequests from "../pages/CallbackRequests";
 import HeroImages from "../pages/HeroImages";
@@ -52,6 +53,7 @@ export default function AppRoutes() {
           <Route path="contact-enquiries" element={<ContactEnquiries />} />
           <Route path="settings" element={<Settings />} />
           <Route path="faq-management" element={<FaqManagement />} />
+          <Route path="why-choose-us" element={<WhyChooseUsManagement />} />
           <Route path="service-enquiries" element={<ServiceEnquiries />} />
           <Route path="callback-requests" element={<CallbackRequests />} />
           <Route path="hero-images" element={<HeroImages />} />

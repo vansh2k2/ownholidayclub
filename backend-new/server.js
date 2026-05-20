@@ -37,12 +37,36 @@ const seoRoutes                 = require("./routes/seo");
 const serviceEnquiryRoutes     = require("./routes/serviceEnquiryRoutes");
 const dashboardRoutes          = require("./routes/dashboardRoutes");
 const activityLogRoutes        = require("./routes/activityLogRoutes");
+const whyChooseUsRoutes        = require("./routes/whyChooseUs");
 
 // ─── Port ──────────────────────────────────────────────────────────────────────
 const port = process.env.PORT || 8081;
 
 // ─── Core Middleware ───────────────────────────────────────────────────────────
-app.use(cors());
+const allowedOrigins = [
+  "https://portal.ownholidayclub.com",
+  "http://localhost:3000",
+  "https://ownholidayclub.com",
+  "https://www.ownholidayclub.com"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
+        /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 
 // ─── API Routes ────────────────────────────────────────────────────────────────
@@ -74,6 +98,7 @@ app.use("/api/seo",                     seoRoutes);
 app.use("/api/service-enquiries",       serviceEnquiryRoutes);
 app.use("/api/dashboard",               dashboardRoutes);
 app.use("/api/activity-logs",           activityLogRoutes);
+app.use("/api/why-choose-us",           whyChooseUsRoutes);
 
 
 // ─── Test Routes (remove in production) ───────────────────────────────────────

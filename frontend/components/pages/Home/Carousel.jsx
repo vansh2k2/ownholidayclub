@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-const slides = [
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081";
+
+const STATIC_SLIDES = [
   { title: "Membership plans for every family", left: "Other travel companies", leftText: "Pay per trip with no long-term benefits. Prices change every season and family members are charged separately.", right: "Own Holiday Club", rightText: "One membership covers Member + Spouse + 2 kids with long-term validity and fixed pricing — no hidden surprises." },
   { title: "Domestic & international destinations", left: "Other travel companies", leftText: "Limited destinations and multiple vendors required for different locations.", right: "Own Holiday Club", rightText: "Access to multiple domestic and international destinations with curated resorts and hotels under one membership." },
   { title: "End-to-end travel planning", left: "Other travel companies", leftText: "You manage bookings, transport, and itinerary separately.", right: "Own Holiday Club", rightText: "Complete travel planning including stays, transport, and experiences handled by experts." },
@@ -14,12 +17,53 @@ const slides = [
 ];
 
 export default function OwnHolidayClubCarousel() {
+  const [slides, setSlides] = useState(STATIC_SLIDES);
+  const [headings, setHeadings] = useState({
+    subheading: "WHY CHOOSE US",
+    heading: "10 REASONS TO",
+    highlightedWord: "Become a Member."
+  });
+
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [paused, setPaused] = useState(false);
 
+  useEffect(() => {
+    const fetchWhyChooseUs = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/why-choose-us/home`);
+        const result = await response.json();
+        if (result.success && result.data) {
+          const wcuData = result.data;
+          
+          if (wcuData.heading) {
+            setHeadings({
+              subheading: wcuData.subheading || "WHY CHOOSE US",
+              heading: wcuData.heading || "10 REASONS TO",
+              highlightedWord: wcuData.highlightedWord || "Become a Member."
+            });
+          }
+          
+          if (wcuData.items && wcuData.items.length > 0) {
+            const mappedSlides = wcuData.items.map(item => ({
+              title: item.title,
+              left: "Other travel companies",
+              leftText: item.otherTravelCompanies,
+              right: "Own Holiday Club",
+              rightText: item.ownHolidayClub
+            }));
+            setSlides(mappedSlides);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching Why Choose Us:", error);
+      }
+    };
+    fetchWhyChooseUs();
+  }, []);
+
   const goTo = (index, manual = false) => {
-    if (animating) return;
+    if (animating || slides.length === 0) return;
     if (manual) setPaused(true);
     setAnimating(true);
     setTimeout(() => {
@@ -29,7 +73,7 @@ export default function OwnHolidayClubCarousel() {
   };
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || slides.length === 0) return;
     const timer = setInterval(() => {
       setAnimating(true);
       setTimeout(() => {
@@ -38,25 +82,24 @@ export default function OwnHolidayClubCarousel() {
       }, 280);
     }, 4000);
     return () => clearInterval(timer);
-  }, [paused, current]);
+  }, [paused, current, slides.length]);
 
-  const slide = slides[current];
+  const slide = slides[current] || STATIC_SLIDES[0];
 
   return (
     <section
       className="w-full py-10 px-4 bg-slate-100 text-slate-900"
       style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
     >
-      {/* ... header and timeline code remains the same ... */}
       {/* ── Header ── */}
       <div className="flex flex-col items-center text-center mb-8">
         <div className="flex items-center gap-3 mb-3">
           <span className="w-8 h-px bg-amber-400" />
           <span
-            className="text-[9px] font-semibold tracking-[0.4em] uppercase text-amber-600"
+            className="text-[9px] font-semibold tracking-[0.4em] uppercase text-amber-600 animate-pulse"
             style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", letterSpacing: "0.4em" }}
           >
-            Why choose us
+            {headings.subheading}
           </span>
           <span className="w-8 h-px bg-amber-400" />
         </div>
@@ -64,8 +107,8 @@ export default function OwnHolidayClubCarousel() {
           className="text-2xl md:text-3xl font-bold text-slate-900 leading-snug uppercase tracking-tight"
           style={{ fontFamily: "'Georgia', serif" }}
         >
-          10 REASONS TO{" "}
-          <span className="text-amber-500 italic font-normal normal-case">Become a Member.</span>
+          {headings.heading}{" "}
+          <span className="text-amber-500 italic font-normal normal-case">{headings.highlightedWord}</span>
         </h2>
       </div>
 
@@ -78,7 +121,7 @@ export default function OwnHolidayClubCarousel() {
         <div
           className="absolute top-[18px] md:top-[22px] left-8 h-[2px] bg-amber-400 z-0 transition-all duration-500"
           style={{
-            width: `calc(${(current / (slides.length - 1)) * 100}% - ${current === (slides.length - 1) ? '0px' : '0px'})`,
+            width: slides.length > 1 ? `calc(${(current / (slides.length - 1)) * 100}% - 0px)` : '0%',
             right: 'auto',
           }}
         />
@@ -160,7 +203,7 @@ export default function OwnHolidayClubCarousel() {
                   className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-2"
                   style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
                 >
-                  {slide.left}
+                  {slide.left || "Other travel companies"}
                 </p>
                 <p
                   className="text-[12px] leading-relaxed text-slate-600"
@@ -191,7 +234,7 @@ export default function OwnHolidayClubCarousel() {
                   className="text-[9px] font-bold uppercase tracking-[0.2em] text-amber-700 mb-2"
                   style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
                 >
-                  {slide.right}
+                  {slide.right || "Own Holiday Club"}
                 </p>
                 <p
                   className="text-[12px] leading-relaxed text-slate-700"

@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const DestinationEnquiry = require("../models/DestinationEnquiry");
 const requireCmsAdmin = require("../middleware/requireCmsAdmin");
 const asyncHandler = require("../utils/asyncHandler");
+const { sendLeadNotificationEmail } = require("../utils/email");
 
 const router = express.Router();
 
@@ -29,6 +30,26 @@ router.post(
       kids: Number(kids) || 0,
       message,
     });
+
+    try {
+      await sendLeadNotificationEmail({
+        leadType: "Destination Enquiry",
+        leadDetails: {
+          "Name": name,
+          "Email": email,
+          "Phone": phone,
+          "Destination": destinationName,
+          "Destination ID": destinationId,
+          "Adults": adults,
+          "Kids": kids,
+          "Check In": checkIn ? new Date(checkIn).toLocaleDateString() : "",
+          "Check Out": checkOut ? new Date(checkOut).toLocaleDateString() : "",
+        },
+        message: message,
+      });
+    } catch (mailErr) {
+      console.error("Failed to send destination enquiry lead email:", mailErr);
+    }
 
     res.status(201).json({ success: true, message: "Enquiry submitted successfully", data: enquiry });
   })
