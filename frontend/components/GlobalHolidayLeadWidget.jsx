@@ -194,7 +194,7 @@ export default function GlobalHolidayLeadWidget() {
         type="button"
         onClick={openLeadModal}
         aria-label="Open holiday lead form"
-        className="fixed bottom-4 right-3 z-[90] flex flex-col items-center gap-1 group modal-luxury"
+        className="fixed bottom-20 sm:bottom-4 right-3 z-[90] flex flex-col items-center gap-1 group modal-luxury"
       >
         <span className="bg-white text-[#C8102E] text-[8px] font-black px-2 py-1 rounded-sm shadow-md transition-all duration-300 uppercase tracking-widest border border-red-100 mb-0.5 flex items-center gap-1.5">
           <MessageSquare size={10} />

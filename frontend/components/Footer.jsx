@@ -191,16 +191,16 @@ export default function Footer() {
       <div className="site-width mx-auto px-4 md:px-8" style={{ position: "relative", zIndex: 5 }}>
 
         {/* ── MAIN GRID ── */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(12, 1fr)",
-          gap: "2rem",
-          padding: "48px 0 36px",
-          borderBottom: "1px solid rgba(255,255,255,0.15)",
-        }}>
+        <div 
+          className="grid grid-cols-12 gap-8 md:gap-6"
+          style={{
+            padding: "48px 0 36px",
+            borderBottom: "1px solid rgba(255,255,255,0.15)",
+          }}
+        >
 
           {/* Brand Column */}
-          <div style={{ gridColumn: "span 4" }}>
+          <div className="col-span-12 md:col-span-4">
             {/* Logo */}
             <div style={{ marginBottom: 20, marginTop: -14 }}>
               <Link href="/">
@@ -226,7 +226,7 @@ export default function Footer() {
               marginBottom: 20,
               fontFamily: "'Inter', sans-serif",
               fontWeight: 400,
-              maxWidth: 280,
+              maxWidth: "100%",
             }}>
               {settings.footerDescription}
             </p>
@@ -272,7 +272,7 @@ export default function Footer() {
           </div>
 
           {/* Company Links */}
-          <div style={{ gridColumn: "span 2" }}>
+          <div className="col-span-6 md:col-span-2">
             <div style={{
               fontSize: 10,
               fontWeight: 700,
@@ -309,7 +309,7 @@ export default function Footer() {
           </div>
 
           {/* Experiences Links */}
-          <div style={{ gridColumn: "span 2" }}>
+          <div className="col-span-6 md:col-span-2">
             <div style={{
               fontSize: 10,
               fontWeight: 700,
@@ -346,7 +346,7 @@ export default function Footer() {
           </div>
 
           {/* Contact + Newsletter */}
-          <div style={{ gridColumn: "span 4", display: "flex", flexDirection: "column", gap: 24 }}>
+          <div className="col-span-12 md:col-span-4 flex flex-col gap-6">
 
             {/* Contact */}
             <div>

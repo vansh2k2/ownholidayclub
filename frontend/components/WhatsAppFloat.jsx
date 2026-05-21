@@ -36,7 +36,7 @@ const WhatsAppFloat = () => {
 
   // Render on the left, as per user's preference
   return (
-    <div className="fixed left-4 bottom-6 z-[100] flex flex-col items-center gap-3">
+    <div className="fixed left-4 bottom-20 sm:bottom-6 z-[100] flex flex-col items-center gap-3">
       {/* WhatsApp Button - Only if number exists */}
       {phoneNumber && (
         <a

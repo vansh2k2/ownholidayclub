@@ -106,8 +106,8 @@ export default function Faq() {
           opacity: 1;
         }
         @media (max-width: 900px) {
-          .faq-outer-grid { grid-template-columns: 1fr !important; }
-          .faq-sticky-col { position: relative !important; }
+          .faq-outer-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+          .faq-sticky-col { position: relative !important; top: 0 !important; }
           .faq-sticky-img { position: relative !important; top: 0 !important; height: 200px !important; }
         }
       `}</style>
