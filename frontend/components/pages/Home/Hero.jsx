@@ -308,7 +308,7 @@ export default function Hero() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -20, opacity: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="font-sans text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.5em] text-amber-500 mb-4 sm:mb-6"
+                className="font-vibes text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-amber-500 mb-4 sm:mb-6"
               >
                 {activeSlide?.subtitle}
               </motion.div>

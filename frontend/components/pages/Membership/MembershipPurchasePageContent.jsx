@@ -657,8 +657,8 @@ export default function MembershipPurchasePageContent({
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] py-4 md:py-6">
-      <div className="site-width mx-auto mt-7 ">
+    <div className="min-h-screen bg-[#F8F9FA] pt-24 pb-4 md:pt-28 md:pb-6">
+      <div className="site-width mx-auto">
         <div className="mb-3">
           <Link
             href={backHref}
