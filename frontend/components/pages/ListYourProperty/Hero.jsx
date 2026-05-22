@@ -1,15 +1,48 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081";
 
 export default function Hero({ onScrollToForm }) {
   const { scrollY } = useScroll();
   const heroScale = useTransform(scrollY, [0, 400], [1, 1.1]);
   const heroY = useTransform(scrollY, [0, 400], [0, 45]);
   const heroOp = useTransform(scrollY, [0, 320], [1, 0.58]);
+
+  const [heroData, setHeroData] = useState(null);
+
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/hero-images/page/List%20Your%20Property?t=${Date.now()}`, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+          }
+        });
+        if (response.ok) {
+          const resData = await response.json();
+          if (resData.success && resData.data) {
+            setHeroData(resData.data);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch hero image for List Your Property", error);
+      }
+    };
+    fetchHeroData();
+  }, []);
+
+  const backgroundImage = heroData?.backgroundImage || "/contact.jpg";
+  const altText = heroData?.imageAltText || "List Your Property";
+  const title = heroData?.title || "List Your";
+  const highlightedText = heroData?.highlightedText || "Property.";
+  const shortDescription = heroData?.shortDescription || "Connect your luxury resort or private villa with 70,000+ high-net-worth members globally.";
 
   return (
     <section
@@ -34,8 +67,8 @@ export default function Hero({ onScrollToForm }) {
         }}
       >
         <img
-          src="/contact.jpg"
-          alt="List Your Property"
+          src={backgroundImage}
+          alt={altText}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
         <div
@@ -72,25 +105,27 @@ export default function Hero({ onScrollToForm }) {
               marginBottom: 12,
             }}
           >
-            List Your{" "}
-            <em style={{ color: "#f5b843", fontWeight: 800, fontStyle: "italic" }}>
-              Property.
-            </em>
+            {title}{" "}
+            {highlightedText && (
+              <em style={{ color: "#f5b843", fontWeight: 800, fontStyle: "italic" }}>
+                {highlightedText}
+              </em>
+            )}
           </h1>
-          <p
-            style={{
-              fontFamily: "'Inter',sans-serif",
-              color: "rgba(255,255,255,0.62)",
-              fontSize: 14,
-              maxWidth: 450,
-              margin: "0 auto",
-              lineHeight: 1.78,
-            }}
-          >
-            Connect your luxury resort or private villa with 70,000+ high-net-worth members globally.
-          </p>
-
-
+          {shortDescription && (
+            <p
+              style={{
+                fontFamily: "'Inter',sans-serif",
+                color: "rgba(255,255,255,0.62)",
+                fontSize: 14,
+                maxWidth: 450,
+                margin: "0 auto",
+                lineHeight: 1.78,
+              }}
+            >
+              {shortDescription}
+            </p>
+          )}
         </motion.div>
       </div>
     </section>

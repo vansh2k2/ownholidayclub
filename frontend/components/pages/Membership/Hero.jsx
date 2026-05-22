@@ -1,12 +1,46 @@
 "use client";
-import React from "react";
+
+import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081";
 
 export default function Hero() {
   const { scrollY } = useScroll();
   const heroScale = useTransform(scrollY, [0, 400], [1, 1.1]);
   const heroY     = useTransform(scrollY, [0, 400], [0, 45]);
   const heroOp    = useTransform(scrollY, [0, 320], [1, 0.58]);
+
+  const [heroData, setHeroData] = useState(null);
+
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/hero-images/page/Membership?t=${Date.now()}`, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+          }
+        });
+        if (response.ok) {
+          const resData = await response.json();
+          if (resData.success && resData.data) {
+            setHeroData(resData.data);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch hero image for Membership", error);
+      }
+    };
+    fetchHeroData();
+  }, []);
+
+  const backgroundImage = heroData?.backgroundImage || "/members1.jpg";
+  const altText = heroData?.imageAltText || "Membership Hero";
+  const title = heroData?.title || "Own the";
+  const highlightedText = heroData?.highlightedText || "Journey.";
+  const shortDescription = heroData?.shortDescription || "Generational Luxury Rates and Unforgettable Experiences Tailored for You.";
 
   return (
     <section
@@ -31,8 +65,8 @@ export default function Hero() {
         }}
       >
         <img
-          src="/members1.jpg"
-          alt="Membership Hero"
+          src={backgroundImage}
+          alt={altText}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
         <div
@@ -69,23 +103,27 @@ export default function Hero() {
               marginBottom: 12,
             }}
           >
-            Own the{" "}
-            <em style={{ color: "#f5b843", fontWeight: 800, fontStyle: "italic" }}>
-              Journey.
-            </em>
+            {title}{" "}
+            {highlightedText && (
+              <em style={{ color: "#f5b843", fontWeight: 800, fontStyle: "italic" }}>
+                {highlightedText}
+              </em>
+            )}
           </h1>
-          <p
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              color: "rgba(255,255,255,0.62)",
-              fontSize: 14,
-              maxWidth: 450,
-              margin: "0 auto",
-              lineHeight: 1.78,
-            }}
-          >
-            Generational Luxury Rates and Unforgettable Experiences Tailored for You.
-          </p>
+          {shortDescription && (
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                color: "rgba(255,255,255,0.62)",
+                fontSize: 14,
+                maxWidth: 450,
+                margin: "0 auto",
+                lineHeight: 1.78,
+              }}
+            >
+              {shortDescription}
+            </p>
+          )}
         </motion.div>
       </div>
     </section>

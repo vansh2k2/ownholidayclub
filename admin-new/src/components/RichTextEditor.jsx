@@ -1,9 +1,53 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Link as LinkIcon, Palette } from 'lucide-react';
 
+const rgbToHex = (color) => {
+    if (!color) return "#333333"; // default color
+    
+    // Check if it's already a hex color
+    if (color.startsWith('#')) {
+        if (color.length === 4) {
+            return '#' + color[1] + color[1] + color[2] + color[2] + color[3] + color[3];
+        }
+        return color;
+    }
+
+    // Try to match rgb or rgba
+    const rgbRegex = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/i;
+    const match = color.match(rgbRegex);
+    if (match) {
+        const r = parseInt(match[1]).toString(16).padStart(2, '0');
+        const g = parseInt(match[2]).toString(16).padStart(2, '0');
+        const b = parseInt(match[3]).toString(16).padStart(2, '0');
+        return `#${r}${g}${b}`.toLowerCase();
+    }
+
+    // If it's a named color, e.g. "yellow", "red" etc.
+    try {
+        const temp = document.createElement('span');
+        temp.style.color = color;
+        document.body.appendChild(temp);
+        const computedColor = window.getComputedStyle(temp).color;
+        document.body.removeChild(temp);
+        
+        const computedMatch = computedColor.match(rgbRegex);
+        if (computedMatch) {
+            const r = parseInt(computedMatch[1]).toString(16).padStart(2, '0');
+            const g = parseInt(computedMatch[2]).toString(16).padStart(2, '0');
+            const b = parseInt(computedMatch[3]).toString(16).padStart(2, '0');
+            return `#${r}${g}${b}`.toLowerCase();
+        }
+    } catch (e) {
+        console.error("Error converting named color to hex:", e);
+    }
+
+    return "#333333";
+};
+
 const RichTextEditor = ({ value, onChange, placeholder, minHeight = "300px", isCodeEditor = false }) => {
     const editorRef = useRef(null);
     const savedRangeRef = useRef(null);
+    const [textColor, setTextColor] = useState("#333333");
     const [activeFormats, setActiveFormats] = useState({
         bold: false,
         italic: false,
@@ -46,6 +90,18 @@ const RichTextEditor = ({ value, onChange, placeholder, minHeight = "300px", isC
                 insertOrderedList: document.queryCommandState("insertOrderedList"),
                 formatBlock: formatBlockValue || 'p'
             });
+
+            // Update text color of the current selection
+            try {
+                const foreColorValue = document.queryCommandValue("foreColor");
+                if (foreColorValue) {
+                    setTextColor(rgbToHex(foreColorValue));
+                } else {
+                    setTextColor("#333333");
+                }
+            } catch (err) {
+                console.error("Error queryCommandValue foreColor:", err);
+            }
         }
     }, [isCodeEditor]);
 
@@ -192,8 +248,12 @@ const RichTextEditor = ({ value, onChange, placeholder, minHeight = "300px", isC
                             <Palette size={14} className="text-gray-500" />
                             <input
                                 type="color"
+                                value={textColor}
                                 onFocus={restoreSelection}
-                                onChange={(e) => execCommand("foreColor", e.target.value)}
+                                onChange={(e) => {
+                                    setTextColor(e.target.value);
+                                    execCommand("foreColor", e.target.value);
+                                }}
                                 className="w-6 h-6 p-0 border-none bg-transparent cursor-pointer"
                                 title="Text Color"
                             />

@@ -56,6 +56,7 @@ export default function ContactUspage() {
     workingHours: "Mon – Sat: 9:30 AM – 6:30 PM",
     mapIframe: "",
   });
+  const [heroData, setHeroData] = useState(null);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081";
 
@@ -69,12 +70,33 @@ export default function ContactUspage() {
         }
       })
       .catch(err => console.error("Settings fetch error:", err));
+
+    fetch(`${API_BASE_URL}/api/hero-images/page/Contact%20Us?t=${Date.now()}`, {
+      cache: "no-store",
+      headers: {
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache"
+      }
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && result.data) {
+          setHeroData(result.data);
+        }
+      })
+      .catch(err => console.error("Failed to fetch hero image for Contact Us", err));
   }, [API_BASE_URL]);
 
   const { scrollY } = useScroll();
   const heroScale = useTransform(scrollY, [0, 400], [1, 1.1]);
   const heroY     = useTransform(scrollY, [0, 400], [0, 45]);
   const heroOp    = useTransform(scrollY, [0, 320], [1, 0.58]);
+
+  const backgroundImage = heroData?.backgroundImage || "/contact.jpg";
+  const altText = heroData?.imageAltText || "Contact";
+  const title = heroData?.title || "Contact";
+  const highlightedText = heroData?.highlightedText || "Us.";
+  const shortDescription = heroData?.shortDescription || "Our experts are ready to craft your next unforgettable journey.";
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -230,7 +252,7 @@ export default function ContactUspage() {
         }}
       >
         <motion.div style={{ scale: heroScale, y: heroY, opacity: heroOp, position: "absolute", inset: 0, zIndex: 0 }}>
-          <img src="/contact.jpg" alt="Contact" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img src={backgroundImage} alt={altText} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           <div style={{ position: "absolute", inset: 0, background: "rgba(10,8,5,0.56)" }} />
         </motion.div>
 
@@ -246,12 +268,16 @@ export default function ContactUspage() {
               color: "#fff", lineHeight: 1.08, letterSpacing: "-.02em",
               textTransform: "uppercase", marginBottom: 12,
             }}>
-              Contact{" "}
-              <em style={{ color: "#f5b843", fontWeight: 800, fontStyle: "italic" }}>Us.</em>
+              {title}{" "}
+              {highlightedText && (
+                <em style={{ color: "#f5b843", fontWeight: 800, fontStyle: "italic" }}>{highlightedText}</em>
+              )}
             </h1>
-            <p style={{ fontFamily: "'Inter',sans-serif", color: "rgba(255,255,255,0.62)", fontSize: 14, maxWidth: 450, margin: "0 auto", lineHeight: 1.78 }}>
-              Our experts are ready to craft your next unforgettable journey.
-            </p>
+            {shortDescription && (
+              <p style={{ fontFamily: "'Inter',sans-serif", color: "rgba(255,255,255,0.62)", fontSize: 14, maxWidth: 450, margin: "0 auto", lineHeight: 1.78 }}>
+                {shortDescription}
+              </p>
+            )}
           </motion.div>
         </div>
       </section>

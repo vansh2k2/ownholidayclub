@@ -16,7 +16,7 @@ export default function Hero() {
   useEffect(() => {
     const fetchHeroData = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/hero-images/page/About%20Us?t=${Date.now()}`, {
+        const response = await fetch(`${API_BASE_URL}/api/hero-images/page/About?t=${Date.now()}`, {
           cache: "no-store",
           headers: {
             "Cache-Control": "no-cache",
@@ -30,7 +30,7 @@ export default function Hero() {
           }
         }
       } catch (error) {
-        console.error("Failed to fetch hero image for About Us", error);
+        console.error("Failed to fetch hero image for About", error);
       }
     };
     fetchHeroData();
