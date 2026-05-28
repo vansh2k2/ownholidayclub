@@ -69,7 +69,7 @@ export default function Hero({ onScrollToForm }) {
         <img
           src={backgroundImage}
           alt={altText}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }}
         />
         <div
           style={{

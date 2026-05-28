@@ -1,8 +1,19 @@
 const express = require("express");
 
 const HolidayLead = require("../models/HolidayLead");
+const EmailVerification = require("../models/EmailVerification");
+const MobileVerification = require("../models/MobileVerification");
 const asyncHandler = require("../utils/asyncHandler");
-const { normaliseEmail, normaliseMobile } = require("../utils/security");
+const { sendOtpEmail } = require("../utils/email");
+const { sendOtpSms } = require("../utils/sms");
+const {
+  normaliseEmail,
+  normaliseMobile,
+  buildOtpDebugPayload,
+  generateOtp,
+  getOtpExpiry,
+  hasOtpExpired,
+} = require("../utils/security");
 const { sendLeadNotificationEmail } = require("../utils/email");
 
 const router = express.Router();
@@ -30,6 +41,170 @@ const normaliseContextType = (value) =>
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 
+// ── CUSTOM OTP ENDPOINTS FOR LEADS ──
+
+// Send Mobile OTP
+router.post(
+  "/mobile/send-otp",
+  asyncHandler(async (req, res) => {
+    const mobile = normaliseMobile(req.body.mobile);
+
+    if (mobile.length !== 10) {
+      return res.status(400).json({
+        message: "A valid 10-digit mobile number is required.",
+      });
+    }
+
+    const otp = generateOtp(6);
+    const expiresAt = getOtpExpiry(15);
+
+    await MobileVerification.findOneAndUpdate(
+      { mobile },
+      {
+        mobile,
+        otpCode: otp,
+        expiresAt,
+        verifiedAt: null,
+      },
+      {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true,
+      },
+    );
+
+    try {
+      await sendOtpSms(mobile, otp);
+    } catch (error) {
+      console.error("SMS OTP sending failed:", error.message);
+      if (process.env.NODE_ENV === "production") {
+        await MobileVerification.deleteOne({ mobile });
+        throw error;
+      }
+    }
+
+    return res.status(200).json({
+      message: "Verification code sent successfully.",
+      mobile,
+      expiresAt,
+      ...buildOtpDebugPayload(otp),
+    });
+  })
+);
+
+// Verify Mobile OTP
+router.post(
+  "/mobile/verify-otp",
+  asyncHandler(async (req, res) => {
+    const mobile = normaliseMobile(req.body.mobile);
+    const otp = String(req.body.otp || "").trim();
+
+    if (mobile.length !== 10 || !otp) {
+      return res.status(400).json({
+        message: "mobile and otp are required.",
+      });
+    }
+
+    const record = await MobileVerification.findOne({ mobile });
+
+    if (!record || hasOtpExpired(record.expiresAt) || record.otpCode !== otp) {
+      return res.status(400).json({
+        message: "Invalid or expired verification code.",
+      });
+    }
+
+    record.verifiedAt = new Date();
+    await record.save();
+
+    return res.status(200).json({
+      message: "Mobile verified successfully.",
+      mobile,
+      verified: true,
+    });
+  })
+);
+
+// Send Email OTP
+router.post(
+  "/email/send-otp",
+  asyncHandler(async (req, res) => {
+    const email = normaliseEmail(req.body.email);
+
+    if (!email) {
+      return res.status(400).json({
+        message: "A valid email address is required.",
+      });
+    }
+
+    const otp = generateOtp(6);
+    const expiresAt = getOtpExpiry(15);
+
+    await EmailVerification.findOneAndUpdate(
+      { email },
+      {
+        email,
+        otpCode: otp,
+        expiresAt,
+        verifiedAt: null,
+      },
+      {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true,
+      },
+    );
+
+    try {
+      await sendOtpEmail(email, otp);
+    } catch (error) {
+      console.error("Email OTP sending failed:", error.message);
+      if (process.env.NODE_ENV === "production") {
+        throw error;
+      }
+    }
+
+    return res.status(200).json({
+      message: "Verification code sent successfully.",
+      email,
+      expiresAt,
+      ...buildOtpDebugPayload(otp),
+    });
+  })
+);
+
+// Verify Email OTP
+router.post(
+  "/email/verify-otp",
+  asyncHandler(async (req, res) => {
+    const email = normaliseEmail(req.body.email);
+    const otp = String(req.body.otp || "").trim();
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        message: "email and otp are required.",
+      });
+    }
+
+    const record = await EmailVerification.findOne({ email });
+
+    if (!record || hasOtpExpired(record.expiresAt) || record.otpCode !== otp) {
+      return res.status(400).json({
+        message: "Invalid or expired verification code.",
+      });
+    }
+
+    record.verifiedAt = new Date();
+    await record.save();
+
+    return res.status(200).json({
+      message: "Email verified successfully.",
+      email,
+      verified: true,
+    });
+  })
+);
+
+// Submit callback/lead
 router.post(
   "/",
   asyncHandler(async (req, res) => {
@@ -42,6 +217,11 @@ router.post(
     const source = normaliseSource(req.body?.source);
     const checkInInput = normaliseText(req.body?.checkIn);
     const checkOutInput = normaliseText(req.body?.checkOut);
+    const location = normaliseText(req.body?.location);
+    const locationType = normaliseText(req.body?.locationType || "Domestic");
+    const budget = normaliseText(req.body?.budget);
+    const travelType = normaliseText(req.body?.travelType);
+
     const adults =
       req.body?.adults === undefined || req.body?.adults === null || req.body?.adults === ""
         ? 0
@@ -68,6 +248,17 @@ router.post(
     if (phone.length !== 10) {
       return res.status(400).json({
         message: "A valid 10-digit phone number is required.",
+      });
+    }
+
+    // Verify phone OTP was verified
+    const isMobileVerified = await MobileVerification.findOne({
+      mobile: phone,
+      verifiedAt: { $ne: null },
+    });
+    if (!isMobileVerified) {
+      return res.status(400).json({
+        message: "Please verify your phone number with OTP first.",
       });
     }
 
@@ -118,6 +309,10 @@ router.post(
       kids,
       message,
       source,
+      location,
+      locationType,
+      budget,
+      travelType,
       status: "new",
     });
 
@@ -130,6 +325,10 @@ router.post(
           "Phone": phone,
           "Source": source,
           "Context": contextName || contextType,
+          "Location Type": locationType,
+          "Location": location,
+          "Budget": budget,
+          "Travel Type": travelType,
           "Adults": adults,
           "Kids": kids,
           "Check In": checkIn ? checkIn.toLocaleDateString() : "",

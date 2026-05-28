@@ -175,51 +175,6 @@ export default function MembershipPurchaseStepTwo({
         </div>
       </div>
 
-      <div className="space-y-3 pt-2">
-        <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-700">
-          <ShieldCheck size={14} />
-          Consent
-        </div>
-
-        <div className="rounded-2xl border border-amber-100 bg-amber-50/40 p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <label className="flex items-start gap-3 text-[15px] text-slate-700">
-              <input
-                type="checkbox"
-                checked={form.acceptedTerms}
-                onChange={(event) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    acceptedTerms: event.target.checked,
-                  }))
-                }
-                className="mt-0.5 h-5 w-5 shrink-0 rounded border-slate-300 text-amber-500 focus:ring-amber-500"
-              />
-              <span className="inline-flex min-w-0 items-start gap-2">
-                <ShieldCheck
-                  size={16}
-                  className="mt-0.5 shrink-0 text-amber-600"
-                />
-                <span className="leading-6">
-                  I agree to the{" "}
-                  <span className="font-medium text-amber-700">
-                    Terms & Conditions
-                  </span>
-                </span>
-              </span>
-            </label>
-
-            <a
-              href={`${baseUrl}/terms&conditions`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-medium text-slate-500 underline-offset-4 transition hover:text-amber-600 hover:underline sm:text-right"
-            >
-              Read full terms and conditions
-            </a>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

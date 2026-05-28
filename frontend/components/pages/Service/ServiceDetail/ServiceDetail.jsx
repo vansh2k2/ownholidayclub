@@ -28,6 +28,8 @@ export default function ServiceDetailPage({ serviceId }) {
     checkOut: "",
     adults: "2",
     kids: "0",
+    travelType: "Holiday",
+    budget: "",
     message: "",
   });
   const [activeModal, setActiveModal] = useState(null);
@@ -76,6 +78,8 @@ export default function ServiceDetailPage({ serviceId }) {
     const checkOut = String(formData.checkOut || "").trim();
     const adults = Number(formData.adults || 0);
     const kids = Number(formData.kids || 0);
+    const travelType = String(formData.travelType || "Holiday").trim();
+    const budget = String(formData.budget || "").trim();
     const message = String(formData.message || "").trim();
 
     if (name.length < 2) {
@@ -130,6 +134,8 @@ export default function ServiceDetailPage({ serviceId }) {
           checkOut,
           adults,
           kids,
+          travelType,
+          budget,
           message,
           serviceName: serviceData?.title || "",
           serviceId: serviceData?._id || null,
@@ -152,6 +158,8 @@ export default function ServiceDetailPage({ serviceId }) {
           checkOut: "",
           adults: "2",
           kids: "0",
+          travelType: "Holiday",
+          budget: "",
           message: "",
         });
         setFormError("");

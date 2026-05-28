@@ -12,7 +12,7 @@ export default function Hero({ serviceData, onImageError }) {
         src={serviceData.heroImage || serviceData.image}
         alt={serviceData.title}
         className="absolute inset-0 w-full h-full object-cover opacity-70"
-        style={{ transform: "scale(1.05)" }}
+        style={{ transform: "scale(1.05)", objectPosition: "center 30%" }}
         onError={onImageError}
       />
 

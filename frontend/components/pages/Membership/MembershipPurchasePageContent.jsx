@@ -163,7 +163,8 @@ export default function MembershipPurchasePageContent({
       addressDetails.residence.addressLine.trim() &&
       addressDetails.residence.city.trim() &&
       addressDetails.residence.state &&
-      addressDetails.residence.country.trim(),
+      addressDetails.residence.country.trim() &&
+      form.acceptedTerms,
     );
   }, [emailState.verified, form, mobileState.verified]);
 
@@ -190,10 +191,6 @@ export default function MembershipPurchasePageContent({
             documents.addressProof?.url ||
             documents.addressProof?.name,
         ),
-      },
-      {
-        label: "Terms & Conditions",
-        complete: Boolean(acceptedTerms),
       },
     ];
   }, [form]);
@@ -741,6 +738,38 @@ export default function MembershipPurchasePageContent({
                   setForm={setForm}
                   baseUrl={baseUrl}
                 />
+              )}
+
+              {currentStep === 1 && (
+                <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-center">
+                  <label className="flex items-start gap-3 text-[14px] text-slate-700 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={form.acceptedTerms}
+                      onChange={(event) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          acceptedTerms: event.target.checked,
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
+                    />
+                    <span className="inline-flex min-w-0 items-center gap-2">
+                      <span className="leading-5">
+                        I agree to the <span className="font-semibold text-slate-800">Terms & Conditions</span>
+                      </span>
+                      <a
+                        href="/OHCTerms.pdf"
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 rounded bg-[#C8102E]/10 px-2 py-0.5 text-[11px] font-bold text-[#C8102E] hover:bg-[#C8102E]/20 transition-colors"
+                      >
+                        View PDF
+                      </a>
+                    </span>
+                  </label>
+                </div>
               )}
 
               <div className="flex flex-col items-center gap-3 pt-4 sm:flex-row sm:justify-center">

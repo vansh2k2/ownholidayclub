@@ -31,7 +31,7 @@ export default function AdminLayout() {
         {/* MAIN CONTENT + FOOTER */}
         <div
           className={`
-            flex flex-col flex-1 transition-all duration-300
+            flex flex-col flex-1 transition-all duration-300 min-w-0 overflow-hidden
             ${sidebarOpen ? "lg:ml-74" : "lg:ml-20"}
           `}
         >

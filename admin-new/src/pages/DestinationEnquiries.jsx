@@ -12,7 +12,9 @@ import {
   Smartphone,
   X,
   Users,
-  Plane
+  Plane,
+  IndianRupee,
+  Compass
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from "../lib/api";
@@ -188,6 +190,20 @@ const DestinationEnquiries = () => {
       ),
     },
     {
+      key: "preferences",
+      label: "PREFERENCES",
+      render: (row) => (
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[9px] font-black text-gray-700 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded flex items-center gap-1.5 w-fit">
+            <Compass size={10} className="text-gray-500" /> {row.travelType || "Holiday"}
+          </span>
+          <span className="text-[9px] font-black text-amber-700 uppercase tracking-wider bg-amber-50 px-2 py-1 rounded flex items-center gap-1 w-fit">
+            <IndianRupee size={10} className="text-amber-500" /> {row.budget || "Not Specified"}
+          </span>
+        </div>
+      ),
+    },
+    {
       key: "message",
       label: "MESSAGE",
       render: (row) => (
@@ -233,7 +249,7 @@ const DestinationEnquiries = () => {
         <select
           value={row.status}
           onChange={(e) => handleStatusChange(row._id, e.target.value)}
-          className={`h-7 px-3 rounded-md text-[10px] font-black uppercase tracking-wider border-2 cursor-pointer transition-all ${
+          className={`h-7 px-1.5 w-[88px] rounded-md text-[9px] font-black uppercase tracking-wider border-2 cursor-pointer transition-all ${
             row.status === "new"
               ? "bg-blue-50 text-blue-700 border-blue-100 hover:border-blue-300"
               : row.status === "contacted"
@@ -449,7 +465,14 @@ const DestinationEnquiries = () => {
 
                         <div className="bg-blue-50 p-4 border border-blue-100">
                             <label className="text-[10px] font-semibold text-blue-400 uppercase tracking-widest block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Destination</label>
-                            <h4 className="text-md font-black text-blue-900">{selectedEnquiry.destinationName}</h4>
+                            <h4 className="text-md font-black text-blue-900 mb-3">{selectedEnquiry.destinationName}</h4>
+                            <div className="flex flex-col gap-2 pt-3 border-t border-blue-200/50">
+                                <label className="text-[10px] font-semibold text-blue-400 uppercase tracking-widest block" style={{ fontFamily: "'Inter', sans-serif" }}>Trip Preferences</label>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-[10px] font-black uppercase text-blue-800 bg-blue-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><Compass size={12} /> {selectedEnquiry.travelType || "Holiday"}</span>
+                                    <span className="text-[10px] font-black uppercase text-amber-700 bg-amber-100/50 px-2 py-1 flex items-center gap-1 rounded"><IndianRupee size={12} /> {selectedEnquiry.budget || "Not Specified"}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

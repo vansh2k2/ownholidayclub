@@ -7,23 +7,486 @@ const STATIC_SLIDES = [
   { title: "Membership plans for every family", left: "Other travel companies", leftText: "Pay per trip with no long-term benefits. Prices change every season and family members are charged separately.", right: "Own Holiday Club", rightText: "One membership covers Member + Spouse + 2 kids with long-term validity and fixed pricing — no hidden surprises." },
   { title: "Domestic & international destinations", left: "Other travel companies", leftText: "Limited destinations and multiple vendors required for different locations.", right: "Own Holiday Club", rightText: "Access to multiple domestic and international destinations with curated resorts and hotels under one membership." },
   { title: "End-to-end travel planning", left: "Other travel companies", leftText: "You manage bookings, transport, and itinerary separately.", right: "Own Holiday Club", rightText: "Complete travel planning including stays, transport, and experiences handled by experts." },
+  { title: "Premium Resorts Only", left: "Other travel companies", leftText: "No quality guarantee — stays range from average to poor.", right: "Own Holiday Club", rightText: "Every property is handpicked for luxury, comfort, and consistent quality standards." },
   { title: "Pay once, travel for years", left: "Other travel companies", leftText: "Prices increase every year with no cost predictability.", right: "Own Holiday Club", rightText: "Fixed pricing membership lets you enjoy holidays every year without worrying about rising hotel costs." },
   { title: "Wide range of destinations", left: "Other travel companies", leftText: "Limited resort options and availability issues.", right: "Own Holiday Club", rightText: "Members get access to a wide range of destinations including beaches, hills, and international cities." },
   { title: "Exclusive member benefits", left: "Other travel companies", leftText: "No exclusive perks or loyalty advantages.", right: "Own Holiday Club", rightText: "Members enjoy special discounts, curated stays, and exclusive deals not available to regular travelers." },
-  { title: "Hassle-free booking", left: "Other travel companies", leftText: "Complex booking processes with multiple confirmations.", right: "Own Holiday Club", rightText: "Simple and smooth booking experience with dedicated support team." },
-  { title: "Family-friendly experiences", left: "Other travel companies", leftText: "Trips often not optimized for family needs.", right: "Own Holiday Club", rightText: "Designed for families with comfortable stays and experiences tailored for all age groups." },
+  { title: "Flexible Holidays", left: "Other travel companies", leftText: "Fixed blackout dates", right: "Own Holiday Club", rightText: "Travel when life allows — anytime" },
   { title: "Cost savings on travel", left: "Other travel companies", leftText: "Repeated bookings increase overall travel expenses.", right: "Own Holiday Club", rightText: "Membership helps save significantly on hotels and travel costs over time with predictable pricing." },
   { title: "Long-term travel value", left: "Other travel companies", leftText: "No long-term value or investment in travel.", right: "Own Holiday Club", rightText: "A long-term travel solution that ensures memorable holidays with consistent quality and service." },
 ];
+
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  .ohc-root {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    background: #f5f0e8;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(196,164,100,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(196,164,100,0.06) 0%, transparent 50%);
+    min-height: 100%;
+    padding: 32px 16px 32px;
+    box-sizing: border-box;
+  }
+
+  .ohc-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .ohc-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .ohc-badge-line {
+    width: 50px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #b8960c, transparent);
+  }
+
+  .ohc-badge-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #b8960c;
+  }
+
+  .ohc-heading {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 700;
+    color: #1a1612;
+    line-height: 1.15;
+    margin: 0 0 14px 0;
+    letter-spacing: -0.01em;
+  }
+
+  .ohc-heading-italic {
+    font-style: italic;
+    color: #c4a428;
+    font-weight: 400;
+  }
+
+  .ohc-subtext {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: #1a1612;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  /* ── Timeline ── */
+  .ohc-timeline-wrap {
+    max-width: 1100px;
+    margin: 0 auto 32px;
+    padding: 0 24px;
+    position: relative;
+  }
+
+  .ohc-timeline-track {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ohc-timeline-bg-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(184, 150, 12, 0.2);
+    transform: translateY(-50%);
+    z-index: 0;
+  }
+
+  .ohc-timeline-progress-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, #b8960c, #d4af37);
+    transform: translateY(-50%);
+    z-index: 1;
+    transition: width 0.5s ease;
+  }
+
+  .ohc-step-btn {
+    position: relative;
+    z-index: 2;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ohc-step-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.35s ease;
+    border: 1.5px solid transparent;
+  }
+
+  .ohc-step-circle.done {
+    background: rgba(196, 164, 40, 0.15);
+    border-color: rgba(196, 164, 40, 0.4);
+    color: #b8960c;
+  }
+
+  .ohc-step-circle.done svg {
+    width: 14px;
+    height: 14px;
+    stroke: #b8960c;
+    stroke-width: 2.5;
+    fill: none;
+  }
+
+  .ohc-step-circle.active {
+    background: linear-gradient(135deg, #d4af37 0%, #b8960c 100%);
+    border-color: #b8960c;
+    color: #fff;
+    box-shadow: 0 0 0 6px rgba(184, 150, 12, 0.15), 0 4px 16px rgba(184, 150, 12, 0.3);
+    transform: scale(1.12);
+  }
+
+  .ohc-step-circle.upcoming {
+    background: rgba(245, 240, 232, 0.8);
+    border-color: rgba(184, 150, 12, 0.2);
+    color: #b0a090;
+  }
+
+  .ohc-step-circle.upcoming:hover {
+    border-color: rgba(184, 150, 12, 0.5);
+    color: #b8960c;
+  }
+
+  /* ── Card ── */
+  .ohc-card-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .ohc-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid rgba(184, 150, 12, 0.12);
+    box-shadow:
+      0 1px 3px rgba(0,0,0,0.04),
+      0 8px 32px rgba(0,0,0,0.06),
+      0 0 0 1px rgba(255,255,255,0.8) inset;
+    overflow: hidden;
+  }
+
+  .ohc-card-top-strip {
+    height: 3px;
+    background: linear-gradient(90deg, #e8d48a, #c4a428, #d4af37, #b8960c, #e8d48a);
+  }
+
+  .ohc-card-body {
+    padding: 40px 48px 32px;
+    transition: opacity 0.3s ease;
+  }
+
+  .ohc-card-body.animating {
+    opacity: 0;
+  }
+
+  .ohc-card-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 20px;
+  }
+
+  .ohc-reason-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #c4a428;
+    margin-bottom: 8px;
+  }
+
+  .ohc-card-title {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 700;
+    color: #1a1612;
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .ohc-counter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #a09080;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    padding-top: 4px;
+  }
+
+  /* ── Comparison columns ── */
+  .ohc-compare {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    align-items: stretch;
+    min-height: 200px;
+  }
+
+  @media (max-width: 640px) {
+    .ohc-compare {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .ohc-vs-col {
+      display: none !important;
+    }
+    .ohc-card-body {
+      padding: 28px 20px 24px;
+    }
+  }
+
+  .ohc-col {
+    border-radius: 14px;
+    padding: 28px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ohc-col-left {
+    background: #f8f6f2;
+    border: 1px solid #ede8de;
+  }
+
+  .ohc-col-right {
+    background: linear-gradient(135deg, #fdf9ee 0%, #faf4dd 100%);
+    border: 1px solid rgba(196, 164, 40, 0.25);
+  }
+
+  .ohc-col-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+  }
+
+  .ohc-col-icon.cross {
+    background: #e8e4dc;
+  }
+
+  .ohc-col-icon.check {
+    background: linear-gradient(135deg, #d4af37, #b8960c);
+    box-shadow: 0 4px 12px rgba(184, 150, 12, 0.3);
+  }
+
+  .ohc-col-icon svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5;
+    fill: none;
+  }
+
+  .ohc-col-icon.cross svg { stroke: #8a8278; }
+  .ohc-col-icon.check svg { stroke: #fff; }
+
+  .ohc-col-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .ohc-col-brand.left-brand { color: #a09080; }
+  .ohc-col-brand.right-brand { color: #b8960c; }
+
+  .ohc-col-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: #3a3028;
+  }
+
+  .ohc-col-left .ohc-col-text { color: #6a6058; }
+
+  .ohc-vs-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ohc-vs-line {
+    flex: 1;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(184,150,12,0.2), transparent);
+  }
+
+  .ohc-vs-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(184,150,12,0.2);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #c4a428;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+    margin: 10px 0;
+  }
+
+  /* ── Footer ── */
+  .ohc-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 48px 20px;
+    border-top: 1px solid rgba(184,150,12,0.1);
+  }
+
+  .ohc-autoplay-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ohc-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #c4a428;
+  }
+
+  .ohc-dot.pulsing {
+    animation: ohcPulse 2s infinite;
+  }
+
+  @keyframes ohcPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .ohc-autoplay-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #b8960c;
+  }
+
+  .ohc-nav-btns {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ohc-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: transparent;
+  }
+
+  .ohc-nav-btn.prev {
+    border-color: rgba(58,48,40,0.2);
+    color: #3a3028;
+  }
+
+  .ohc-nav-btn.prev:hover {
+    background: #f0ebe0;
+    border-color: rgba(58,48,40,0.4);
+  }
+
+  .ohc-nav-btn.next {
+    border-color: #c4a428;
+    background: linear-gradient(135deg, #d4af37, #b8960c);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(184,150,12,0.3);
+  }
+
+  .ohc-nav-btn.next:hover {
+    box-shadow: 0 6px 20px rgba(184,150,12,0.45);
+    transform: translateY(-1px);
+  }
+
+  .ohc-nav-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .ohc-resume-btn {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #b8960c;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+  }
+`;
 
 export default function OwnHolidayClubCarousel() {
   const [slides, setSlides] = useState(STATIC_SLIDES);
   const [headings, setHeadings] = useState({
     subheading: "WHY CHOOSE US",
-    heading: "10 REASONS TO",
-    highlightedWord: "Become a Member."
+    heading: "10 Reasons to",
+    highlightedWord: "Become a Member",
   });
-
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -35,22 +498,20 @@ export default function OwnHolidayClubCarousel() {
         const result = await response.json();
         if (result.success && result.data) {
           const wcuData = result.data;
-          
           if (wcuData.heading) {
             setHeadings({
               subheading: wcuData.subheading || "WHY CHOOSE US",
-              heading: wcuData.heading || "10 REASONS TO",
-              highlightedWord: wcuData.highlightedWord || "Become a Member."
+              heading: wcuData.heading || "10 Reasons to",
+              highlightedWord: wcuData.highlightedWord || "Become a Member",
             });
           }
-          
           if (wcuData.items && wcuData.items.length > 0) {
-            const mappedSlides = wcuData.items.map(item => ({
+            const mappedSlides = wcuData.items.map((item) => ({
               title: item.title,
               left: "Other travel companies",
               leftText: item.otherTravelCompanies,
               right: "Own Holiday Club",
-              rightText: item.ownHolidayClub
+              rightText: item.ownHolidayClub,
             }));
             setSlides(mappedSlides);
           }
@@ -69,7 +530,7 @@ export default function OwnHolidayClubCarousel() {
     setTimeout(() => {
       setCurrent((index + slides.length) % slides.length);
       setAnimating(false);
-    }, 280);
+    }, 300);
   };
 
   useEffect(() => {
@@ -79,208 +540,174 @@ export default function OwnHolidayClubCarousel() {
       setTimeout(() => {
         setCurrent((prev) => (prev + 1) % slides.length);
         setAnimating(false);
-      }, 280);
+      }, 300);
     }, 4000);
     return () => clearInterval(timer);
   }, [paused, current, slides.length]);
 
   const slide = slides[current] || STATIC_SLIDES[0];
+  const progressPct =
+    slides.length > 1 ? (current / (slides.length - 1)) * 100 : 0;
 
   return (
-    <section
-      className="w-full py-10 px-4 bg-slate-100 text-slate-900"
-      style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-    >
-      {/* ── Header ── */}
-      <div className="flex flex-col items-center text-center mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <span className="w-8 h-px bg-amber-400" />
-          <span
-            className="text-[9px] font-semibold tracking-[0.4em] uppercase text-amber-600 animate-pulse"
-            style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", letterSpacing: "0.4em" }}
-          >
-            {headings.subheading}
-          </span>
-          <span className="w-8 h-px bg-amber-400" />
+    <>
+      <style dangerouslySetInnerHTML={{ __html: styles }} />
+      <section className="ohc-root">
+        {/* ── Header ── */}
+        <div className="ohc-header">
+          <div className="ohc-badge">
+            <span className="ohc-badge-line" />
+            <span className="ohc-badge-text">{headings.subheading}</span>
+            <span className="ohc-badge-line" />
+          </div>
+          <h2 className="ohc-heading">
+            {headings.heading}{" "}
+            <em className="ohc-heading-italic">{headings.highlightedWord}</em>
+          </h2>
+          <p className="ohc-subtext">
+            Side by side. See exactly what sets the Own Holiday Club apart.
+          </p>
         </div>
-        <h2
-          className="text-2xl md:text-3xl font-bold text-slate-900 leading-snug uppercase tracking-tight"
-          style={{ fontFamily: "'Georgia', serif" }}
-        >
-          {headings.heading}{" "}
-          <span className="text-amber-500 italic font-normal normal-case">{headings.highlightedWord}</span>
-        </h2>
-      </div>
 
-      {/* ── Timeline ── */}
-      <div className="w-full max-w-[800px] mx-auto mb-10 px-4 relative">
-        {/* Background Line */}
-        <div className="absolute top-[18px] md:top-[22px] left-8 right-8 h-[2px] bg-slate-200 z-0" />
-        
-        {/* Progress Line */}
-        <div
-          className="absolute top-[18px] md:top-[22px] left-8 h-[2px] bg-amber-400 z-0 transition-all duration-500"
-          style={{
-            width: slides.length > 1 ? `calc(${(current / (slides.length - 1)) * 100}% - 0px)` : '0%',
-            right: 'auto',
-          }}
-        />
-
-        <div className="relative flex items-center justify-between w-full z-10">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i, true)}
-              className="flex flex-col items-center group transition-transform duration-300"
-              style={{ width: '0', flex: '0 0 auto', overflow: 'visible' }}
-            >
-              <div
-                className={`w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-[8px] md:text-[10px] font-bold border-2 transition-all duration-300 ${
-                  i === current
-                    ? "bg-amber-500 border-amber-500 text-white shadow-md shadow-amber-200 scale-110"
-                    : i < current
-                    ? "bg-amber-100 border-amber-300 text-amber-700"
-                    : "bg-white border-slate-200 text-slate-400 group-hover:border-amber-300 group-hover:text-amber-500"
-                }`}
-                style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
-              >
-                {i < current ? "✓" : i + 1}
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Card ── */}
-      <div className="w-full max-w-[800px] mx-auto">
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-
-          {/* Amber top strip */}
-          <div className="h-[3px] w-full bg-gradient-to-r from-amber-300 via-amber-500 to-amber-300" />
-
-          {/* Progress bar */}
-          <div className="w-full h-[2px] bg-slate-100">
+        {/* ── Timeline ── */}
+        <div className="ohc-timeline-wrap">
+          <div className="ohc-timeline-track">
+            <div className="ohc-timeline-bg-line" />
             <div
-              className="h-full bg-amber-400"
-              style={{
-                width: paused ? "0%" : "100%",
-                transition: paused ? "none" : "width 4000ms linear",
-              }}
-              key={`${current}-${paused}`}
+              className="ohc-timeline-progress-line"
+              style={{ width: `${progressPct}%` }}
             />
+            {slides.map((_, i) => {
+              const state =
+                i === current ? "active" : i < current ? "done" : "upcoming";
+              return (
+                <button
+                  key={i}
+                  className="ohc-step-btn"
+                  onClick={() => goTo(i, true)}
+                  aria-label={`Go to reason ${i + 1}`}
+                >
+                  <div className={`ohc-step-circle ${state}`}>
+                    {state === "done" ? (
+                      <svg viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : (
+                      i + 1
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
-
-          {/* Content */}
-          <div
-            className="px-6 pt-6 pb-5"
-            style={{ opacity: animating ? 0 : 1, transition: "opacity 0.28s ease" }}
-          >
-            {/* Title + counter */}
-            <div className="flex items-center justify-between mb-5 gap-4">
-              <h3
-                className="text-base md:text-lg font-bold text-slate-800 leading-snug"
-                style={{ fontFamily: "'Georgia', serif" }}
-              >
-                {slide.title}
-              </h3>
-              <span
-                className="text-[9px] font-semibold tracking-[0.18em] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full flex-shrink-0 uppercase"
-                style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
-              >
-                {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
-              </span>
-            </div>
-
-            {/* Comparison columns */}
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_44px_1fr] gap-0">
-
-              {/* Left — Other companies */}
-              <div className="flex flex-col items-center text-center px-4 py-4 rounded-xl bg-slate-100 border border-slate-200">
-                <div className="w-7 h-7 rounded-full bg-slate-400 flex items-center justify-center mb-2 flex-shrink-0">
-                  <span className="text-[10px] font-bold text-white">✕</span>
-                </div>
-                <p
-                  className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-2"
-                  style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
-                >
-                  {slide.left || "Other travel companies"}
-                </p>
-                <p
-                  className="text-[12px] leading-relaxed text-slate-600"
-                  style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
-                >
-                  {slide.leftText}
-                </p>
-              </div>
-
-              {/* VS */}
-              <div className="flex md:flex-col items-center justify-center py-3 md:py-0">
-                <div className="hidden md:block flex-1 w-px bg-slate-200" />
-                <div
-                  className="w-8 h-8 rounded-full border border-slate-200 bg-white flex items-center justify-center text-[9px] font-bold text-slate-400 flex-shrink-0 md:my-2 shadow-sm"
-                  style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
-                >
-                  VS
-                </div>
-                <div className="hidden md:block flex-1 w-px bg-slate-200" />
-              </div>
-
-              {/* Right — Own Holiday Club */}
-              <div className="flex flex-col items-center text-center px-4 py-4 rounded-xl bg-amber-50 border border-amber-200">
-                <div className="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center mb-2 flex-shrink-0">
-                  <span className="text-[10px] font-bold text-white">✓</span>
-                </div>
-                <p
-                  className="text-[9px] font-bold uppercase tracking-[0.2em] text-amber-700 mb-2"
-                  style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
-                >
-                  {slide.right || "Own Holiday Club"}
-                </p>
-                <p
-                  className="text-[12px] leading-relaxed text-slate-700"
-                  style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
-                >
-                  {slide.rightText}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div
-            className="flex items-center justify-between px-6 py-3 border-t border-slate-100 bg-slate-50"
-            style={{ fontFamily: "Helvetica Neue, Arial, sans-serif" }}
-          >
-            {paused ? (
-              <button
-                onClick={() => setPaused(false)}
-                className="flex items-center gap-1.5 text-[9px] font-bold tracking-widest uppercase text-amber-600 hover:text-amber-700 transition-colors"
-              >
-                ▶ Resume
-              </button>
-            ) : (
-              <span className="text-[9px] font-bold tracking-widest uppercase text-amber-700 bg-amber-50 px-2 py-0.5 rounded-sm">
-                Auto-playing
-              </span>
-            )}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => goTo(current - 1, true)}
-                className="w-8 h-8 bg-red-600 flex items-center justify-center text-white hover:bg-red-700 transition-all text-sm shadow-sm"
-              >
-                ←
-              </button>
-              <button
-                onClick={() => goTo(current + 1, true)}
-                className="w-8 h-8 bg-amber-500 flex items-center justify-center text-white hover:bg-amber-600 transition-all text-sm shadow-sm"
-              >
-                →
-              </button>
-            </div>
-          </div>
-
         </div>
-      </div>
-    </section>
+
+        {/* ── Card ── */}
+        <div className="ohc-card-wrap">
+          <div className="ohc-card">
+            <div className="ohc-card-top-strip" />
+
+            <div className={`ohc-card-body${animating ? " animating" : ""}`}>
+              {/* Meta row */}
+              <div className="ohc-card-meta">
+                <div>
+                  <p className="ohc-reason-label">
+                    Reason {String(current + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="ohc-card-title">{slide.title}</h3>
+                </div>
+                <div className="ohc-counter">
+                  {String(current + 1).padStart(2, "0")} /{" "}
+                  {String(slides.length).padStart(2, "0")}
+                </div>
+              </div>
+
+              {/* Comparison */}
+              <div className="ohc-compare">
+                {/* Left */}
+                <div className="ohc-col ohc-col-left">
+                  <div className="ohc-col-icon cross">
+                    <svg viewBox="0 0 24 24">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </div>
+                  <p className="ohc-col-brand left-brand">
+                    {slide.left || "Other travel companies"}
+                  </p>
+                  <p className="ohc-col-text">{slide.leftText}</p>
+                </div>
+
+                {/* VS */}
+                <div className="ohc-vs-col">
+                  <div className="ohc-vs-line" />
+                  <div className="ohc-vs-badge">VS</div>
+                  <div className="ohc-vs-line" />
+                </div>
+
+                {/* Right */}
+                <div className="ohc-col ohc-col-right">
+                  <div className="ohc-col-icon check">
+                    <svg viewBox="0 0 24 24">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <p className="ohc-col-brand right-brand">
+                    {slide.right || "Own Holiday Club"}
+                  </p>
+                  <p className="ohc-col-text">{slide.rightText}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="ohc-card-footer">
+              {paused ? (
+                <button
+                  className="ohc-resume-btn"
+                  onClick={() => setPaused(false)}
+                >
+                  <svg
+                    width="10"
+                    height="12"
+                    viewBox="0 0 10 12"
+                    fill="#b8960c"
+                  >
+                    <polygon points="0,0 10,6 0,12" />
+                  </svg>
+                  Resume
+                </button>
+              ) : (
+                <div className="ohc-autoplay-indicator">
+                  <span className="ohc-dot pulsing" />
+                  <span className="ohc-autoplay-text">Auto-playing</span>
+                </div>
+              )}
+
+              <div className="ohc-nav-btns">
+                <button
+                  className="ohc-nav-btn prev"
+                  onClick={() => goTo(current - 1, true)}
+                  aria-label="Previous"
+                >
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                <button
+                  className="ohc-nav-btn next"
+                  onClick={() => goTo(current + 1, true)}
+                  aria-label="Next"
+                >
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

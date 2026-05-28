@@ -181,6 +181,34 @@ const CallbackRequests = () => {
       ),
     },
     {
+      key: "location",
+      label: "LOCATION",
+      render: (row) => (
+        <div className="flex flex-col">
+          <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
+            {row.location || "N/A"}
+          </span>
+          <span className="text-[10px] text-blue-600 font-bold uppercase">
+            {row.locationType || "Domestic"}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "budget",
+      label: "BUDGET",
+      render: (row) => (
+        <div className="flex flex-col">
+          <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
+            {row.budget || "N/A"}
+          </span>
+          <span className="text-[10px] text-green-600 font-bold uppercase">
+            {row.travelType || "Holiday"}
+          </span>
+        </div>
+      ),
+    },
+    {
       key: "message",
       label: "MESSAGE",
       render: (row) => (
@@ -226,7 +254,7 @@ const CallbackRequests = () => {
         <select
           value={row.status}
           onChange={(e) => handleStatusChange(row._id, e.target.value)}
-          className={`h-7 px-3 rounded-md text-[10px] font-black uppercase tracking-wider border-2 cursor-pointer transition-all ${
+          className={`h-7 px-1.5 w-[88px] rounded-md text-[9px] font-black uppercase tracking-wider border-2 cursor-pointer transition-all ${
             row.status === "new"
               ? "bg-blue-50 text-blue-700 border-blue-100 hover:border-blue-300"
               : row.status === "contacted"
@@ -445,12 +473,36 @@ const CallbackRequests = () => {
                             </div>
                         </div>
 
+                        {/* Location and Budget */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-slate-50 p-3 border border-slate-100">
+                                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1">Location</label>
+                                <p className="text-xs font-bold text-slate-800 uppercase tracking-tight">{selectedLead.location || "N/A"} ({selectedLead.locationType || "Domestic"})</p>
+                            </div>
+                            <div className="bg-slate-50 p-3 border border-slate-100">
+                                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1">Budget</label>
+                                <p className="text-xs font-bold text-slate-800 uppercase tracking-tight">{selectedLead.budget || "N/A"} ({selectedLead.travelType || "Holiday"})</p>
+                            </div>
+                        </div>
+
+                        {/* Dates */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-slate-50 p-3 border border-slate-100">
+                                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1">Check In</label>
+                                <p className="text-xs font-bold text-slate-800">{selectedLead.checkIn ? new Date(selectedLead.checkIn).toLocaleDateString('en-GB') : "N/A"}</p>
+                            </div>
+                            <div className="bg-slate-50 p-3 border border-slate-100">
+                                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1">Check Out</label>
+                                <p className="text-xs font-bold text-slate-800">{selectedLead.checkOut ? new Date(selectedLead.checkOut).toLocaleDateString('en-GB') : "N/A"}</p>
+                            </div>
+                        </div>
+
                         <div className="bg-slate-50 p-3 border border-slate-100">
                             <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Status</label>
                             <select 
                                 value={selectedLead.status}
                                 onChange={(e) => handleStatusChange(selectedLead._id, e.target.value)}
-                                className="w-full text-xs font-black uppercase tracking-widest border-none bg-transparent p-0 cursor-pointer focus:ring-0"
+                                className="w-full text-xs font-black uppercase tracking-widest border-none bg-transparent p-0 cursor-pointer focus:ring-0 text-slate-800 font-bold"
                             >
                                 <option value="new">New</option>
                                 <option value="pending">Pending</option>

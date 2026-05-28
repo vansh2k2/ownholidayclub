@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Calendar,
   CheckCircle2,
@@ -12,9 +12,41 @@ import {
   Star,
   Shield,
   CheckCircle,
+  IndianRupee,
+  Compass,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081";
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const BUDGET_OPTIONS = {
+  Holiday: [
+    { label: "Below 5,000 (per day)", value: "Below 5000" },
+    { label: "5,000 - 7,000 (per day)", value: "5000 - 7000" },
+    { label: "7,000 - 10,000 (per day)", value: "7000 - 10000" },
+    { label: "Above 10,000 (per day)", value: "Above 10000" },
+  ],
+  Events: [
+    { label: "Below 1,000 (per person)", value: "Below 1000" },
+    { label: "1,000 - 2,000 (per person)", value: "1000 - 2000" },
+    { label: "2,000 - 3,000 (per person)", value: "2000 - 3000" },
+    { label: "Above 3,000 (per person)", value: "Above 3000" },
+  ],
+  Wedding: [
+    { label: "Below 1,500 (per person)", value: "Below 1500" },
+    { label: "1,500 - 2,500 (per person)", value: "1500 - 2500" },
+    { label: "2,500 - 3,500 (per person)", value: "2500 - 3500" },
+    { label: "Above 3,500 (per person)", value: "Above 3500" },
+  ],
+  Outing: [
+    { label: "Below 500 (per person)", value: "Below 500" },
+    { label: "1,000 - 2,000 (per person)", value: "1000 - 2000" },
+    { label: "3,000 - 5,000 (per person)", value: "3000 - 5000" },
+    { label: "Above 5,000 (per person)", value: "Above 5000" },
+  ],
+};
 
 /* ── Floating particles ── */
 function Particles() {
@@ -61,7 +93,7 @@ const InputField = ({ icon: Icon, label, textarea, rows, ...props }) => (
     {label && (
       <label
         className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        style={{ fontFamily: "'Inter', sans-serif" }}
       >
         {label}
       </label>
@@ -78,13 +110,13 @@ const InputField = ({ icon: Icon, label, textarea, rows, ...props }) => (
           rows={rows || 2}
           {...props}
           className="w-full p-2.5 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 resize-none disabled:opacity-50"
-          style={{ fontFamily: "'DM Sans', sans-serif", borderRadius: "6px" }}
+          style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
         />
       ) : (
         <input
           {...props}
           className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-          style={{ fontFamily: "'DM Sans', sans-serif", borderRadius: "6px" }}
+          style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
         />
       )}
     </div>
@@ -99,6 +131,138 @@ export default function LeadForm({
   handleInputChange,
   handleSubmitLead,
 }) {
+  const [mobileOtp, setMobileOtp] = useState("");
+  const [isSendingMobileOtp, setIsSendingMobileOtp] = useState(false);
+  const [isMobileOtpSent, setIsMobileOtpSent] = useState(false);
+  const [isMobileVerified, setIsMobileVerified] = useState(false);
+  const [isVerifyingMobileOtp, setIsVerifyingMobileOtp] = useState(false);
+
+  const [emailOtp, setEmailOtp] = useState("");
+  const [isSendingEmailOtp, setIsSendingEmailOtp] = useState(false);
+  const [isEmailOtpSent, setIsEmailOtpSent] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isVerifyingEmailOtp, setIsVerifyingEmailOtp] = useState(false);
+  const [isEmailSkipped, setIsEmailSkipped] = useState(false);
+
+  const [localFeedback, setLocalFeedback] = useState("");
+
+  // Reset verification if phone/email changes
+  useEffect(() => {
+    setIsMobileVerified(false);
+    setIsMobileOtpSent(false);
+    setMobileOtp("");
+  }, [formData?.phone]);
+
+  useEffect(() => {
+    setIsEmailVerified(false);
+    setIsEmailOtpSent(false);
+    setEmailOtp("");
+    setIsEmailSkipped(false);
+  }, [formData?.email]);
+
+  const handleSendMobileOtp = async () => {
+    if (!formData?.phone || formData.phone.length !== 10) {
+      setLocalFeedback("Please enter a valid 10-digit phone number.");
+      return;
+    }
+    try {
+      setIsSendingMobileOtp(true);
+      setLocalFeedback("");
+      const res = await fetch(`${API_BASE_URL}/api/holiday-leads/mobile/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile: formData.phone }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to send OTP.");
+      setIsMobileOtpSent(true);
+      setLocalFeedback("OTP sent to your mobile number.");
+    } catch (err) {
+      setLocalFeedback(err.message);
+    } finally {
+      setIsSendingMobileOtp(false);
+    }
+  };
+
+  const handleVerifyMobileOtp = async () => {
+    if (mobileOtp.length !== 6) {
+      setLocalFeedback("Please enter the 6-digit OTP.");
+      return;
+    }
+    try {
+      setIsVerifyingMobileOtp(true);
+      setLocalFeedback("");
+      const res = await fetch(`${API_BASE_URL}/api/holiday-leads/mobile/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile: formData.phone, otp: mobileOtp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Invalid OTP code.");
+      setIsMobileVerified(true);
+      setLocalFeedback("Phone number verified successfully!");
+    } catch (err) {
+      setLocalFeedback(err.message);
+    } finally {
+      setIsVerifyingMobileOtp(false);
+    }
+  };
+
+  const handleSendEmailOtp = async () => {
+    if (!formData?.email || !EMAIL_PATTERN.test(formData.email)) {
+      setLocalFeedback("Please enter a valid email address.");
+      return;
+    }
+    try {
+      setIsSendingEmailOtp(true);
+      setLocalFeedback("");
+      const res = await fetch(`${API_BASE_URL}/api/holiday-leads/email/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to send OTP.");
+      setIsEmailOtpSent(true);
+      setLocalFeedback("OTP sent to your email.");
+    } catch (err) {
+      setLocalFeedback(err.message);
+    } finally {
+      setIsSendingEmailOtp(false);
+    }
+  };
+
+  const handleVerifyEmailOtp = async () => {
+    if (emailOtp.length !== 6) {
+      setLocalFeedback("Please enter the 6-digit OTP.");
+      return;
+    }
+    try {
+      setIsVerifyingEmailOtp(true);
+      setLocalFeedback("");
+      const res = await fetch(`${API_BASE_URL}/api/holiday-leads/email/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, otp: emailOtp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Invalid OTP code.");
+      setIsEmailVerified(true);
+      setLocalFeedback("Email address verified successfully!");
+    } catch (err) {
+      setLocalFeedback(err.message);
+    } finally {
+      setIsVerifyingEmailOtp(false);
+    }
+  };
+
+  const handleSkipEmailOtp = () => {
+    setIsEmailVerified(false);
+    setIsEmailOtpSent(false);
+    setIsEmailSkipped(true);
+    setLocalFeedback("Email OTP verification skipped.");
+  };
+
   return (
     <section
       id="inquiry-form"
@@ -129,7 +293,7 @@ export default function LeadForm({
 
               <h2
                 className="text-2xl md:text-3xl font-bold text-slate-900 leading-[1.1] mb-3"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 Plan Your Event
                 <br />
@@ -145,7 +309,7 @@ export default function LeadForm({
 
               <p
                 className="text-slate-500 text-[13px] leading-relaxed mb-10"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 Connect with our dedicated experience team. We'll understand your goals and curate a tailored proposal.
               </p>
@@ -162,7 +326,7 @@ export default function LeadForm({
                       </div>
                       <span
                         className="text-[12px] text-slate-600 font-semibold"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
+                        style={{ fontFamily: "'Inter', sans-serif" }}
                       >
                         {perk}
                       </span>
@@ -184,7 +348,7 @@ export default function LeadForm({
               </div>
               <p
                 className="text-[12px] text-slate-500 leading-relaxed"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 Trusted by{" "}
                 <span className="font-bold text-slate-800">280,000+</span>{" "}
@@ -224,7 +388,7 @@ export default function LeadForm({
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
                       className="text-2xl font-bold text-slate-900 mb-3 text-center"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                      style={{ fontFamily: "'Inter', sans-serif" }}
                     >
                       Successfully Sent!
                     </motion.h3>
@@ -234,7 +398,7 @@ export default function LeadForm({
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.4 }}
                       className="text-slate-500 text-center mb-8 max-w-xs mx-auto text-[13px] leading-relaxed"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
+                      style={{ fontFamily: "'Inter', sans-serif" }}
                     >
                       Thank you,{" "}
                       <span className="font-semibold text-slate-800">
@@ -248,7 +412,7 @@ export default function LeadForm({
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.5 }}
                       className="flex items-center gap-2 text-sm text-slate-400"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
+                      style={{ fontFamily: "'Inter', sans-serif" }}
                     >
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                       Form will reset automatically...
@@ -266,14 +430,14 @@ export default function LeadForm({
                       <h3
                         className="text-lg font-bold text-slate-900 mb-0.5"
                         style={{
-                          fontFamily: "'Playfair Display', Georgia, serif",
+                          fontFamily: "'Inter', sans-serif",
                         }}
                       >
                         Inquiry Details
                       </h3>
                       <p
                         className="text-[11px] text-slate-400 font-medium"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
+                        style={{ fontFamily: "'Inter', sans-serif" }}
                       >
                         Please provide your event details for a custom proposal.
                       </p>
@@ -285,10 +449,21 @@ export default function LeadForm({
                           className="border border-red-200 bg-red-50 px-4 py-3 text-[12px] font-medium text-red-600"
                           style={{
                             borderRadius: "8px",
-                            fontFamily: "'DM Sans', sans-serif",
+                            fontFamily: "'Inter', sans-serif",
                           }}
                         >
                           {formError}
+                        </div>
+                      )}
+                      {localFeedback && (
+                        <div
+                          className="border border-blue-200 bg-blue-50 px-4 py-3 text-[12px] font-medium text-blue-600"
+                          style={{
+                            borderRadius: "8px",
+                            fontFamily: "'Inter', sans-serif",
+                          }}
+                        >
+                          {localFeedback}
                         </div>
                       )}
 
@@ -305,31 +480,159 @@ export default function LeadForm({
                           disabled={formStep === "submitting"}
                           placeholder="Enter your full name"
                         />
-                        <InputField
-                          icon={Phone}
-                          label="Phone Number"
-                          type="tel"
-                          name="phone"
-                          required
-                          value={formData?.phone || ""}
-                          onChange={handleInputChange}
-                          disabled={formStep === "submitting"}
-                          placeholder="+91 00000 00000"
-                        />
+                        
+                        {/* Mobile Number & OTP */}
+                        <div className="flex flex-col gap-1.5">
+                          <label
+                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
+                            style={{ fontFamily: "'Inter', sans-serif" }}
+                          >
+                            Phone Number
+                          </label>
+                          <div className="flex gap-2 items-start">
+                            <div className="relative group flex-1">
+                              <Phone
+                                size={14}
+                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
+                              />
+                              <input
+                                type="tel"
+                                name="phone"
+                                required
+                                disabled={isMobileVerified || formStep === "submitting"}
+                                value={formData?.phone || ""}
+                                onChange={handleInputChange}
+                                placeholder="10-digit mobile"
+                                className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
+                                style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                              />
+                            </div>
+                            {!isMobileVerified ? (
+                              <button
+                                type="button"
+                                onClick={handleSendMobileOtp}
+                                disabled={isSendingMobileOtp || !formData?.phone || formData.phone.length !== 10}
+                                className="h-[38px] px-3 bg-slate-900 hover:bg-amber-600 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded"
+                              >
+                                {isSendingMobileOtp ? "Wait..." : isMobileOtpSent ? "Resend" : "OTP"}
+                              </button>
+                            ) : (
+                              <span className="h-[38px] px-3 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded border border-emerald-200">
+                                ✓ Verified
+                              </span>
+                            )}
+                          </div>
+                          {isMobileOtpSent && !isMobileVerified && (
+                            <motion.div 
+                              initial={{ opacity: 0, y: -5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="flex gap-2 items-center mt-1"
+                            >
+                              <input
+                                type="text"
+                                maxLength={6}
+                                placeholder="6-digit OTP"
+                                value={mobileOtp}
+                                onChange={(e) => setMobileOtp(e.target.value.replace(/\D/g, ""))}
+                                className="h-8 px-3 border border-slate-300 text-center text-xs font-bold w-full outline-none focus:border-amber-500 rounded"
+                              />
+                              <button
+                                type="button"
+                                onClick={handleVerifyMobileOtp}
+                                disabled={isVerifyingMobileOtp || mobileOtp.length !== 6}
+                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded shrink-0"
+                              >
+                                {isVerifyingMobileOtp ? "Verifying..." : "Verify"}
+                              </button>
+                            </motion.div>
+                          )}
+                        </div>
                       </div>
 
-                      {/* Email */}
-                      <InputField
-                        icon={Mail}
-                        label="Email Address"
-                        type="email"
-                        name="email"
-                        required
-                        value={formData?.email || ""}
-                        onChange={handleInputChange}
-                        disabled={formStep === "submitting"}
-                        placeholder="you@example.com"
-                      />
+                      {/* Email & OTP */}
+                      <div className="flex flex-col gap-1.5">
+                        <label
+                          className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
+                          style={{ fontFamily: "'Inter', sans-serif" }}
+                        >
+                          Email Address
+                        </label>
+                        <div className="flex gap-2 items-start">
+                          <div className="relative group flex-1">
+                            <Mail
+                              size={14}
+                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
+                            />
+                            <input
+                              type="email"
+                              name="email"
+                              required
+                              disabled={isEmailVerified || formStep === "submitting"}
+                              value={formData?.email || ""}
+                              onChange={handleInputChange}
+                              placeholder="you@example.com"
+                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
+                              style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                            />
+                          </div>
+                          {!isEmailVerified && !isEmailSkipped ? (
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={handleSendEmailOtp}
+                                disabled={isSendingEmailOtp || !formData?.email || !EMAIL_PATTERN.test(formData.email)}
+                                className="h-[38px] px-3 bg-slate-900 hover:bg-amber-600 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded"
+                              >
+                                {isSendingEmailOtp ? "Wait..." : isEmailOtpSent ? "Resend" : "OTP"}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={handleSkipEmailOtp}
+                                className="h-[38px] px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors"
+                              >
+                                Skip
+                              </button>
+                            </div>
+                          ) : (
+                            <span className={`h-[38px] px-3 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded border ${isEmailVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
+                              {isEmailVerified ? "✓ Verified" : "Skipped"}
+                            </span>
+                          )}
+                        </div>
+                        {isEmailOtpSent && !isEmailVerified && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex gap-2 items-center mt-1"
+                          >
+                            <input
+                              type="text"
+                              maxLength={6}
+                              placeholder="6-digit OTP"
+                              value={emailOtp}
+                              onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, ""))}
+                              className="h-8 px-3 border border-slate-300 text-center text-xs font-bold w-full outline-none focus:border-amber-500 rounded"
+                            />
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={handleVerifyEmailOtp}
+                                disabled={isVerifyingEmailOtp || emailOtp.length !== 6}
+                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded"
+                              >
+                                {isVerifyingEmailOtp ? "Verifying..." : "Verify"}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={handleSkipEmailOtp}
+                                className="h-8 px-2 text-[10px] font-black uppercase text-slate-400 hover:text-slate-600"
+                              >
+                                Skip
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </div>
 
                       {/* Dates */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -379,6 +682,68 @@ export default function LeadForm({
                         />
                       </div>
 
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {/* Travel Type */}
+                        <div className="flex flex-col gap-1.5">
+                          <label
+                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
+                            style={{ fontFamily: "'Inter', sans-serif" }}
+                          >
+                            Travel Type
+                          </label>
+                          <div className="relative group">
+                            <Compass
+                              size={14}
+                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
+                            />
+                            <select
+                              name="travelType"
+                              value={formData?.travelType || "Holiday"}
+                              onChange={handleInputChange}
+                              disabled={formStep === "submitting"}
+                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
+                              style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                            >
+                              <option value="Holiday">Holiday</option>
+                              <option value="Events">Events</option>
+                              <option value="Wedding">Wedding</option>
+                              <option value="Outing">Outing</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Budget */}
+                        <div className="flex flex-col gap-1.5">
+                          <label
+                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
+                            style={{ fontFamily: "'Inter', sans-serif" }}
+                          >
+                            Estimated Budget
+                          </label>
+                          <div className="relative group">
+                            <IndianRupee
+                              size={14}
+                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
+                            />
+                            <select
+                              name="budget"
+                              value={formData?.budget || ""}
+                              onChange={handleInputChange}
+                              disabled={formStep === "submitting"}
+                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
+                              style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                            >
+                              <option value="">Select a budget...</option>
+                              {BUDGET_OPTIONS[formData?.travelType || "Holiday"]?.map((opt, idx) => (
+                                <option key={idx} value={opt.value}>
+                                  {opt.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Message */}
                       <InputField
                         icon={null}
@@ -396,9 +761,9 @@ export default function LeadForm({
                       <div className="flex flex-col md:flex-row items-center gap-4 pt-1">
                         <button
                           type="submit"
-                          disabled={formStep === "submitting"}
+                          disabled={formStep === "submitting" || !isMobileVerified || (!isEmailVerified && !isEmailSkipped)}
                           className="w-full md:flex-1 flex items-center justify-center gap-3 bg-red-600 text-white px-6 py-2.5 hover:bg-red-700 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-red-600/10"
-                          style={{ borderRadius: "7px", fontFamily: "'DM Sans', sans-serif" }}
+                          style={{ borderRadius: "7px", fontFamily: "'Inter', sans-serif" }}
                         >
                           <span className="text-[11px] font-black uppercase tracking-[0.2em]">
                             {formStep === "submitting"
@@ -412,7 +777,7 @@ export default function LeadForm({
                           <Shield size={14} className="text-green-600" />
                           <span
                             className="text-[10px] text-slate-400 font-medium uppercase tracking-widest"
-                            style={{ fontFamily: "'DM Sans', sans-serif" }}
+                            style={{ fontFamily: "'Inter', sans-serif" }}
                           >
                             100% Secure
                           </span>

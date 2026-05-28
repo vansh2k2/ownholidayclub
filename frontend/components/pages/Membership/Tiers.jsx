@@ -4,20 +4,6 @@ import React, { useEffect, useRef } from "react";
 import { Star, Sparkles, Crown, Gem, ArrowRight, Check } from "lucide-react";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
 
-// Load GSAP dynamically
-const loadGSAP = () => {
-  return new Promise((resolve) => {
-    if (typeof window !== "undefined" && window.gsap) {
-      resolve(window.gsap);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js";
-    script.onload = () => resolve(window.gsap);
-    document.head.appendChild(script);
-  });
-};
-
 const TIER_CONFIG = [
   {
     color: "#2563eb",
@@ -126,93 +112,6 @@ const getTierFallbackDetails = (tier, idx) => {
   }
   return null;
 };
-
-// Bubble component rendered inside each card
-function BubbleCanvas({ color }) {
-  const canvasRef = useRef(null);
-  const animationsRef = useRef([]);
-
-  useEffect(() => {
-    let gsap;
-    let bubbles = [];
-    let container = canvasRef.current;
-    if (!container) return;
-
-    loadGSAP().then((g) => {
-      gsap = g;
-      // Create 2 bubbles per card
-      for (let i = 0; i < 2; i++) {
-        const size = 18 + Math.random() * 40;
-        const bubble = document.createElement("div");
-        bubble.style.cssText = `
-          position: absolute;
-          width: ${size}px;
-          height: ${size}px;
-          border-radius: 50%;
-          background: ${color};
-          pointer-events: none;
-          left: ${Math.random() * 90}%;
-          top: ${Math.random() * 90}%;
-          transform: scale(0);
-          opacity: 0;
-        `;
-        container.appendChild(bubble);
-        bubbles.push(bubble);
-
-        const delay = i * 0.3 + Math.random() * 0.5;
-        const duration = 3 + Math.random() * 3;
-
-        const tl = gsap.timeline({ repeat: -1, delay });
-        tl.to(bubble, {
-          scale: 1,
-          opacity: 1,
-          duration: duration * 0.3,
-          ease: "power2.out",
-        })
-          .to(bubble, {
-            y: -(30 + Math.random() * 60),
-            x: (Math.random() - 0.5) * 40,
-            duration: duration * 0.5,
-            ease: "sine.inOut",
-          }, "<")
-          .to(bubble, {
-            scale: 0,
-            opacity: 0,
-            duration: duration * 0.2,
-            ease: "power2.in",
-          })
-          .set(bubble, {
-            y: 0,
-            x: 0,
-            left: `${Math.random() * 90}%`,
-            top: `${60 + Math.random() * 30}%`,
-          });
-
-        animationsRef.current.push(tl);
-      }
-    });
-
-    return () => {
-      animationsRef.current.forEach((tl) => tl && tl.kill());
-      animationsRef.current = [];
-      if (container) container.innerHTML = "";
-    };
-  }, [color]);
-
-  return (
-    <div
-      ref={canvasRef}
-      style={{
-        position: "absolute",
-        inset: 0,
-        overflow: "hidden",
-        borderRadius: "inherit",
-        pointerEvents: "none",
-        zIndex: 0,
-      }}
-    />
-  );
-}
 
 export default function Tiers({
   membershipTiers,
@@ -364,7 +263,7 @@ export default function Tiers({
                   className="relative flex flex-col h-full group tier-card"
                   style={{
                     background: "#ffffff",
-                    borderRadius: "0px",
+                    borderRadius: "24px",
                     borderTop: `3px solid ${cfg.color}`,
                     borderLeft: "1px solid #e8edf3",
                     borderRight: "1px solid #e8edf3",
@@ -382,9 +281,6 @@ export default function Tiers({
                     e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.06)";
                   }}
                 >
-                  {/* GSAP Bubble Canvas */}
-                  <BubbleCanvas color={cfg.bubbleColor} />
-
                   {/* Popular badge */}
                   {isPopular && (
                     <div

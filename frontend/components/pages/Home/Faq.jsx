@@ -74,7 +74,7 @@ export default function Faq() {
   const activeQuestionNum = noneOpen ? null : String(openFaq + 1).padStart(2, "0");
 
   return (
-    <section className="py-24 overflow-hidden" style={{ position: "relative", background: "#ffffff" }}>
+    <section className="py-12 overflow-hidden" style={{ position: "relative", background: "#ffffff" }}>
       <SplitBackground />
 
       <style>{`

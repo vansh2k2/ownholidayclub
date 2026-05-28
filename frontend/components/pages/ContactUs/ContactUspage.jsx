@@ -252,7 +252,7 @@ export default function ContactUspage() {
         }}
       >
         <motion.div style={{ scale: heroScale, y: heroY, opacity: heroOp, position: "absolute", inset: 0, zIndex: 0 }}>
-          <img src={backgroundImage} alt={altText} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img src={backgroundImage} alt={altText} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }} />
           <div style={{ position: "absolute", inset: 0, background: "rgba(10,8,5,0.56)" }} />
         </motion.div>
 

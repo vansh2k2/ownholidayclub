@@ -48,6 +48,14 @@ const destinationEnquirySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    travelType: {
+      type: String,
+      default: "",
+    },
+    budget: {
+      type: String,
+      default: "",
+    },
     status: {
       type: String,
       default: "new", // new, pending, contacted, resolved

@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { CheckCircle2, MessageSquare, X, Send, User, Mail, Smartphone, PhoneCall } from "lucide-react";
+import { 
+  CheckCircle2, MessageSquare, X, Send, User, Mail, 
+  Smartphone, PhoneCall, ChevronRight, ChevronLeft, 
+  Calendar, Users, Check 
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const API_BASE_URL =
@@ -9,18 +13,105 @@ const API_BASE_URL =
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const BUDGET_OPTIONS = {
+  Holiday: [
+    { label: "Below 5,000 (per day)", value: "Below 5000" },
+    { label: "5,000 - 7,000 (per day)", value: "5000 - 7000" },
+    { label: "7,000 - 10,000 (per day)", value: "7000 - 10000" },
+    { label: "Above 10,000 (per day)", value: "Above 10000" },
+  ],
+  Events: [
+    { label: "Below 1,000 (per person)", value: "Below 1000" },
+    { label: "1,000 - 2,000 (per person)", value: "1000 - 2000" },
+    { label: "2,000 - 3,000 (per person)", value: "2000 - 3000" },
+    { label: "Above 3,000 (per person)", value: "Above 3000" },
+  ],
+  Wedding: [
+    { label: "Below 1,500 (per person)", value: "Below 1500" },
+    { label: "1,500 - 2,500 (per person)", value: "1500 - 2500" },
+    { label: "2,500 - 3,500 (per person)", value: "2500 - 3500" },
+    { label: "Above 3,500 (per person)", value: "Above 3500" },
+  ],
+  Outing: [
+    { label: "Below 500 (per person)", value: "Below 500" },
+    { label: "1,000 - 2,000 (per person)", value: "1000 - 2000" },
+    { label: "3,000 - 5,000 (per person)", value: "3000 - 5000" },
+    { label: "Above 5,000 (per person)", value: "Above 5000" },
+  ],
+};
+
 const createInitialLeadForm = () => ({
   name: "",
   email: "",
   phone: "",
+  location: "",
+  locationType: "Domestic",
+  checkIn: "",
+  checkOut: "",
+  adults: 1,
+  kids: 0,
+  travelType: "Holiday",
+  budget: "",
   message: "",
 });
 
 export default function GlobalHolidayLeadWidget() {
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [step, setStep] = useState(1);
   const [leadForm, setLeadForm] = useState(createInitialLeadForm);
   const [leadFeedback, setLeadFeedback] = useState({ type: "", message: "" });
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
+
+  // Destinations from API
+  const [destinations, setDestinations] = useState([]);
+  const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
+
+  // OTP Verification States
+  const [mobileOtp, setMobileOtp] = useState("");
+  const [isSendingMobileOtp, setIsSendingMobileOtp] = useState(false);
+  const [isMobileOtpSent, setIsMobileOtpSent] = useState(false);
+  const [isMobileVerified, setIsMobileVerified] = useState(false);
+  const [isVerifyingMobileOtp, setIsVerifyingMobileOtp] = useState(false);
+
+  const [emailOtp, setEmailOtp] = useState("");
+  const [isSendingEmailOtp, setIsSendingEmailOtp] = useState(false);
+  const [isEmailOtpSent, setIsEmailOtpSent] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isVerifyingEmailOtp, setIsVerifyingEmailOtp] = useState(false);
+  const [isEmailSkipped, setIsEmailSkipped] = useState(false);
+
+  // Fetch destinations from API
+  useEffect(() => {
+    const fetchDests = async () => {
+      try {
+        setIsLoadingDestinations(true);
+        const res = await fetch(`${API_BASE_URL}/api/destinations`);
+        const result = await res.json();
+        if (result.success && Array.isArray(result.data)) {
+          setDestinations(result.data);
+        }
+      } catch (err) {
+        console.error("Error fetching destinations:", err);
+      } finally {
+        setIsLoadingDestinations(false);
+      }
+    };
+    if (isLeadModalOpen) {
+      fetchDests();
+    }
+  }, [isLeadModalOpen]);
+
+  // Sync default budget when category changes
+  useEffect(() => {
+    const defaultBudget = BUDGET_OPTIONS[leadForm.travelType]?.[0]?.value || "";
+    setLeadForm((prev) => ({ ...prev, budget: defaultBudget }));
+  }, [leadForm.travelType]);
+
+  useEffect(() => {
+    const handleOpenGlobalModal = () => openLeadModal();
+    window.addEventListener("openGlobalLeadModal", handleOpenGlobalModal);
+    return () => window.removeEventListener("openGlobalLeadModal", handleOpenGlobalModal);
+  }, []);
 
   useEffect(() => {
     if (!isLeadModalOpen) {
@@ -50,14 +141,22 @@ export default function GlobalHolidayLeadWidget() {
 
     const timeoutId = window.setTimeout(() => {
       setLeadFeedback({ type: "", message: "" });
-    }, 5000);
+    }, 6000);
 
     return () => window.clearTimeout(timeoutId);
   }, [leadFeedback.message]);
 
   const openLeadModal = () => {
     setLeadFeedback({ type: "", message: "" });
+    setStep(1);
     setIsLeadModalOpen(true);
+    setMobileOtp("");
+    setEmailOtp("");
+    setIsMobileOtpSent(false);
+    setIsMobileVerified(false);
+    setIsEmailOtpSent(false);
+    setIsEmailVerified(false);
+    setIsEmailSkipped(false);
   };
 
   const closeLeadModal = () => {
@@ -78,36 +177,159 @@ export default function GlobalHolidayLeadWidget() {
           ? value.replace(/\D/g, "").slice(0, 10)
           : value,
     }));
+
+    // Reset verification if phone changes
+    if (field === "phone") {
+      setIsMobileVerified(false);
+      setIsMobileOtpSent(false);
+      setMobileOtp("");
+    }
+    // Reset verification if email changes
+    if (field === "email") {
+      setIsEmailVerified(false);
+      setIsEmailOtpSent(false);
+      setEmailOtp("");
+      setIsEmailSkipped(false);
+    }
+  };
+
+  // OTP Sending & Verification Actions
+  const handleSendMobileOtp = async () => {
+    if (leadForm.phone.length !== 10) {
+      setLeadFeedback({ type: "error", message: "Please enter a valid 10-digit phone number." });
+      return;
+    }
+    try {
+      setIsSendingMobileOtp(true);
+      setLeadFeedback({ type: "", message: "" });
+      const res = await fetch(`${API_BASE_URL}/api/holiday-leads/mobile/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile: leadForm.phone }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to send OTP.");
+      setIsMobileOtpSent(true);
+      setLeadFeedback({ 
+        type: "success", 
+        message: "Verification OTP sent to your mobile number." 
+      });
+    } catch (err) {
+      setLeadFeedback({ type: "error", message: err.message });
+    } finally {
+      setIsSendingMobileOtp(false);
+    }
+  };
+
+  const handleVerifyMobileOtp = async () => {
+    if (mobileOtp.length !== 6) {
+      setLeadFeedback({ type: "error", message: "Please enter the 6-digit OTP." });
+      return;
+    }
+    try {
+      setIsVerifyingMobileOtp(true);
+      setLeadFeedback({ type: "", message: "" });
+      const res = await fetch(`${API_BASE_URL}/api/holiday-leads/mobile/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile: leadForm.phone, otp: mobileOtp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Invalid OTP code.");
+      setIsMobileVerified(true);
+      setLeadFeedback({ type: "success", message: "Phone number verified successfully!" });
+    } catch (err) {
+      setLeadFeedback({ type: "error", message: err.message });
+    } finally {
+      setIsVerifyingMobileOtp(false);
+    }
+  };
+
+  const handleSendEmailOtp = async () => {
+    if (!EMAIL_PATTERN.test(leadForm.email)) {
+      setLeadFeedback({ type: "error", message: "Please enter a valid email address." });
+      return;
+    }
+    try {
+      setIsSendingEmailOtp(true);
+      setLeadFeedback({ type: "", message: "" });
+      const res = await fetch(`${API_BASE_URL}/api/holiday-leads/email/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: leadForm.email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to send OTP.");
+      setIsEmailOtpSent(true);
+      setLeadFeedback({ 
+        type: "success", 
+        message: "Verification OTP sent to your email." 
+      });
+    } catch (err) {
+      setLeadFeedback({ type: "error", message: err.message });
+    } finally {
+      setIsSendingEmailOtp(false);
+    }
+  };
+
+  const handleVerifyEmailOtp = async () => {
+    if (emailOtp.length !== 6) {
+      setLeadFeedback({ type: "error", message: "Please enter the 6-digit OTP." });
+      return;
+    }
+    try {
+      setIsVerifyingEmailOtp(true);
+      setLeadFeedback({ type: "", message: "" });
+      const res = await fetch(`${API_BASE_URL}/api/holiday-leads/email/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: leadForm.email, otp: emailOtp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Invalid OTP code.");
+      setIsEmailVerified(true);
+      setLeadFeedback({ type: "success", message: "Email address verified successfully!" });
+    } catch (err) {
+      setLeadFeedback({ type: "error", message: err.message });
+    } finally {
+      setIsVerifyingEmailOtp(false);
+    }
+  };
+
+  const handleSkipEmailOtp = () => {
+    setIsEmailVerified(false);
+    setIsEmailOtpSent(false);
+    setIsEmailSkipped(true);
+    setLeadFeedback({ type: "success", message: "Email OTP verification skipped." });
+  };
+
+  const handleNextStep = () => {
+    const name = String(leadForm.name || "").trim();
+    if (name.length < 2) {
+      setLeadFeedback({ type: "error", message: "Please enter your full name." });
+      return;
+    }
+    if (!isMobileVerified) {
+      setLeadFeedback({ type: "error", message: "Please verify your mobile number with OTP first." });
+      return;
+    }
+    if (!EMAIL_PATTERN.test(leadForm.email)) {
+      setLeadFeedback({ type: "error", message: "Please enter your email address." });
+      return;
+    }
+    if (!isEmailVerified && !isEmailSkipped) {
+      setLeadFeedback({ type: "error", message: "Please verify your email or click Skip." });
+      return;
+    }
+    setStep(2);
+    setLeadFeedback({ type: "", message: "" });
   };
 
   const handleLeadSubmit = async (event) => {
     event.preventDefault();
 
-    const name = String(leadForm.name || "").trim();
-    const email = String(leadForm.email || "").trim().toLowerCase();
-    const phone = String(leadForm.phone || "").replace(/\D/g, "");
-
-    if (name.length < 2) {
-      setLeadFeedback({
-        type: "error",
-        message: "Please enter your full name.",
-      });
-      return;
-    }
-
-    if (!EMAIL_PATTERN.test(email)) {
-      setLeadFeedback({
-        type: "error",
-        message: "Please enter a valid email address.",
-      });
-      return;
-    }
-
-    if (phone.length !== 10) {
-      setLeadFeedback({
-        type: "error",
-        message: "Please enter a valid 10-digit phone number.",
-      });
+    if (!leadForm.location) {
+      setLeadFeedback({ type: "error", message: "Please select a destination location." });
       return;
     }
 
@@ -121,13 +343,21 @@ export default function GlobalHolidayLeadWidget() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
-          email,
-          phone,
+          name: leadForm.name,
+          email: leadForm.email,
+          phone: leadForm.phone,
+          location: leadForm.location,
+          locationType: leadForm.locationType,
+          checkIn: leadForm.checkIn,
+          checkOut: leadForm.checkOut,
+          adults: leadForm.adults,
+          kids: leadForm.kids,
+          travelType: leadForm.travelType,
+          budget: leadForm.budget,
           message: leadForm.message,
           source: "callback-widget",
           contextType: "callback-request",
-          contextName: "Floating Callback Widget"
+          contextName: "Floating Callback Widget",
         }),
       });
       const data = await response.json();
@@ -142,7 +372,7 @@ export default function GlobalHolidayLeadWidget() {
       });
       setLeadForm(createInitialLeadForm());
       
-      // Keep modal open to show success state, auto-close after 5 seconds
+      // Auto-close modal after success
       setTimeout(() => {
         setIsLeadModalOpen(false);
         setLeadFeedback({ type: "", message: "" });
@@ -157,11 +387,18 @@ export default function GlobalHolidayLeadWidget() {
     }
   };
 
+  // Filter locations by Domestic/International region toggle
+  const filteredLocations = destinations.filter(
+    (dest) => dest.region?.toLowerCase() === leadForm.locationType.toLowerCase()
+  );
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
         .modal-luxury { font-family: 'Poppins', sans-serif; }
+        .modal-right-roboto { font-family: 'Roboto', sans-serif; }
       ` }} />
 
       <AnimatePresence>
@@ -170,7 +407,7 @@ export default function GlobalHolidayLeadWidget() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed right-4 top-24 z-[100] w-full max-w-sm px-2 sm:right-6 sm:px-0 modal-luxury"
+            className="fixed right-4 top-24 z-[120] w-full max-w-sm px-2 sm:right-6 sm:px-0 modal-luxury"
           >
             <div
               className={`border-l-4 px-5 py-3 text-xs font-bold shadow-2xl backdrop-blur-md ${
@@ -219,77 +456,76 @@ export default function GlobalHolidayLeadWidget() {
 
             {/* Modal Content */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 30, rotateX: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-              exit={{ opacity: 0, scale: 1.05, y: -20, rotateX: -5 }}
-              transition={{ 
-                type: "spring", 
-                damping: 22, 
-                stiffness: 150,
-                mass: 1
-              }}
-              className="relative z-10 w-full max-w-2xl bg-white shadow-[0_50px_120px_rgba(0,0,0,0.6)] border border-white/20 overflow-hidden"
-              style={{ perspective: "1000px" }}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.05, y: -20 }}
+              transition={{ type: "spring", damping: 22, stiffness: 150 }}
+              className="relative z-10 w-full max-w-3xl bg-white shadow-[0_50px_120px_rgba(0,0,0,0.6)] border border-white/20 overflow-hidden rounded-2xl"
             >
-              <div className="flex flex-col md:flex-row min-h-[400px]">
-                {/* Left Side - Visual Branding with Background Image and Logo */}
-                <div className="md:w-5/12 relative flex flex-col justify-between overflow-hidden text-white p-8">
-                  {/* Background Image with Overlay */}
+              <div className="flex flex-col md:flex-row min-h-[500px]">
+                {/* Left Side - Visual Branding */}
+                <div className="md:w-5/12 relative flex flex-col justify-between overflow-hidden text-white p-8 bg-slate-950">
                   <div 
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-[10s] hover:scale-110"
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-[10s] hover:scale-110 opacity-70"
                     style={{ 
                       backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=1000')",
                     }}
                   />
-                  {/* Subtle dark overlay for readability only */}
-                  <div className="absolute inset-0 bg-black/30" />
-                  
-                  {/* Decorative glass elements */}
-                  <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-red-950/80" />
                   
                   <div className="relative z-10">
-                    <img src="/logo.png" className="w-32 invert brightness-0 underline" alt="Own Holiday Club" style={{ filter: "brightness(0) invert(1)" }} />
-                    <h3 className="mt-10 text-4xl font-black leading-[1.05] tracking-tighter">
+                    <img src="/logo.png" className="w-32 invert brightness-0" alt="Own Holiday Club" />
+                    <h3 className="mt-10 text-3xl font-black leading-[1.1] tracking-tighter uppercase">
                       Your Next <br/>Grand <br/>Escape.
                     </h3>
                   </div>
 
-                  <p className="relative z-10 text-[9px] leading-relaxed text-white/80 uppercase tracking-[0.2em] font-medium">
+                  <div className="relative z-10 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`h-8 w-8 rounded-full border flex items-center justify-center text-xs font-black transition-all ${step === 1 ? "bg-white text-slate-950 border-white" : "bg-emerald-500 border-emerald-500 text-white"}`}>
+                        {step === 1 ? "1" : <Check size={14} />}
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-white/95">Verify Identity</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`h-8 w-8 rounded-full border flex items-center justify-center text-xs font-black transition-all ${step === 2 ? "bg-white text-slate-950 border-white" : "border-white/30 text-white/40"}`}>
+                        2
+                      </div>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${step === 2 ? "text-white" : "text-white/40"}`}>Preferences</span>
+                    </div>
+                  </div>
+
+                  <p className="relative z-10 text-[8px] leading-relaxed text-white/70 uppercase tracking-[0.2em] font-medium mt-6">
                     Professional curation for the discerning traveler.
                   </p>
                 </div>
 
-                {/* Right Side - Form or Success View */}
-                <div className="md:w-7/12 p-8 md:p-10 bg-white relative flex flex-col justify-center">
+                {/* Right Side - Form wizard */}
+                <div className="md:w-7/12 p-8 md:p-10 bg-white relative flex flex-col justify-between max-h-[90vh] overflow-y-auto modal-right-roboto">
                   <button
                     type="button"
                     onClick={closeLeadModal}
                     disabled={isSubmittingLead}
-                    className="absolute right-6 top-6 text-[#C8102E] hover:scale-110 transition-transform"
+                    className="absolute right-6 top-6 text-slate-400 hover:text-[#C8102E] transition-colors"
                   >
                     <X size={20} />
                   </button>
 
                   <AnimatePresence mode="wait">
-                    {leadFeedback.type === "success" ? (
+                    {leadFeedback.type === "success" && leadForm.name === "" ? (
                       <motion.div
                         key="success-content"
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 1.1 }}
-                        className="text-center"
+                        className="text-center py-10 my-auto"
                       >
                         <div className="flex justify-center mb-6">
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: "spring", damping: 12, stiffness: 200, delay: 0.1 }}
-                            className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500"
-                          >
+                          <div className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shadow-lg shadow-emerald-100">
                             <CheckCircle2 size={48} strokeWidth={2.5} />
-                          </motion.div>
+                          </div>
                         </div>
-                        <h4 className="text-2xl font-black text-slate-900 tracking-tighter uppercase mb-3">Request Received!</h4>
+                        <h4 className="text-2xl font-black text-slate-950 tracking-tighter uppercase mb-3">Request Received!</h4>
                         <p className="text-sm text-slate-500 font-medium leading-relaxed">
                           Thank you for choosing Own Holiday Club. <br/>
                           Our luxury travel experts will reach out to you within 24 hours to plan your perfect escape.
@@ -297,97 +533,358 @@ export default function GlobalHolidayLeadWidget() {
                         
                         <button
                           onClick={closeLeadModal}
-                          className="mt-8 text-[10px] font-black uppercase tracking-[0.2em] text-[#C8102E] hover:underline"
+                          className="mt-8 px-6 py-2.5 bg-[#C8102E] text-white rounded-lg text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#9a0c22] transition-colors shadow-lg shadow-red-500/20"
                         >
                           Close Window
                         </button>
                       </motion.div>
                     ) : (
-                      <motion.div
-                        key="form-content"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        <div className="mb-6">
-                          <h4 className="text-xl font-black text-slate-900 tracking-tighter uppercase">Request Callback</h4>
-                          <div className="h-1 w-12 bg-[#C8102E] mt-2" />
+                      <div className="my-auto space-y-6">
+                        {/* HEADER */}
+                        <div>
+                          <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#C8102E]">Own Holiday Club</span>
+                          <h4 className="text-2xl font-black text-slate-950 tracking-tighter uppercase leading-none mt-1">
+                            {step === 1 ? "Verify Contact Info" : "Holiday Preferences"}
+                          </h4>
+                          <div className="h-1 w-12 bg-[#C8102E] mt-3" />
                         </div>
 
-                        <form onSubmit={handleLeadSubmit} className="space-y-4">
-                          <div className="space-y-3">
+                        {/* STEP 1: VERIFICATIONS */}
+                        {step === 1 && (
+                          <motion.div
+                            key="step1-fields"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 10 }}
+                            className="space-y-4"
+                          >
+                            {/* Full Name */}
                             <div className="group">
-                              <label className="block text-[8px] font-bold uppercase tracking-[0.2em] text-slate-600 mb-1 ml-0.5">Full Name</label>
-                              <div className="relative border-b border-slate-300 group-focus-within:border-[#C8102E] transition-all">
-                                <User size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-200 group-focus-within:text-[#C8102E]" />
+                              <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 ml-0.5">Full Name</label>
+                              <div className="relative border-b border-slate-200 group-focus-within:border-[#C8102E] transition-all">
+                                <User size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#C8102E]" />
                                 <input
                                   type="text"
                                   value={leadForm.name}
-                                  required
                                   onChange={(e) => handleLeadFieldChange("name", e.target.value)}
                                   placeholder="Full name"
-                                  className="w-full h-9 pl-6 bg-transparent text-xs font-normal text-slate-800 outline-none placeholder:text-slate-400"
+                                  className="w-full h-10 pl-6 bg-transparent text-xs font-semibold text-slate-800 outline-none placeholder:text-slate-400"
                                 />
                               </div>
                             </div>
 
-                            <div className="group">
-                              <label className="block text-[8px] font-bold uppercase tracking-[0.2em] text-slate-600 mb-1 ml-0.5">Email Address</label>
-                              <div className="relative border-b border-slate-300 group-focus-within:border-[#C8102E] transition-all">
-                                <Mail size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-200 group-focus-within:text-[#C8102E]" />
+                            {/* Mobile Number & OTP */}
+                            <div className="space-y-2">
+                              <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 ml-0.5">Mobile Number</label>
+                              <div className="flex gap-2 items-end">
+                                <div className="relative border-b border-slate-200 group focus-within:border-[#C8102E] transition-all flex-1">
+                                  <Smartphone size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#C8102E]" />
+                                  <input
+                                    type="tel"
+                                    disabled={isMobileVerified}
+                                    value={leadForm.phone}
+                                    onChange={(e) => handleLeadFieldChange("phone", e.target.value)}
+                                    placeholder="10-digit mobile"
+                                    className="w-full h-10 pl-6 bg-transparent text-xs font-bold text-slate-800 outline-none placeholder:text-slate-400 disabled:text-slate-400"
+                                  />
+                                </div>
+                                {!isMobileVerified ? (
+                                  <button
+                                    type="button"
+                                    onClick={handleSendMobileOtp}
+                                    disabled={isSendingMobileOtp || leadForm.phone.length !== 10}
+                                    className="h-8 px-4 bg-slate-900 hover:bg-[#C8102E] text-white text-[9px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded"
+                                  >
+                                    {isSendingMobileOtp ? "Sending..." : isMobileOtpSent ? "Resend OTP" : "Get OTP"}
+                                  </button>
+                                ) : (
+                                  <span className="h-8 px-4 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded border border-emerald-200">
+                                    ✓ Verified
+                                  </span>
+                                )}
+                              </div>
+
+                              {isMobileOtpSent && !isMobileVerified && (
+                                <motion.div 
+                                  initial={{ opacity: 0, y: -5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className="flex gap-2 items-center bg-slate-50 p-2.5 border border-slate-200"
+                                >
+                                  <input
+                                    type="text"
+                                    maxLength={6}
+                                    placeholder="Enter 6-digit OTP"
+                                    value={mobileOtp}
+                                    onChange={(e) => setMobileOtp(e.target.value.replace(/\D/g, ""))}
+                                    className="h-8 px-3 border border-slate-300 text-center text-xs font-bold w-36 outline-none tracking-widest"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={handleVerifyMobileOtp}
+                                    disabled={isVerifyingMobileOtp || mobileOtp.length !== 6}
+                                    className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded"
+                                  >
+                                    {isVerifyingMobileOtp ? "Verifying..." : "Verify"}
+                                  </button>
+                                </motion.div>
+                              )}
+                            </div>
+
+                            {/* Email & OTP */}
+                            <div className="space-y-2">
+                              <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 ml-0.5">Email Address</label>
+                              <div className="flex gap-2 items-end">
+                                <div className="relative border-b border-slate-200 group focus-within:border-[#C8102E] transition-all flex-1">
+                                  <Mail size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#C8102E]" />
+                                  <input
+                                    type="email"
+                                    disabled={isEmailVerified}
+                                    value={leadForm.email}
+                                    onChange={(e) => handleLeadFieldChange("email", e.target.value)}
+                                    placeholder="email@example.com"
+                                    className="w-full h-10 pl-6 bg-transparent text-xs font-semibold text-slate-800 outline-none placeholder:text-slate-400 disabled:text-slate-400"
+                                  />
+                                </div>
+                                {!isEmailVerified && !isEmailSkipped ? (
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={handleSendEmailOtp}
+                                      disabled={isSendingEmailOtp || !EMAIL_PATTERN.test(leadForm.email)}
+                                      className="h-8 px-4 bg-slate-900 hover:bg-[#C8102E] text-white text-[9px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded"
+                                    >
+                                      {isSendingEmailOtp ? "Sending..." : isEmailOtpSent ? "Resend" : "Get OTP"}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={handleSkipEmailOtp}
+                                      className="text-[9px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors"
+                                    >
+                                      Skip
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span className={`h-8 px-4 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded border ${isEmailVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
+                                    {isEmailVerified ? "✓ Verified" : "Skipped"}
+                                  </span>
+                                )}
+                              </div>
+
+                              {isEmailOtpSent && !isEmailVerified && (
+                                <motion.div 
+                                  initial={{ opacity: 0, y: -5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className="flex gap-2 items-center bg-slate-50 p-2.5 border border-slate-200"
+                                >
+                                  <input
+                                    type="text"
+                                    maxLength={6}
+                                    placeholder="Enter 6-digit OTP"
+                                    value={emailOtp}
+                                    onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, ""))}
+                                    className="h-8 px-3 border border-slate-300 text-center text-xs font-bold w-36 outline-none tracking-widest"
+                                  />
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={handleVerifyEmailOtp}
+                                      disabled={isVerifyingEmailOtp || emailOtp.length !== 6}
+                                      className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded"
+                                    >
+                                      {isVerifyingEmailOtp ? "Verifying..." : "Verify"}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={handleSkipEmailOtp}
+                                      className="text-[9px] font-black uppercase text-slate-400 hover:text-[#C8102E]"
+                                    >
+                                      Skip OTP
+                                    </button>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </div>
+
+                            {/* NEXT STEP BUTTON */}
+                            <button
+                              type="button"
+                              onClick={handleNextStep}
+                              disabled={!isMobileVerified || (!isEmailVerified && !isEmailSkipped)}
+                              className="group w-full h-12 bg-slate-950 hover:bg-[#C8102E] disabled:bg-slate-200 text-white disabled:text-slate-400 text-xs font-bold uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all mt-6"
+                            >
+                              Preferences
+                              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                            </button>
+                          </motion.div>
+                        )}
+
+                        {/* STEP 2: PREFERENCES */}
+                        {step === 2 && (
+                          <motion.div
+                            key="step2-fields"
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="space-y-4"
+                          >
+                            {/* Location Domestic/International toggle & dropdown */}
+                            <div className="space-y-2">
+                              <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Destination Location</label>
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleLeadFieldChange("locationType", "Domestic")}
+                                  className={`flex-1 py-1.5 border text-[10px] font-bold uppercase tracking-widest transition-all ${leadForm.locationType === "Domestic" ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-600"}`}
+                                >
+                                  Domestic
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleLeadFieldChange("locationType", "International")}
+                                  className={`flex-1 py-1.5 border text-[10px] font-bold uppercase tracking-widest transition-all ${leadForm.locationType === "International" ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-600"}`}
+                                >
+                                  International
+                                </button>
+                              </div>
+                              <select
+                                value={leadForm.location}
+                                required
+                                onChange={(e) => handleLeadFieldChange("location", e.target.value)}
+                                className="w-full h-10 px-3 border border-slate-200 text-xs font-bold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none tracking-wide"
+                              >
+                                <option value="" disabled>-- Select Destination --</option>
+                                {isLoadingDestinations ? (
+                                  <option disabled>Loading destinations...</option>
+                                ) : filteredLocations.length > 0 ? (
+                                  filteredLocations.map((dest) => (
+                                    <option key={dest._id || dest.name} value={dest.name}>
+                                      {dest.name} {dest.location ? `(${dest.location})` : ""}
+                                    </option>
+                                  ))
+                                ) : (
+                                  <option disabled>No {leadForm.locationType} destinations found</option>
+                                )}
+                              </select>
+                            </div>
+
+                            {/* Dates */}
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 ml-0.5 flex items-center gap-1"><Calendar size={11} /> Check-in</label>
                                 <input
-                                  type="email"
-                                  value={leadForm.email}
+                                  type="date"
                                   required
-                                  onChange={(e) => handleLeadFieldChange("email", e.target.value)}
-                                  placeholder="email@example.com"
-                                  className="w-full h-9 pl-6 bg-transparent text-xs font-normal text-slate-800 outline-none placeholder:text-slate-400"
+                                  value={leadForm.checkIn}
+                                  onChange={(e) => handleLeadFieldChange("checkIn", e.target.value)}
+                                  className="w-full h-10 px-3 border border-slate-200 text-xs font-semibold text-slate-800 focus:border-[#C8102E] outline-none"
                                 />
                               </div>
-                            </div>
-
-                            <div className="group">
-                              <label className="block text-[8px] font-bold uppercase tracking-[0.2em] text-slate-600 mb-1 ml-0.5">Phone Number</label>
-                              <div className="relative border-b border-slate-300 group-focus-within:border-[#C8102E] transition-all">
-                                <Smartphone size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-200 group-focus-within:text-[#C8102E]" />
+                              <div>
+                                <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 ml-0.5 flex items-center gap-1"><Calendar size={11} /> Check-out</label>
                                 <input
-                                  type="tel"
-                                  value={leadForm.phone}
+                                  type="date"
                                   required
-                                  onChange={(e) => handleLeadFieldChange("phone", e.target.value)}
-                                  placeholder="Phone number"
-                                  className="w-full h-9 pl-6 bg-transparent text-xs font-normal text-slate-800 outline-none placeholder:text-slate-400"
+                                  value={leadForm.checkOut}
+                                  onChange={(e) => handleLeadFieldChange("checkOut", e.target.value)}
+                                  className="w-full h-10 px-3 border border-slate-200 text-xs font-semibold text-slate-800 focus:border-[#C8102E] outline-none"
                                 />
                               </div>
                             </div>
 
+                            {/* Guests */}
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 ml-0.5 flex items-center gap-1"><Users size={11} /> Adults</label>
+                                <select
+                                  value={leadForm.adults}
+                                  onChange={(e) => handleLeadFieldChange("adults", Number(e.target.value))}
+                                  className="w-full h-10 px-3 border border-slate-200 text-xs font-bold text-slate-800 focus:border-[#C8102E] outline-none"
+                                >
+                                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                                    <option key={n} value={n}>{n} Adult{n > 1 ? "s" : ""}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 ml-0.5">Kids (Below 10 years)</label>
+                                <select
+                                  value={leadForm.kids}
+                                  onChange={(e) => handleLeadFieldChange("kids", Number(e.target.value))}
+                                  className="w-full h-10 px-3 border border-slate-200 text-xs font-bold text-slate-800 focus:border-[#C8102E] outline-none"
+                                >
+                                  {[0, 1, 2, 3, 4, 5, 6].map((n) => (
+                                    <option key={n} value={n}>{n} Kid{n !== 1 ? "s" : ""}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+
+                            {/* Category selector & budget dropdown options */}
+                            <div className="space-y-2">
+                              <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Travel Type & Budget</label>
+                              <div className="flex gap-1.5 flex-wrap">
+                                {["Holiday", "Events", "Wedding", "Outing"].map((cat) => (
+                                  <button
+                                    key={cat}
+                                    type="button"
+                                    onClick={() => handleLeadFieldChange("travelType", cat)}
+                                    className={`px-3 py-1 border text-[9px] font-bold uppercase tracking-wider transition-all ${leadForm.travelType === cat ? "bg-red-700 border-red-700 text-white" : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"}`}
+                                  >
+                                    {cat}
+                                  </button>
+                                ))}
+                              </div>
+                              <select
+                                value={leadForm.budget}
+                                required
+                                onChange={(e) => handleLeadFieldChange("budget", e.target.value)}
+                                className="w-full h-10 px-3 border border-slate-200 text-xs font-bold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none tracking-wide"
+                              >
+                                {BUDGET_OPTIONS[leadForm.travelType].map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Special requests (message) */}
                             <div className="group">
-                              <label className="block text-[8px] font-bold uppercase tracking-[0.2em] text-slate-600 mb-1 ml-0.5">Your Message (Optional)</label>
-                              <div className="relative border-b border-slate-300 group-focus-within:border-[#C8102E] transition-all">
-                                <MessageSquare size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-200 group-focus-within:text-[#C8102E]" />
-                                <textarea
+                              <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 ml-0.5">Special Demands/Message</label>
+                              <div className="relative border-b border-slate-200 group focus-within:border-[#C8102E] transition-all">
+                                <MessageSquare size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#C8102E]" />
+                                <input
+                                  type="text"
                                   value={leadForm.message}
                                   onChange={(e) => handleLeadFieldChange("message", e.target.value)}
-                                  placeholder="Write your message here..."
-                                  rows={1}
-                                  className="w-full min-h-[36px] py-2 pl-6 bg-transparent text-xs font-normal text-slate-800 outline-none placeholder:text-slate-400 resize-none"
+                                  placeholder="Any special demands? Let us know!"
+                                  className="w-full h-10 pl-6 bg-transparent text-xs font-medium text-slate-800 outline-none placeholder:text-slate-400"
                                 />
                               </div>
                             </div>
-                          </div>
 
-                          <button
-                            type="submit"
-                            disabled={isSubmittingLead}
-                            className="group relative flex h-12 w-full items-center justify-center bg-[#C8102E] text-white hover:brightness-110 transition-all disabled:opacity-50 mt-6 shadow-[0_10px_20px_rgba(200,16,46,0.2)]"
-                          >
-                            <span className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.3em]">
-                              {isSubmittingLead ? "Processing..." : "Confirm Request"}
-                              {!isSubmittingLead && <Send size={12} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
-                            </span>
-                          </button>
-                        </form>
-                      </motion.div>
+                            {/* ACTION BUTTONS (Back & Submit) */}
+                            <div className="flex gap-3 pt-2">
+                              <button
+                                type="button"
+                                onClick={() => setStep(1)}
+                                className="h-12 px-6 border border-slate-300 hover:border-slate-800 text-slate-700 hover:text-slate-900 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-1 transition-all rounded-md"
+                              >
+                                <ChevronLeft size={14} /> Back
+                              </button>
+                              <button
+                                type="button"
+                                onClick={handleLeadSubmit}
+                                disabled={isSubmittingLead}
+                                className="group flex-1 h-12 bg-[#C8102E] hover:brightness-110 disabled:opacity-50 text-white text-xs font-bold uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all rounded-md shadow-lg shadow-red-500/10"
+                              >
+                                {isSubmittingLead ? "Processing..." : "Confirm Request"}
+                                {!isSubmittingLead && <Send size={12} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </div>
                     )}
                   </AnimatePresence>
                 </div>

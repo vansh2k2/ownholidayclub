@@ -277,7 +277,7 @@ const ManageLeads = () => {
         <select
           value={row.status}
           onChange={(e) => handleStatusChange(row._id, e.target.value)}
-          className={`h-7 px-3 rounded-md text-[10px] font-black uppercase tracking-wider border-2 cursor-pointer transition-all ${
+          className={`h-7 px-1.5 w-[88px] rounded-md text-[9px] font-black uppercase tracking-wider border-2 cursor-pointer transition-all ${
             row.status === "new"
               ? "bg-blue-50 text-blue-700 border-blue-100 hover:border-blue-300"
               : row.status === "contacted"

@@ -136,8 +136,7 @@ export default function Hero() {
   }, [leadFeedback.message]);
 
   const openLeadModal = () => {
-    setLeadFeedback({ type: "", message: "" });
-    setIsLeadModalOpen(true);
+    window.dispatchEvent(new Event("openGlobalLeadModal"));
   };
 
   const closeLeadModal = () => {
