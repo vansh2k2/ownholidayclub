@@ -274,7 +274,7 @@ const HomeSlider = () => {
                                 <div className="flex justify-between items-center mb-1">
                                     <label className="block text-sm font-bold text-gray-700 uppercase tracking-tight">Title Line 2 (Editor)</label>
                                     <span className="text-[10px] font-bold text-amber-500 bg-amber-50 px-2 py-0.5 border border-amber-200">
-                                        Yellow RGB: rgb(245, 158, 11)
+                                        Yellow RGB: rgb(245, 158, 11) | Hex: #F59E0B
                                     </span>
                                 </div>
                                 <RichTextEditor

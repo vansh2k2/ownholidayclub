@@ -183,10 +183,10 @@ export default function RefundPolicy() {
                       If you’ve done all of this and you still have not received
                       your refund yet, please contact us at{" "}
                       <a
-                        href="mailto:abhishek@priyatravels.in"
+                        href="mailto:membership@ownholidayclub.com"
                         className="text-amber-600 font-medium hover:underline"
                       >
-                        abhishek@priyatravels.in
+                        membership@ownholidayclub.com
                       </a>
                       .
                     </p>

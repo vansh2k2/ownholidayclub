@@ -189,14 +189,13 @@ export default function PrivacyPolicy() {
                       / or anniversary date. I/ We hereby consent to, agree and
                       acknowledge that any of the RHSPL Group may call/ email/
                       SMS me/us... I/We provide the details herein at my/our
-                      sole discretion and confirm that no Mahindra Entity shall
+                      sole discretion and confirm that no RHSPL Entity shall
                       be held responsible or liable for any claim arising out of
                       accessing or using my/our basic data. I/We consent to
                       being assigned a unique identity within the RHSPL Group.
                       I/We also agree that if at any point of time, I/We wish to
-                      stop receiving such communications from Mahindra Entities,
-                      I/We will call at Mahindra Holidays & Resorts India
-                      Limited’s designated call center number and register
+                      stop receiving such communications from RHSPL Entity,
+                      I/We will call at Rigel Hospitality Services Pvt. Ltd designated call center number and register
                       my/our preference or write to{" "}
                       <a
                         href="mailto:membership@ownholidayclub.com"

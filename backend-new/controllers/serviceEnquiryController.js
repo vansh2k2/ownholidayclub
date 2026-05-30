@@ -1,6 +1,6 @@
 const ServiceEnquiry = require("../models/ServiceEnquiry");
 const asyncHandler = require("../utils/asyncHandler");
-const { sendLeadNotificationEmail } = require("../utils/email");
+const { sendLeadNotificationEmail, sendGenericThankYouEmail } = require("../utils/email");
 
 // @desc    Create new service enquiry
 // @route   POST /api/service-enquiries
@@ -22,6 +22,16 @@ exports.createEnquiry = asyncHandler(async (req, res) => {
     });
   } catch (mailErr) {
     console.error("Failed to send service enquiry lead email:", mailErr);
+  }
+
+  try {
+    await sendGenericThankYouEmail({
+      to: enquiry.email,
+      name: enquiry.name,
+      type: "Service"
+    });
+  } catch (thankYouErr) {
+    console.error("Failed to send thank you email:", thankYouErr);
   }
 
   res.status(201).json({

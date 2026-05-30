@@ -76,7 +76,7 @@ export default function AppShell({ children }) {
       <header className={`${pathname === "/" ? "absolute" : "relative"} top-0 left-0 w-full z-50`}>
         <Topbar />
         <Navbar onLoginClick={openAuth} />
-        {pathname !== "/" && <div className="h-[72px]" />}
+        {pathname !== "/" && <div className="h-[56px]" />}
       </header>
       <main className="flex-grow">{children}</main>
       <SocialSidebar />

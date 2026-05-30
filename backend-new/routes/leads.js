@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Lead = require('../models/Lead');
+const { sendLeadNotificationEmail, sendGenericThankYouEmail } = require('../utils/email');
 
 // @route   POST /api/leads
 // @desc    Create a new lead (public)
@@ -20,6 +21,31 @@ router.post('/', async (req, res) => {
         });
 
         await newLead.save();
+
+        try {
+            await sendLeadNotificationEmail({
+                leadType: 'Contact Page Lead',
+                leadDetails: {
+                    Name: name,
+                    Email: email,
+                    Phone: phone,
+                },
+                message: message,
+            });
+        } catch (mailErr) {
+            console.error('Failed to send lead notification email:', mailErr);
+        }
+
+        try {
+            await sendGenericThankYouEmail({
+                to: email,
+                name: name,
+                type: 'Contact',
+            });
+        } catch (thankYouErr) {
+            console.error('Failed to send thank you email:', thankYouErr);
+        }
+
         res.status(201).json({ success: true, message: 'Lead submitted successfully.' });
     } catch (error) {
         console.error('Lead creation error:', error);

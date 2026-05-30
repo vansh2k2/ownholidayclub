@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const DestinationEnquiry = require("../models/DestinationEnquiry");
 const requireCmsAdmin = require("../middleware/requireCmsAdmin");
 const asyncHandler = require("../utils/asyncHandler");
-const { sendLeadNotificationEmail } = require("../utils/email");
+const { sendLeadNotificationEmail, sendGenericThankYouEmail } = require("../utils/email");
 
 const router = express.Router();
 
@@ -53,6 +53,16 @@ router.post(
       });
     } catch (mailErr) {
       console.error("Failed to send destination enquiry lead email:", mailErr);
+    }
+
+    try {
+      await sendGenericThankYouEmail({
+        to: email,
+        name: name,
+        type: "Destination"
+      });
+    } catch (thankYouErr) {
+      console.error("Failed to send thank you email:", thankYouErr);
     }
 
     res.status(201).json({ success: true, message: "Enquiry submitted successfully", data: enquiry });

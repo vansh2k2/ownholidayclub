@@ -14,7 +14,7 @@ const {
   getOtpExpiry,
   hasOtpExpired,
 } = require("../utils/security");
-const { sendLeadNotificationEmail } = require("../utils/email");
+const { sendLeadNotificationEmail, sendLeadThankYouEmail } = require("../utils/email");
 
 const router = express.Router();
 
@@ -338,6 +338,15 @@ router.post(
       });
     } catch (mailErr) {
       console.error("Failed to send lead email:", mailErr);
+    }
+
+    try {
+      await sendLeadThankYouEmail({
+        to: email,
+        name: name,
+      });
+    } catch (thankYouErr) {
+      console.error("Failed to send thank you email:", thankYouErr);
     }
 
     return res.status(201).json({

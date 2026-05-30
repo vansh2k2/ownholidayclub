@@ -11,27 +11,39 @@ const TIER_CONFIG = [
     borderTop: "#2563eb",
     Icon: Star,
     bubbleColor: "rgba(37, 99, 235, 0.12)",
+    // Light blue card bg
+    cardBg: "linear-gradient(145deg, #eff6ff 0%, #dbeafe 60%, #bfdbfe 100%)",
+    cardBgSolid: "#eff6ff",
   },
   {
-    color: "#f59e0b",
-    colorBg: "rgba(245, 158, 11, 0.10)",
+    color: "#b45309",
+    colorBg: "rgba(180, 83, 9, 0.08)",
     borderTop: "#f59e0b",
     Icon: Sparkles,
     bubbleColor: "rgba(245, 158, 11, 0.15)",
+    // Light amber card bg
+    cardBg: "linear-gradient(145deg, #fffbeb 0%, #fef3c7 60%, #fde68a 100%)",
+    cardBgSolid: "#fffbeb",
   },
   {
-    color: "#10b981",
-    colorBg: "rgba(16, 185, 129, 0.08)",
+    color: "#059669",
+    colorBg: "rgba(5, 150, 105, 0.08)",
     borderTop: "#10b981",
     Icon: Crown,
     bubbleColor: "rgba(16, 185, 129, 0.12)",
+    // Light emerald card bg
+    cardBg: "linear-gradient(145deg, #ecfdf5 0%, #d1fae5 60%, #a7f3d0 100%)",
+    cardBgSolid: "#ecfdf5",
   },
   {
-    color: "#8b5cf6",
-    colorBg: "rgba(139, 92, 246, 0.08)",
+    color: "#7c3aed",
+    colorBg: "rgba(124, 58, 237, 0.08)",
     borderTop: "#8b5cf6",
     Icon: Gem,
     bubbleColor: "rgba(139, 92, 246, 0.13)",
+    // Light violet card bg
+    cardBg: "linear-gradient(145deg, #f5f3ff 0%, #ede9fe 60%, #ddd6fe 100%)",
+    cardBgSolid: "#f5f3ff",
   },
 ];
 
@@ -262,25 +274,41 @@ export default function Tiers({
                 <div
                   className="relative flex flex-col h-full group tier-card"
                   style={{
-                    background: "#ffffff",
+                    background: cfg.cardBg,
                     borderRadius: "24px",
-                    borderTop: `3px solid ${cfg.color}`,
-                    borderLeft: "1px solid #e8edf3",
-                    borderRight: "1px solid #e8edf3",
-                    borderBottom: "1px solid #e8edf3",
-                    boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
+                    borderTop: `3px solid ${cfg.borderTop}`,
+                    borderLeft: `1px solid ${cfg.borderTop}22`,
+                    borderRight: `1px solid ${cfg.borderTop}22`,
+                    borderBottom: `1px solid ${cfg.borderTop}22`,
+                    boxShadow: `0 4px 24px ${cfg.bubbleColor}`,
                     transition: "transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s cubic-bezier(0.16,1,0.3,1)",
                     overflow: "hidden",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-8px)";
-                    e.currentTarget.style.boxShadow = `0 24px 48px rgba(0,0,0,0.10), 0 0 0 1px ${cfg.color}22`;
+                    e.currentTarget.style.boxShadow = `0 24px 48px ${cfg.bubbleColor}, 0 0 0 1px ${cfg.color}22`;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.06)";
+                    e.currentTarget.style.boxShadow = `0 4px 24px ${cfg.bubbleColor}`;
                   }}
                 >
+                  {/* Decorative circle bg element */}
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      bottom: "-40px",
+                      right: "-40px",
+                      width: "140px",
+                      height: "140px",
+                      borderRadius: "50%",
+                      background: cfg.bubbleColor,
+                      pointerEvents: "none",
+                      zIndex: 0,
+                    }}
+                  />
+
                   {/* Popular badge */}
                   {isPopular && (
                     <div
@@ -315,13 +343,14 @@ export default function Tiers({
                       style={{
                         width: "48px",
                         height: "48px",
-                        background: cfg.colorBg,
+                        background: "rgba(255,255,255,0.7)",
                         borderRadius: "10px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         marginBottom: "14px",
                         flexShrink: 0,
+                        boxShadow: `0 2px 8px ${cfg.bubbleColor}`,
                       }}
                     >
                       <Icon size={22} color={cfg.color} strokeWidth={2.2} />
@@ -347,7 +376,7 @@ export default function Tiers({
                       style={{
                         fontFamily: "'Inter', sans-serif",
                         fontSize: "12.5px",
-                        color: "#000000",
+                        color: "#1e293b",
                         lineHeight: 1.55,
                         margin: "0 0 14px",
                         fontWeight: 500,
@@ -361,9 +390,7 @@ export default function Tiers({
                     <div style={{ minHeight: "72px", marginBottom: "4px" }}>
                       {hasOffer ? (
                         <div>
-                          {/* Struck price on left, Pay offer price on right */}
                           <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "6px", flexWrap: "wrap" }}>
-                            {/* Crossed out actual price */}
                             <span
                               style={{
                                 fontFamily: "'Inter', sans-serif",
@@ -378,8 +405,6 @@ export default function Tiers({
                             >
                               {formatPrice(displayActuallyPrice)}
                             </span>
-
-                            {/* Pay label */}
                             <span
                               style={{
                                 fontFamily: "'Inter', sans-serif",
@@ -390,8 +415,6 @@ export default function Tiers({
                             >
                               Pay
                             </span>
-
-                            {/* Offer price */}
                             <span
                               style={{
                                 fontFamily: "'Inter', sans-serif",
@@ -411,10 +434,11 @@ export default function Tiers({
                               style={{
                                 display: "inline-flex",
                                 alignItems: "center",
-                                background: "rgba(22, 163, 74, 0.08)",
+                                background: "rgba(255,255,255,0.6)",
                                 borderRadius: "4px",
                                 padding: "3px 9px",
                                 marginBottom: "4px",
+                                border: "1px solid rgba(22,163,74,0.2)",
                               }}
                             >
                               <span
@@ -467,7 +491,7 @@ export default function Tiers({
                     <div
                       style={{
                         height: "1px",
-                        background: "#f1f5f9",
+                        background: `${cfg.color}22`,
                         margin: "10px 0",
                         width: "100%",
                       }}
@@ -487,17 +511,29 @@ export default function Tiers({
                     >
                       {displayFeatures.map((feature, i) => (
                         <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
-                          <Check
-                            size={15}
-                            color={cfg.color}
-                            strokeWidth={3}
-                            style={{ flexShrink: 0, marginTop: "2px" }}
-                          />
+                          <div style={{
+                            width: "18px",
+                            height: "18px",
+                            borderRadius: "50%",
+                            background: "rgba(255,255,255,0.8)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                            marginTop: "1px",
+                            boxShadow: `0 1px 4px ${cfg.bubbleColor}`,
+                          }}>
+                            <Check
+                              size={11}
+                              color={cfg.color}
+                              strokeWidth={3}
+                            />
+                          </div>
                           <span
                             style={{
                               fontFamily: "'Inter', sans-serif",
                               fontSize: "13px",
-                              color: "#000000",
+                              color: "#1e293b",
                               lineHeight: 1.4,
                               fontWeight: 500,
                             }}
@@ -520,9 +556,9 @@ export default function Tiers({
                         gap: "8px",
                         width: "100%",
                         padding: "11px 16px",
-                        background: isPopular ? cfg.color : "transparent",
+                        background: isPopular ? cfg.color : "rgba(255,255,255,0.7)",
                         color: isPopular ? "#ffffff" : cfg.color,
-                        border: isPopular ? "none" : `1.5px solid ${cfg.color}`,
+                        border: `1.5px solid ${cfg.color}`,
                         borderRadius: "6px",
                         fontFamily: "'Inter', sans-serif",
                         fontSize: "11px",
@@ -533,6 +569,7 @@ export default function Tiers({
                         opacity: isProcessing ? 0.5 : 1,
                         transition: "all 0.25s ease",
                         boxShadow: isPopular ? `0 4px 16px ${cfg.color}40` : "none",
+                        backdropFilter: "blur(4px)",
                       }}
                       onMouseEnter={(e) => {
                         if (!isProcessing) {
@@ -540,7 +577,9 @@ export default function Tiers({
                           if (isPopular) {
                             e.currentTarget.style.boxShadow = `0 8px 24px ${cfg.color}55`;
                           } else {
-                            e.currentTarget.style.background = cfg.colorBg;
+                            e.currentTarget.style.background = cfg.color;
+                            e.currentTarget.style.color = "#ffffff";
+                            e.currentTarget.style.boxShadow = `0 4px 16px ${cfg.color}40`;
                           }
                         }
                       }}
@@ -548,8 +587,12 @@ export default function Tiers({
                         e.currentTarget.style.transform = "translateY(0)";
                         if (isPopular) {
                           e.currentTarget.style.boxShadow = `0 4px 16px ${cfg.color}40`;
+                          e.currentTarget.style.background = cfg.color;
+                          e.currentTarget.style.color = "#ffffff";
                         } else {
-                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.background = "rgba(255,255,255,0.7)";
+                          e.currentTarget.style.color = cfg.color;
+                          e.currentTarget.style.boxShadow = "none";
                         }
                       }}
                     >

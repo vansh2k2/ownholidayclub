@@ -360,8 +360,7 @@ export default function TermsAndConditions() {
                       <li className="flex items-start gap-3">
                         <span className="text-amber-500 mt-1">•</span>
                         <span>
-                          By participating, you expressly agree that Club
-                          Mahindra will not be responsible for any loss or
+                          By participating, you expressly agree that Rigel Hospitality Services Pvt. Ltd will not be responsible for any loss or
                           damage incurred by you in relation to this Contest.
                         </span>
                       </li>
