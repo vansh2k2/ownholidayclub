@@ -76,23 +76,23 @@ const Topbar = () => {
           style={{ maxWidth: "1400px", height: "36px" }}
         >
           {/* ── LEFT: Email + Phone ── */}
-          <div className="flex items-center gap-3 md:gap-5 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-5 shrink-0">
             <a
               href={`mailto:${email}`}
-              className="ohc-tb-link flex items-center gap-1.5"
-              style={{ color: "#ffffff", fontSize: "11px", fontWeight: 600, textDecoration: "none", transition: "color 0.2s" }}
+              className="ohc-tb-link hidden min-[360px]:flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white transition-colors"
+              style={{ textDecoration: "none" }}
             >
               <Mail size={11} style={{ color: "#C8102E", flexShrink: 0 }} />
               <span className="hidden sm:inline">{email}</span>
-              <span className="sm:hidden">Email Us</span>
+              <span className="sm:hidden">Email</span>
             </a>
 
-            <span style={{ width: "1px", height: "14px", background: "rgba(255,255,255,0.15)", flexShrink: 0 }} />
+            <span className="hidden min-[360px]:block w-[1px] h-[14px] bg-white/15 shrink-0" />
 
             <a
               href={`tel:${phone}`}
-              className="ohc-tb-link flex items-center gap-1.5"
-              style={{ color: "#ffffff", fontSize: "11px", fontWeight: 600, textDecoration: "none", transition: "color 0.2s" }}
+              className="ohc-tb-link flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold text-white transition-colors"
+              style={{ textDecoration: "none" }}
             >
               <Phone size={11} style={{ color: "#C8102E", flexShrink: 0 }} />
               <span>{phone}</span>
@@ -138,21 +138,8 @@ const Topbar = () => {
           <div className="shrink-0">
             <Link
               href="/membership"
-              style={{
-                display: "inline-block",
-                padding: "5px 14px",
-                fontSize: "10px",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                color: "#fff",
-                background: "#C8102E",
-                borderRadius: "2px",
-                border: "1px solid rgba(255,255,255,0.15)",
-                transition: "background 0.2s",
-                whiteSpace: "nowrap",
-                textDecoration: "none",
-              }}
+              className="inline-block px-2 py-1 sm:px-[14px] sm:py-[5px] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.08em] text-white bg-[#C8102E] rounded-sm whitespace-nowrap transition-colors border border-white/15"
+              style={{ textDecoration: "none" }}
             >
               Get Membership
             </Link>

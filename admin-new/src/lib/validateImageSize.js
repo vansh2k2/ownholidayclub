@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 
-export const validateImageSize = (file, maxSizeInKb = 200) => {
+export const validateImageSize = (file, maxSizeInKb = 10240) => {
     if (!file) return false;
     
     const fileSizeInKb = file.size / 1024;

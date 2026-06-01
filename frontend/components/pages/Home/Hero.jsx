@@ -279,12 +279,12 @@ export default function Hero() {
                 initial={{ scale: 1 }}
                 animate={{ scale: 1.15 }}
                 transition={{ duration: 7, ease: "linear" }}
-                className="h-full w-full object-cover brightness-[0.85] saturate-[1.1]"
+                className="h-full w-full object-cover brightness-[0.95] saturate-[1.1]"
               />
             </motion.div>
           </AnimatePresence>
           
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-black/10" />
           <div
             className="absolute inset-0"
             style={{
@@ -337,25 +337,25 @@ export default function Hero() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -20, opacity: 0 }}
                 transition={{ duration: 0.6, delay: 0.7 }}
-                className="flex flex-wrap items-center justify-center gap-4"
+                className="flex flex-row flex-nowrap items-center justify-center gap-1 sm:gap-4 w-full px-1"
               >
                 <button
                   type="button"
                   onClick={openLeadModal}
-                  className="shrink-0 whitespace-nowrap rounded-full bg-amber-500 px-8 py-3.5 text-[11px] font-bold uppercase tracking-widest text-slate-900 transition-all duration-300 hover:bg-amber-400 hover:scale-105 shadow-xl shadow-amber-500/20"
+                  className="shrink-0 whitespace-nowrap rounded-full bg-amber-500 px-2 py-1.5 sm:px-8 sm:py-3.5 text-[7px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-900 transition-all duration-300 hover:bg-amber-400 hover:scale-105 shadow-xl shadow-amber-500/20"
                 >
                   {activeSlide?.button1Text || "Book Holiday"}
                 </button>
                 {activeSlide?.button2Link && (
                   <Link href={activeSlide.button2Link}>
-                    <button className="whitespace-nowrap rounded-full border border-white/20 bg-white/5 px-8 py-3.5 text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-slate-900 hover:scale-105">
+                    <button className="shrink-0 whitespace-nowrap rounded-full border border-white/20 bg-white/5 px-2 py-1.5 sm:px-8 sm:py-3.5 text-[7px] sm:text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-slate-900 hover:scale-105">
                       {activeSlide?.button2Text || "Memberships"}
                     </button>
                   </Link>
                 )}
                 {activeSlide?.button3Link && (
                   <Link href={activeSlide.button3Link}>
-                    <button className="whitespace-nowrap rounded-full border border-white/20 bg-white/5 px-8 py-3.5 text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-slate-900 hover:scale-105">
+                    <button className="shrink-0 whitespace-nowrap rounded-full border border-white/20 bg-white/5 px-2 py-1.5 sm:px-8 sm:py-3.5 text-[7px] sm:text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-slate-900 hover:scale-105">
                       {activeSlide?.button3Text || "Plan Event"}
                     </button>
                   </Link>

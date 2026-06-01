@@ -431,14 +431,14 @@ export default function GlobalHolidayLeadWidget() {
         type="button"
         onClick={openLeadModal}
         aria-label="Open holiday lead form"
-        className="fixed bottom-20 sm:bottom-4 right-3 z-[90] flex flex-col items-center gap-1 group modal-luxury"
+        className="fixed bottom-20 sm:bottom-4 right-3 z-[90] flex flex-col items-end gap-1 group modal-luxury"
       >
-        <span className="bg-white text-[#C8102E] text-[8px] font-black px-2 py-1 rounded-sm shadow-md transition-all duration-300 uppercase tracking-widest border border-red-100 mb-0.5 flex items-center gap-1.5">
-          <MessageSquare size={10} />
+        <span className="bg-white text-[#C8102E] text-[7px] md:text-[8px] font-black px-2 py-1 rounded-sm shadow-md transition-all duration-300 uppercase tracking-widest border border-red-100 mb-0.5 flex items-center gap-1.5 whitespace-nowrap">
+          <MessageSquare className="w-3 h-3 md:w-4 md:h-4" />
           Request Call Back
         </span>
-        <div className="relative inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#C8102E] text-white shadow-[0_10px_30px_rgba(200,16,46,0.25)] transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-105 md:h-14 md:w-14">
-          <Mail size={24} strokeWidth={2.2} />
+        <div className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#C8102E] text-white shadow-[0_10px_30px_rgba(200,16,46,0.25)] transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-105 md:h-14 md:w-14">
+          <Mail className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.2} />
           <div className="absolute inset-0 rounded-full bg-[#C8102E] opacity-20 animate-ping" />
         </div>
       </button>

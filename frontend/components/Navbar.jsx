@@ -186,7 +186,7 @@ export default function Navbar({ onLoginClick }) {
 
       {/* ─── MOBILE BOTTOM TAB BAR ─── */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-[90] bg-white/95 backdrop-blur-xl border-t border-slate-100">
-        <div className="flex items-center justify-around px-2 pt-1 pb-3">
+        <div className="flex items-center justify-between px-1 sm:px-2 pt-1 pb-3">
           {BOTTOM_TABS.map((tab) => {
             const isActive = pathname === tab.href;
             const Icon = tab.icon;
@@ -194,12 +194,12 @@ export default function Navbar({ onLoginClick }) {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all"
+                className="flex flex-col items-center gap-0.5 px-1 sm:px-2 py-1.5 rounded-xl transition-all flex-1"
               >
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 ${isActive ? "bg-amber-500 shadow-md shadow-amber-300/40" : "bg-transparent"}`}>
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center transition-all duration-200 ${isActive ? "bg-amber-500 shadow-md shadow-amber-300/40" : "bg-transparent"}`}>
                   <Icon className={`w-4 h-4 transition-colors ${isActive ? "text-white" : "text-slate-600"}`} />
                 </div>
-                <span className={`text-[9px] font-semibold uppercase tracking-wider transition-colors ${isActive ? "text-amber-600" : "text-slate-500"}`}>
+                <span className={`text-[8px] sm:text-[9px] font-semibold uppercase tracking-wide transition-colors truncate w-full text-center ${isActive ? "text-amber-600" : "text-slate-500"}`}>
                   {tab.label}
                 </span>
               </Link>
@@ -209,12 +209,12 @@ export default function Navbar({ onLoginClick }) {
           {/* Center FAB */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className="flex flex-col items-center gap-0.5 px-3 py-1.5"
+            className="flex flex-col items-center gap-0.5 px-1 sm:px-2 py-1.5 flex-1"
           >
-            <div className="w-10 h-10 rounded-xl bg-red-700 flex items-center justify-center shadow-lg shadow-red-700/30 -mt-5 border-2 border-white transition-all active:scale-95">
-              <LayoutGrid className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-700 flex items-center justify-center shadow-lg shadow-red-700/30 -mt-4 border-2 border-white transition-all active:scale-95">
+              <LayoutGrid className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-red-700 mt-0.5">Menu</span>
+            <span className="text-[8px] sm:text-[9px] font-semibold uppercase tracking-wide text-red-700 mt-0.5 truncate w-full text-center">Menu</span>
           </button>
         </div>
       </div>
