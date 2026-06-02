@@ -383,7 +383,7 @@ const HeroImages = () => {
                                 <div className="mt-4 bg-red-50/50 p-4 rounded-lg border border-red-100">
                                     <p className="text-[#C8102E] text-[10px] font-bold uppercase mb-1.5">Image Requirements</p>
                                     <ul className="text-[10px] text-gray-600 space-y-1 uppercase tracking-wider">
-                                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-600" /> Resolution: 1920x1080</li>
+                                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-600" /> Resolution: 1330 x 500</li>
                                         <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-600" /> Format: JPG, PNG, WEBP ONLY</li>
                                         <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-600" /> MAX SIZE: 10MB</li>
                                     </ul>

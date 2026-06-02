@@ -153,7 +153,7 @@ const MemberProfile = () => {
         <div className="print-bg-white" style={{ minHeight: "100vh", background: "#f0f2f5", fontFamily: "'Inter', sans-serif" }}>
             
             {/* ══ TOP NAV BAR (Navy Blue) ══ */}
-            <div className="no-print sticky top-[88px] z-[30]" style={{ background: "#0f2d52", color: "white", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.2)" }}>
+            <div className="no-print relative z-[30]" style={{ background: "#0f2d52", color: "white", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.2)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <button onClick={() => navigate(-1)} style={{ color: "white", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontWeight: 600, fontSize: 13 }}>
                         <ArrowLeft size={16} /> Dashboard
@@ -357,12 +357,102 @@ const MemberProfile = () => {
                         </tr>
                     </Section>
 
+                    {/* ── HOLIDAY BOOKINGS ─────────────────────────────── */}
+                    <Section title="Holiday Booked">
+                        <tr style={{ borderBottom: "1px solid #d1d5db" }}>
+                            <td colSpan={6} style={{ padding: 0 }}>
+                                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                                    <thead>
+                                        <tr style={{ background: "#f9fafb", borderBottom: "1px solid #d1d5db" }}>
+                                            <th style={{ ...LC, fontSize: 10, width: "25%" }}>Destination</th>
+                                            <th style={{ ...LC, fontSize: 10, width: "25%" }}>Dates & Guests</th>
+                                            <th style={{ ...LC, fontSize: 10, width: "25%" }}>Requested On</th>
+                                            <th style={{ ...LC, fontSize: 10, width: "25%", borderRight: "none" }}>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {member.holidayBookings?.length > 0 ? (
+                                            member.holidayBookings.map((bk, i) => {
+                                                const statusStr = (bk.status || "pending").toLowerCase();
+                                                let badgeColor = "#F59E0B"; // pending (amber)
+                                                let displayStatus = "PENDING";
+                                                if (statusStr === "approved" || statusStr === "booked" || statusStr === "booking") {
+                                                    badgeColor = "#10B981"; // emerald
+                                                    displayStatus = "APPROVED";
+                                                } else if (statusStr === "rejected") {
+                                                    badgeColor = "#EF4444"; // red
+                                                    displayStatus = "REJECTED";
+                                                }
+
+                                                return (
+                                                    <tr key={i} style={{ borderBottom: i === member.holidayBookings.length - 1 ? "none" : "1px solid #eee" }}>
+                                                        <td style={VCD}>
+                                                            <div style={{ fontWeight: 700, color: "#1e3a5f" }}>{bk.place}</div>
+                                                            <div style={{ fontSize: 11, color: "#6b7280", textTransform: "capitalize" }}>{bk.region || "Domestic"}</div>
+                                                        </td>
+                                                        <td style={VCD}>
+                                                            <div style={{ fontSize: 11 }}>
+                                                                <span style={{ color: "#6b7280" }}>IN:</span> {fmtDate(bk.checkIn)} <br />
+                                                                <span style={{ color: "#6b7280" }}>OUT:</span> {fmtDate(bk.checkOut)}
+                                                            </div>
+                                                            <div style={{ fontSize: 11, color: "#1e3a5f", marginTop: 4, fontWeight: 600 }}>
+                                                                {bk.adults} Adults / {bk.kids} Kids
+                                                            </div>
+                                                        </td>
+                                                        <td style={VCD}>
+                                                            <div style={{ fontSize: 11, fontWeight: 600, color: "#1e3a5f" }}>{fmtDate(bk.requestedAt)}</div>
+                                                            <div style={{ fontSize: 10, color: "#6b7280" }}>{new Date(bk.requestedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                                                        </td>
+                                                        <td style={{ ...VC, borderRight: "none" }}>
+                                                            <span style={{ 
+                                                                display: "inline-block",
+                                                                border: `1px solid ${badgeColor}`,
+                                                                color: badgeColor, 
+                                                                fontSize: "9px", 
+                                                                fontWeight: 800, 
+                                                                padding: "4px 8px", 
+                                                                borderRadius: "4px",
+                                                                letterSpacing: "0.05em",
+                                                                marginBottom: bk.adminMessage ? "6px" : "0"
+                                                            }}>
+                                                                {displayStatus}
+                                                            </span>
+                                                            {bk.adminMessage && (
+                                                                <div style={{
+                                                                    marginTop: 2,
+                                                                    padding: "4px 8px",
+                                                                    background: "#f3f4f6",
+                                                                    borderRadius: 4,
+                                                                    fontSize: 10,
+                                                                    color: "#111827",
+                                                                    display: "block"
+                                                                }}>
+                                                                    <strong style={{ color: "#374151" }}>Admin Note:</strong> "{bk.adminMessage}"
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={4} style={{ ...VC, textAlign: "center", fontStyle: "italic", color: "#999" }}>No holiday bookings found</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </Section>
+
                     {/* ── FOOTER ───────────────────────────────────────────── */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 40, borderTop: "1px solid #eee", pt: 20 }}>
-                        <p style={{ fontSize: 11, color: "#9ca3af", margin: 0 }}>
-                            MEMBER ID: {membershipId} &nbsp;·&nbsp; GENERATED ON: {new Date().toLocaleDateString()}
+                        <p style={{ fontSize: 11, color: "#1e3a5f", margin: 0, fontWeight: 600, letterSpacing: "0.02em" }}>
+                            <span style={{ color: "#6b7280" }}>MEMBER ID:</span> <span style={{ color: "#C8102E", fontWeight: 800 }}>{membershipId}</span> 
+                            <span style={{ color: "#d1d5db", margin: "0 8px" }}>|</span> 
+                            <span style={{ color: "#6b7280" }}>GENERATED ON:</span> <span style={{ color: "#10B981", fontWeight: 800 }}>{new Date().toLocaleDateString()}</span>
                         </p>
-                        <p style={{ fontSize: 11, color: "#9ca3af", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", margin: 0 }}>
+                        <p style={{ fontSize: 11, color: "#0f2d52", fontWeight: 900, letterSpacing: "0.15em", textTransform: "uppercase", margin: 0 }}>
                             OWN HOLIDAY CLUB
                         </p>
                     </div>

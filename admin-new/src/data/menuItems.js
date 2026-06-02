@@ -215,6 +215,12 @@ export const menuItems = [
     icon: Users,
     path: "/members-list",
   },
+  {
+    type: "item",
+    label: "Holiday Bookings",
+    icon: CalendarCheck,
+    path: "/holiday-bookings",
+  },
 
   /* ================= MEDIA SECTION ================= */
   // {

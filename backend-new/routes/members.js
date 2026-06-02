@@ -22,6 +22,42 @@ router.get(
   })
 );
 
+// GET ALL HOLIDAY BOOKINGS
+router.get(
+  "/all-holiday-bookings",
+  requireCmsAdmin,
+  asyncHandler(async (req, res) => {
+    // Find users with non-empty holidayBookings
+    const users = await User.find(
+      { "holidayBookings.0": { $exists: true } },
+      "name email mobile membershipId holidayBookings"
+    ).lean();
+
+    let allBookings = [];
+    users.forEach((user) => {
+      user.holidayBookings.forEach((booking) => {
+        allBookings.push({
+          ...booking,
+          userId: user._id,
+          userName: user.name,
+          userEmail: user.email,
+          userMobile: user.mobile,
+          membershipId: user.membershipId,
+        });
+      });
+    });
+
+    // Sort by requestedAt descending
+    allBookings.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+
+    res.status(200).json({
+      success: true,
+      message: "Holiday bookings fetched successfully.",
+      bookings: allBookings,
+    });
+  })
+);
+
 // GET SINGLE MEMBER
 router.get(
   "/:id",
@@ -87,6 +123,53 @@ router.delete(
 
     res.status(200).json({
       message: "Member deleted successfully.",
+    });
+  })
+);
+
+
+// UPDATE HOLIDAY BOOKING STATUS
+router.put(
+  "/:userId/holiday-bookings/:bookingId/status",
+  requireCmsAdmin,
+  asyncHandler(async (req, res) => {
+    const { userId, bookingId } = req.params;
+    const { status, adminMessage } = req.body;
+
+    if (!isValidObjectId(userId) || !isValidObjectId(bookingId)) {
+      return res.status(400).json({ message: "Invalid ID(s) provided." });
+    }
+
+    const validStatuses = ["booking", "booked", "pending", "approved", "rejected"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const booking = user.holidayBookings.id(bookingId);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    booking.status = status;
+    if (adminMessage !== undefined) {
+      booking.adminMessage = adminMessage;
+    }
+    
+    if (status === "approved" || status === "booked") {
+      booking.confirmedAt = new Date();
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Booking status updated successfully.",
+      booking,
     });
   })
 );

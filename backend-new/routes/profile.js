@@ -384,17 +384,18 @@ router.post(
     const enrichedMembership = enrichMembership(user.membership, user.payments);
     const holidayQuota = getHolidayQuota(enrichedMembership);
     const holidaySlots = getHolidaySlots(enrichedMembership, user.payments);
-    const existingHolidayBookings = Array.isArray(user.holidayBookings)
-      ? user.holidayBookings
-      : [];
+    const existingHolidayBookings = (Array.isArray(user.holidayBookings) ? user.holidayBookings : [])
+      .filter(b => String(b.status || "").toLowerCase() !== "rejected");
 
     if (!enrichedMembership?.name || holidayQuota <= 0) {
+      console.log("Error 400: An active membership is required before booking a holiday.");
       return res.status(400).json({
         message: "An active membership is required before booking a holiday.",
       });
     }
 
     if (holidaySlots.length === 0) {
+      console.log("Error 400: Membership start date is missing for holiday access.");
       return res.status(400).json({
         message: "Membership start date is missing for holiday access.",
       });
@@ -403,12 +404,14 @@ router.post(
     const requestedSlot = holidaySlots.find((slot) => slot.slotNumber === slotNumber);
 
     if (!requestedSlot) {
+      console.log("Error 400: Selected holiday slot is not valid for this membership.");
       return res.status(400).json({
         message: "Selected holiday slot is not valid for this membership.",
       });
     }
 
     if (existingHolidayBookings.length >= holidayQuota) {
+      console.log("Error 400: Your holiday booking quota has been fully used.");
       return res.status(400).json({
         message: "Your holiday booking quota has been fully used.",
       });
@@ -420,6 +423,7 @@ router.post(
     );
 
     if (mappedHolidayBookings.some((entry) => entry.slotNumber === slotNumber)) {
+      console.log("Error 400: This holiday access has already been requested or used.");
       return res.status(400).json({
         message: "This holiday access has already been requested or used.",
       });
@@ -427,25 +431,22 @@ router.post(
 
     const now = new Date();
 
-    if (now < requestedSlot.validFrom) {
-      return res.status(400).json({
-        message: "This holiday access is not open for booking yet.",
-      });
-    }
-
     if (now >= requestedSlot.validTo) {
+      console.log("Error 400: This holiday access has already expired.");
       return res.status(400).json({
         message: "This holiday access has already expired.",
       });
     }
 
     if (checkIn < requestedSlot.validFrom || checkIn >= requestedSlot.validTo) {
+      console.log("Error 400: Check-in must be within the selected holiday access period.", { checkIn, validFrom: requestedSlot.validFrom, validTo: requestedSlot.validTo });
       return res.status(400).json({
         message: "Check-in must be within the selected holiday access period.",
       });
     }
 
     if (checkOut > requestedSlot.validTo) {
+      console.log("Error 400: Check-out must be within the selected holiday access period.");
       return res.status(400).json({
         message: "Check-out must be within the selected holiday access period.",
       });
@@ -459,6 +460,7 @@ router.post(
     const maxDurationMs = stayAllowance.days * 24 * 60 * 60 * 1000;
 
     if (bookingDurationMs > maxDurationMs) {
+      console.log("Error 400: Exceeds package limit", { bookingDurationMs, maxDurationMs, label: stayAllowance.label });
       return res.status(400).json({
         message: `This booking exceeds your package limit of ${stayAllowance.label}.`,
       });
@@ -469,7 +471,7 @@ router.post(
       place,
       checkIn,
       checkOut,
-      status: "booking",
+      status: "pending",
       requestedAt: new Date(),
       adults,
       kids,

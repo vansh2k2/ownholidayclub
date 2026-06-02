@@ -87,10 +87,10 @@ export default function Profilepage() {
   const holidaySlots          = getHolidayAccessSlots(profile, holidayBookingHistory);
   const totalHolidayQuota     = getHolidayQuota(profile.membership);
   const requestedHolidayQuota = holidayBookingHistory.filter(
-    (b) => String(b?.status || "").toLowerCase() === "booking",
+    (b) => String(b?.status || "").toLowerCase() === "pending",
   ).length;
   const usedHolidayQuota      = holidayBookingHistory.filter(
-    (b) => String(b?.status || "").toLowerCase() === "booked",
+    (b) => String(b?.status || "").toLowerCase() === "approved",
   ).length;
   const consumedHolidayQuota  = requestedHolidayQuota + usedHolidayQuota;
   const remainingHolidayQuota = Math.max(totalHolidayQuota - consumedHolidayQuota, 0);
@@ -209,6 +209,12 @@ export default function Profilepage() {
     if (!Number.isInteger(adults) || adults <= 0 || !Number.isInteger(kids) || kids < 0) {
       setFeedback({ type: "error", message: "Please provide valid adults and kids counts." }); return;
     }
+    const checkInDate = new Date(holidayForm.checkIn);
+    const checkOutDate = new Date(holidayForm.checkOut);
+    const bookingDurationMs = checkOutDate.getTime() - checkInDate.getTime();
+    if (bookingDurationMs > nextStayAllowance.days * 86400000) {
+      setFeedback({ type: "error", message: `This booking exceeds your package limit of ${nextStayAllowance.label}.` }); return;
+    }
     setIsBookingHoliday(true);
     setFeedback({ type: "", message: "" });
     try {
@@ -276,7 +282,7 @@ export default function Profilepage() {
       ` }} />
 
       <div
-        className="min-h-screen bg-white px-4 pb-16 pt-24 md:px-8 lg:px-12"
+        className="min-h-screen bg-white px-4 pb-16 pt-12 md:px-8 lg:px-12"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         <FeedbackToast feedback={feedback} />

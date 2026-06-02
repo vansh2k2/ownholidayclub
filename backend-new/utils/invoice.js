@@ -227,16 +227,34 @@ const buildInvoiceDurationLabel = (membership = {}, payment = {}) => {
   return "5 years";
 };
 
+const getEntitlementText = (membership = {}, payment = {}) => {
+  const { tierId, tierName } = getInvoiceTierIdentity(membership, payment);
+  
+  if (tierId === "ohc-privilege" || tierName.includes("privilege")) {
+    return "3 Nights / 4 Days for 3 Years and 4 Nights / 5 Days for 2 Years";
+  }
+  if (tierId === "ohc-memorable" || tierName.includes("memorable")) {
+    return "6 Nights / 7 Days for 10 Years and Special Offer 2 Years Extra";
+  }
+  if (tierId === "ohc-golden" || tierName.includes("golden")) {
+    return "6 Nights / 7 Days for 20 Years and Special Offer 3 Years Extra";
+  }
+  if (tierId === "ohc-diamond" || tierName.includes("diamond")) {
+    return "6 Nights / 7 Days for 30 Years and Special Offer 5 Years Extra";
+  }
+  
+  return String(membership?.nightsPerYear || "").trim() || "N/A";
+};
+
 const buildDynamicTerms = ({ membership, payment }) => {
   const durationLabel = buildInvoiceDurationLabel(membership, payment);
-  const purchaseDate = formatDate(membership?.purchasedAt || payment?.paidAt) || "N/A";
-  const annualQuota = String(membership?.nightsPerYear || "").trim() || "N/A";
+  const entitlementText = getEntitlementText(membership, payment);
 
   return [
     `1. This membership is valid for next ${durationLabel}.`,
-    `2. This membership will start from ${purchaseDate}.`,
+    `2. This membership will start from next financial year.`,
     `3. Each financial year member will get one vacation (accommodation only), next ${durationLabel}.`,
-    `4. Member is entitled for ${annualQuota}.`,
+    `4. Member is entitled for ${entitlementText}.`,
     "5. Member have to send the request for booking Minimum 15 days before of Vacation.",
     "6. Member have to pay the utilities charges at the time of booking.",
     "7. Member have to send the booking request by mail on booking@ownholidayclub.com.",

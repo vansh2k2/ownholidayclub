@@ -14,7 +14,7 @@ import { API_BASE_URL } from "./profileData";
 export function FeedbackToast({ feedback }) {
   if (!feedback?.message) return null;
   return (
-    <div className="fixed right-6 top-24 z-50 w-full max-w-sm">
+    <div className="fixed right-6 top-24 z-[100] w-full max-w-sm">
       <div
         className={`border-l-4 px-5 py-4 text-sm font-medium shadow-xl ${
           feedback.type === "error"
@@ -174,10 +174,10 @@ export function ProfileInput({
   max = "",
 }) {
   return (
-    <label className="block w-full border border-[#E8E4DC] bg-[#f8fafc] px-5 py-4">
+    <label className="block w-full">
       <div
-        className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9A84C]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="mb-1.5 text-xs font-medium text-[#4B5563]"
+        style={{ fontFamily: "'Inter', sans-serif" }}
       >
         {label}
       </div>
@@ -188,8 +188,8 @@ export function ProfileInput({
         placeholder={placeholder}
         min={min || undefined}
         max={max || undefined}
-        className="mt-2 w-full border-none bg-transparent p-0 text-sm font-semibold text-[#0A1628] outline-none placeholder:text-[#9CA3AF]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="w-full rounded-lg border border-[#E8E4DC] bg-white px-4 py-2.5 text-sm text-[#0A1628] outline-none transition-all focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] placeholder:text-[#9CA3AF]"
+        style={{ fontFamily: "'Inter', sans-serif" }}
       />
     </label>
   );

@@ -25,6 +25,9 @@ import {
 const HOLIDAY_STATUS_STYLES = {
   used:      "border-emerald-600 bg-emerald-50 text-emerald-700",
   booking:   "border-amber-500 bg-amber-50 text-amber-700",
+  pending:   "border-amber-500 bg-amber-50 text-amber-700",
+  approved:  "border-emerald-600 bg-emerald-50 text-emerald-700",
+  rejected:  "border-rose-500 bg-rose-50 text-rose-700",
   expired:   "border-rose-500 bg-rose-50 text-rose-700",
   available: "border-sky-500 bg-sky-50 text-sky-700",
   inactive:  "border-[#E8E4DC] bg-[#f8fafc] text-[#9CA3AF]",
@@ -36,12 +39,15 @@ const HOLIDAY_STATUS_CLASS =
 const getHolidaySlotState = (slot, hasActiveMembership) => {
   const bookingStatus = String(slot?.booking?.status || "").trim().toLowerCase();
   const now = new Date();
-  if (bookingStatus === "booked") return { key: "used", label: "Used", canBook: false };
-  if (slot?.booking) return { key: "booking", label: "Booking", canBook: false };
+  
+  if (bookingStatus === "booked" || bookingStatus === "approved") return { key: "approved", label: "Approved", canBook: false };
+  if (bookingStatus === "rejected") return { key: "rejected", label: "Rejected", canBook: true };
+  if (bookingStatus === "booking" || bookingStatus === "pending") return { key: "pending", label: "Pending", canBook: false };
   if (!hasActiveMembership) return { key: "inactive", label: "Inactive", canBook: false };
   if (now >= slot.validTo) return { key: "expired", label: "Expired", canBook: false };
-  if (now >= slot.validFrom) return { key: "booking", label: "Book", canBook: true };
-  return { key: "available", label: "Available", canBook: false };
+  
+  // All valid unbooked slots are available to book
+  return { key: "available", label: "Available", canBook: true };
 };
 
 // ─── Section heading helper ────────────────────────────────────────────────────
@@ -206,7 +212,7 @@ export function HolidayTab({
             <HolidayQuotaCard label="Remaining"             value={String(remainingHolidayQuota)} />
           </div>
 
-          <div className="border border-[#E8E4DC] bg-[#f8fafc] p-6">
+          <div className="w-full">
             {!hasActiveMembership ? (
               <div
                 className="border border-dashed border-[#E8E4DC] bg-white px-6 py-8 text-sm text-[#9CA3AF]"
@@ -267,12 +273,13 @@ export function HolidayTab({
                           <td className="px-5 py-4" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                             {booking ? (
                               <div className="space-y-1">
-                                <div className="font-bold text-[#0A1628]">{booking.place || "N/A"}</div>
-                                <div className="text-xs text-[#6B7280]">
-                                  {formatHolidayDateTime(booking.checkIn)} → {formatHolidayDateTime(booking.checkOut)}
+                                <div className="font-bold text-blue-900">{booking.place || "N/A"}</div>
+                                <div className="text-[11px] font-medium text-slate-600 flex flex-col">
+                                  <span>{formatHolidayDateTime(booking.checkIn)}</span>
+                                  <span>{formatHolidayDateTime(booking.checkOut)}</span>
                                 </div>
-                                <div className="text-xs text-[#6B7280]">{guestSummary}</div>
-                                <div className="text-xs text-[#9CA3AF]">
+                                <div className="text-[11px] font-medium text-slate-600">{guestSummary}</div>
+                                <div className="text-[10px] font-semibold text-blue-600 mt-1 whitespace-nowrap">
                                   Requested {formatHolidayDateTime(booking.requestedAt)}
                                 </div>
                               </div>
@@ -291,12 +298,20 @@ export function HolidayTab({
                                 Book Now
                               </button>
                             ) : (
-                              <span
-                                className={`${HOLIDAY_STATUS_CLASS} ${HOLIDAY_STATUS_STYLES[slotState.key] || HOLIDAY_STATUS_STYLES.inactive}`}
-                                style={{ fontFamily: "'DM Sans', sans-serif" }}
-                              >
-                                {slotState.label}
-                              </span>
+                              <div className="flex flex-col gap-1.5 items-start">
+                                <span
+                                  className={`${HOLIDAY_STATUS_CLASS} ${HOLIDAY_STATUS_STYLES[slotState.key] || HOLIDAY_STATUS_STYLES.inactive}`}
+                                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                                >
+                                  {slotState.label}
+                                </span>
+                                {booking?.adminMessage && (
+                                  <div className="text-[10px] bg-slate-100 border border-slate-200 p-2 rounded text-red-600 font-medium leading-tight max-w-[140px] mt-1">
+                                    <span className="font-bold text-black">Admin Note:</span><br/>
+                                    "{booking.adminMessage}"
+                                  </div>
+                                )}
+                              </div>
                             )}
                           </td>
                         </tr>
@@ -321,44 +336,46 @@ export function HolidayTab({
 
       {/* Modal */}
       {isHolidayModalOpen && selectedHolidaySlot ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-[#0A1628]/70 px-4 py-8 backdrop-blur-sm">
-          <div className="w-full max-w-3xl bg-white shadow-[0_32px_80px_rgba(10,22,40,0.35)]">
-            {/* Modal header bar */}
-            <div className="h-[3px] bg-gradient-to-r from-[#C9A84C] via-[#F0D080] to-[#C9A84C]" />
-
-            <div className="px-8 py-7">
-              <div className="flex flex-col gap-3 border-b border-[#E8E4DC] pb-6 sm:flex-row sm:items-start sm:justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0A1628]/80 px-4 py-8 backdrop-blur-md transition-opacity">
+          <div className="w-full max-w-xl rounded-2xl bg-white shadow-[0_32px_80px_rgba(10,22,40,0.35)] overflow-hidden animate-scale-in">
+            {/* Elegant Header */}
+            <div className="bg-[#0A1628] px-6 py-5 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#C9A84C] via-[#F0D080] to-[#C9A84C]" />
+              <div className="flex items-start justify-between relative z-10">
                 <div>
                   <div
-                    className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C9A84C]"
-                    style={{ fontFamily: "'DM Sans', sans-serif" }}
+                    className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9A84C]"
+                    style={{ fontFamily: "'Inter', sans-serif" }}
                   >
                     Holiday Access #{selectedHolidaySlot.slotNumber}
                   </div>
                   <h3
-                    className="mt-2 text-2xl font-bold text-[#0A1628]"
+                    className="mt-1 text-xl font-medium text-white"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
                     Request Your Holiday
                   </h3>
-                  <p
-                    className="mt-1 text-sm text-[#6B7280]"
-                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                  >
-                    Valid {formatHolidayDate(selectedHolidaySlot.validFrom)} — {formatHolidayDate(selectedHolidaySlot.validTo)}
-                  </p>
                 </div>
                 <button
                   type="button"
                   onClick={onCloseHolidayModal}
-                  className="border border-[#E8E4DC] px-4 py-2 text-xs font-bold uppercase tracking-widest text-[#6B7280] transition hover:border-[#0A1628] hover:text-[#0A1628]"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  className="text-white/70 hover:text-white transition-colors"
+                  title="Close"
                 >
-                  Close
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
               </div>
+            </div>
 
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <div className="px-6 py-6">
+              <p
+                className="mb-5 text-sm text-[#6B7280]"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                Valid: {formatHolidayDate(selectedHolidaySlot.validFrom)} — {formatHolidayDate(selectedHolidaySlot.validTo)}
+              </p>
+
+              <div className="grid gap-5 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <ProfileInput
                     label="Destination / Place"
@@ -368,7 +385,7 @@ export function HolidayTab({
                   />
                 </div>
                 <ProfileInput
-                  label="Check-In Date & Time"
+                  label="Check-In Date"
                   type="datetime-local"
                   value={holidayForm.checkIn}
                   onChange={(v) => onHolidayFieldChange("checkIn", v)}
@@ -376,7 +393,7 @@ export function HolidayTab({
                   max={holidayForm.slotValidTo || ""}
                 />
                 <ProfileInput
-                  label="Check-Out Date & Time"
+                  label="Check-Out Date"
                   type="datetime-local"
                   value={holidayForm.checkOut}
                   onChange={(v) => onHolidayFieldChange("checkOut", v)}
@@ -384,14 +401,14 @@ export function HolidayTab({
                   max={maxCheckOutValue || holidayForm.slotValidTo || ""}
                 />
                 <ProfileInput
-                  label="No. of Adults"
+                  label="Adults"
                   type="number"
                   value={holidayForm.adults}
                   onChange={(v) => onHolidayFieldChange("adults", v)}
                   min="1"
                 />
                 <ProfileInput
-                  label="No. of Kids"
+                  label="Kids"
                   type="number"
                   value={holidayForm.kids}
                   onChange={(v) => onHolidayFieldChange("kids", v)}
@@ -399,12 +416,12 @@ export function HolidayTab({
                 />
               </div>
 
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={onCloseHolidayModal}
-                  className="border border-[#E8E4DC] px-7 py-3 text-xs font-bold uppercase tracking-widest text-[#6B7280] transition hover:border-[#0A1628] hover:text-[#0A1628]"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  className="rounded-lg border border-[#E8E4DC] px-6 py-2.5 text-sm font-medium text-[#4B5563] transition hover:bg-gray-50 hover:text-[#0A1628]"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
                 >
                   Cancel
                 </button>
@@ -412,8 +429,8 @@ export function HolidayTab({
                   type="button"
                   onClick={onBookHoliday}
                   disabled={isBookingHoliday}
-                  className="bg-[#0A1628] px-7 py-3 text-xs font-bold uppercase tracking-widest text-[#C9A84C] transition hover:bg-[#C9A84C] hover:text-[#0A1628] disabled:cursor-not-allowed disabled:opacity-50"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  className="rounded-lg bg-[#0A1628] px-6 py-2.5 text-sm font-medium text-[#C9A84C] transition hover:bg-[#112240] hover:text-[#F0D080] disabled:cursor-not-allowed disabled:opacity-50"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
                 >
                   {isBookingHoliday ? "Submitting..." : "Submit Booking"}
                 </button>

@@ -33,6 +33,7 @@ import AddSeo from "../pages/AddSeo";
 import SeoList from "../pages/SeoList";
 import SocialMedia from "../pages/SocialMedia";
 import ActivityLogs from "../pages/ActivityLogs";
+import HolidayBookings from "../pages/HolidayBookings";
 
 /* Protected */
 import ProtectedRoute from "./ProtectedRoute";
@@ -61,6 +62,7 @@ export default function AppRoutes() {
           <Route path="add-membership" element={<ManageMembership />} />
           <Route path="membership-list" element={<ManageMembership />} />
           <Route path="members-list" element={<ManageMembers />} />
+          <Route path="holiday-bookings" element={<HolidayBookings />} />
           <Route path="member-profile/:id" element={<MemberProfile />} />
           <Route path="change-password" element={<ChangePassword />} />
           <Route path="explore-services" element={<ExploreServices />} />

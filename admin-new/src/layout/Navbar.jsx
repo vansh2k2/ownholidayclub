@@ -220,7 +220,7 @@ export default function Navbar({
           >
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-[#C8102E] flex-shrink-0 shadow-md bg-white">
               <DotLottieReact
-                src="https://lottie.host/830f8dda-b63b-4b0d-91fc-5e3262f6d66b/WqGQlSwc2d.lottie"
+                src="https://lottie.host/a7b85873-a46c-41aa-975d-56dd4d4c0015/DibmXAuxEK.lottie"
                 loop
                 autoplay
                 style={{ width: "100%", height: "100%", transform: "scale(1.4)" }}

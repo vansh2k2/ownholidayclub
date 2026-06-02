@@ -464,7 +464,7 @@ export default function GlobalHolidayLeadWidget() {
             >
               <div className="flex flex-col md:flex-row min-h-[500px]">
                 {/* Left Side - Visual Branding */}
-                <div className="md:w-5/12 relative flex flex-col justify-between overflow-hidden text-white p-8 bg-slate-950">
+                <div className="hidden md:flex md:w-5/12 relative flex-col justify-between overflow-hidden text-white p-8 bg-slate-950">
                   <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-[10s] hover:scale-110 opacity-70"
                     style={{ 
@@ -501,7 +501,7 @@ export default function GlobalHolidayLeadWidget() {
                 </div>
 
                 {/* Right Side - Form wizard */}
-                <div className="md:w-7/12 p-8 md:p-10 bg-white relative flex flex-col justify-between max-h-[90vh] overflow-y-auto modal-right-roboto">
+                <div className="w-full md:w-7/12 p-6 md:p-10 bg-white relative flex flex-col justify-between max-h-[90vh] md:max-h-none overflow-y-auto modal-right-roboto">
                   <button
                     type="button"
                     onClick={closeLeadModal}

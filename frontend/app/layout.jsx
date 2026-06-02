@@ -1,6 +1,7 @@
 
 import "./globals.css";
 import AppShell from "@/components/AppShell";
+import SmoothScroll from "@/components/SmoothScroll";
 import { siteUrl } from "@/lib/site-config";
 import {
   DEFAULT_OG_IMAGE,
@@ -64,7 +65,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
-        <AppShell>{children}</AppShell>
+        <SmoothScroll>
+          <AppShell>{children}</AppShell>
+        </SmoothScroll>
       </body>
     </html>
   );

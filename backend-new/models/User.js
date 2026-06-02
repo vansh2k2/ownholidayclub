@@ -260,8 +260,8 @@ const holidayBookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: "booking",
-      enum: ["booking", "booked"],
+      default: "pending",
+      enum: ["booking", "booked", "pending", "approved", "rejected"],
       lowercase: true,
       trim: true,
     },
@@ -282,6 +282,11 @@ const holidayBookingSchema = new mongoose.Schema(
       type: Number,
       default: 0,
       min: 0,
+    },
+    adminMessage: {
+      type: String,
+      default: "",
+      trim: true,
     },
   },
   { _id: true },
