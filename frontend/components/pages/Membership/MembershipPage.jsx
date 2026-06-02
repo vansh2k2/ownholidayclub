@@ -36,6 +36,7 @@ const membershipFaqs = [
     a: "Transparency is our core value. All nominal maintenance fees are clearly outlined in your membership tier upon signing and remain locked for 3 years at a time.",
   },
 ];
+import SignatureThought from "./SignatureThought";
 
 export default function Membership() {
   const router = useRouter();
@@ -73,11 +74,12 @@ export default function Membership() {
   return (
     <div className="bg-[#FDFDFD] min-h-screen font-sans text-slate-900 selection:bg-amber-100 selection:text-amber-900 overflow-hidden luxury-membership-container">
       <Hero onImageError={handleImageError} onScrollToTiers={scrollToTiers} />
-      <Benefits onImageError={handleImageError} />
+      <SignatureThought />
       <Tiers
         membershipTiers={membershipTiers}
         onPurchaseTier={handlePurchaseTier}
       />
+      <Benefits onImageError={handleImageError} />
       {/* <Comparison comparisonFeatures={comparisonFeatures} /> */}
 
       <Faq

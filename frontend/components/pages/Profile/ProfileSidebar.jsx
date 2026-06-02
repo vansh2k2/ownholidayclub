@@ -12,7 +12,7 @@ const navigationItems = [
 
 export default function ProfileSidebar({ profile, activeTab, onTabChange, onSignOut }) {
   return (
-    <div className="space-y-5 lg:col-span-3">
+    <div className="min-w-0 space-y-5 lg:col-span-3">
       {/* Member Card */}
       <div className="bg-[#0A1628] text-white relative overflow-hidden">
         {/* Decorative gold lines */}
@@ -60,40 +60,42 @@ export default function ProfileSidebar({ profile, activeTab, onTabChange, onSign
 
       {/* Navigation */}
       <nav className="bg-white border border-[#E8E4DC]">
-        <div className="px-4 py-2">
-          {navigationItems.map(({ id, label, icon: Icon }) => (
+        <div className="flex lg:flex-col overflow-x-auto hide-scrollbar divide-x lg:divide-x-0 lg:divide-y divide-[#E8E4DC]">
+          <div className="flex lg:flex-col min-w-max lg:min-w-0 p-2 lg:p-4 gap-2 lg:gap-0">
+            {navigationItems.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => onTabChange(id)}
+                className={`group flex items-center gap-2 lg:gap-3 px-4 py-2.5 lg:py-3.5 text-xs lg:text-sm font-semibold transition-all rounded-full lg:rounded-none whitespace-nowrap ${
+                  activeTab === id
+                    ? "bg-[#0A1628] text-white"
+                    : "bg-[#F7F5F0] text-[#0A1628] hover:bg-gray-100"
+                }`}
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                <Icon
+                  size={16}
+                  className={activeTab === id ? "text-[#C9A84C]" : "text-[#C9A84C]"}
+                />
+                {label}
+                {activeTab === id && (
+                  <span className="hidden lg:block ml-auto w-1.5 h-1.5 bg-[#C9A84C]" />
+                )}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center p-2 lg:p-4 lg:border-t border-[#E8E4DC]">
             <button
-              key={id}
               type="button"
-              onClick={() => onTabChange(id)}
-              className={`group flex w-full items-center gap-3 px-4 py-3.5 text-sm font-semibold transition-all ${
-                activeTab === id
-                  ? "bg-[#0A1628] text-white"
-                  : "bg-[#F7F5F0] text-[#0A1628]"
-              }`}
+              onClick={onSignOut}
+              className="flex items-center gap-2 lg:gap-3 px-4 py-2.5 lg:py-3 text-xs lg:text-sm font-semibold text-[#DC2626] bg-red-50 hover:bg-red-100 transition-colors rounded-full lg:rounded-none whitespace-nowrap"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              <Icon
-                size={16}
-                className={activeTab === id ? "text-[#C9A84C]" : "text-[#C9A84C]"}
-              />
-              {label}
-              {activeTab === id && (
-                <span className="ml-auto w-1.5 h-1.5 bg-[#C9A84C]" />
-              )}
+              <LogOut size={16} />
+              Sign Out
             </button>
-          ))}
-        </div>
-        <div className="border-t border-[#E8E4DC] px-4 py-3">
-          <button
-            type="button"
-            onClick={onSignOut}
-            className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold text-[#DC2626] bg-red-50 transition-colors"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            <LogOut size={16} />
-            Sign Out
-          </button>
+          </div>
         </div>
       </nav>
 

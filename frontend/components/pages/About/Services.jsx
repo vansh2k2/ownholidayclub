@@ -30,8 +30,7 @@ export default function Services() {
               </span>
             </h2>
             <p className="text-slate-500 text-xl max-w-2xl mx-auto font-sans">
-              Extending our wings since 2012, we curate an array of premium
-              services catering to your travel and celebration needs.
+              Extending our wings since 2012, we have created an array of services to cater to your needs.
             </p>
           </ScrollAnimate>
         </div>
@@ -52,11 +51,11 @@ export default function Services() {
 
                 <div className="grid sm:grid-cols-2 gap-y-6 gap-x-12 font-sans">
                   {[
-                    "Exclusive Vacation Memberships",
-                    "Domestic Holidays across India",
-                    "International Holiday Packages",
-                    "Hotels, Resorts & Club Promotions",
-                    "Luxury Outings & Retreats",
+                    "Membership",
+                    "Domestic Holidays",
+                    "International Holidays",
+                    "Hotels, Resorts, Club Promotions",
+                    "Outings",
                   ].map((service, i) => (
                     <div
                       key={i}
@@ -116,7 +115,7 @@ export default function Services() {
                       "Wedding Planning",
                       "Corporate Events",
                       "Destination Weddings",
-                      "Private Parties",
+                      "Parties",
                     ].map((tag, i) => (
                       <span
                         key={i}

@@ -94,16 +94,18 @@ export default function Origin() {
                 ))}
               </div>
 
-              <div className="space-y-3 mb-7" style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", lineHeight: 1.8, color: "#64748b" }}>
+              <div className="space-y-4 mb-7" style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", lineHeight: 1.8, color: "#64748b" }}>
                 <p>
-                  Started in 2012 as{" "}
-                  <strong style={{ color: "#1e293b", fontWeight: 600 }}>Rigel Hospitality Services Pvt Ltd</strong>,
-                  Own Holiday Club is a fast-growing name in India's hospitality sector — promoting Hotels,
-                  Clubs, and Resorts with 20 years of collective expertise.
+                  A world of your <strong style={{ color: "#1e293b", fontWeight: 600 }}>OWN</strong> experiences. A taste of authenticity. A touch of comfort that feels oh! So familiar. Welcome to <strong style={{ color: "#1e293b", fontWeight: 600 }}>OWN HOLIDAY CLUB</strong> your home away from home.
                 </p>
                 <p>
-                  We specialise in crafting bespoke vacation experiences, customising events and holidays
-                  to fit your exact taste. Painting India as never envisioned before.
+                  <strong style={{ color: "#1e293b", fontWeight: 600 }}>Own Holiday Club</strong> is a fast growing and well known company in hospitality sector in India. We have 20 year of experience in promoting Hotels, Clubs, Resorts all over India.
+                </p>
+                <p>
+                  <strong style={{ color: "#1e293b", fontWeight: 600 }}>Own Holiday Club</strong> started in 2012, originally known as <strong style={{ color: "#1e293b", fontWeight: 600 }}>Rigel Hospitality Services Pvt Ltd.</strong> Specialized in creating Vacation experiences, we customize events and holidays to fit your needs and taste.
+                </p>
+                <p>
+                  With 20 years of experience, <strong style={{ color: "#1e293b", fontWeight: 600 }}>Own Holiday Club</strong> is a proven name in the holidays and Vacation industry today. While painting India as never envisioned, we were able to create our mark as a Vacation and event management expert with over 10,000 privilege members. We strive to provide only the best of imagination for our guests from all over the world. We are known for providing an excellent standard of customer service with highly experienced and a professional team of staff.
                 </p>
               </div>
 

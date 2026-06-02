@@ -94,7 +94,7 @@ export default function Profilepage() {
   ).length;
   const consumedHolidayQuota  = requestedHolidayQuota + usedHolidayQuota;
   const remainingHolidayQuota = Math.max(totalHolidayQuota - consumedHolidayQuota, 0);
-  const nextStayAllowance     = getStayAllowance(profile.membership, consumedHolidayQuota);
+  const nextStayAllowance     = getStayAllowance(profile.membership, consumedHolidayQuota + 1);
   const maxCheckOutValue = (() => {
     if (!holidayForm.checkIn) return holidayForm.slotValidTo || "";
     const checkInDate = new Date(holidayForm.checkIn);
@@ -317,7 +317,7 @@ export default function Profilepage() {
               onTabChange={setActiveTab}
               onSignOut={signOut}
             />
-            <div className="lg:col-span-9">{renderActiveTab()}</div>
+            <div className="min-w-0 lg:col-span-9">{renderActiveTab()}</div>
           </div>
         </div>
       </div>

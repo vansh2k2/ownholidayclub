@@ -20,6 +20,7 @@ import {
   formatPaymentAmount,
   formatPaymentDate,
   getPaymentDurationLabel,
+  getStayAllowance,
 } from "./profileData";
 
 const HOLIDAY_STATUS_STYLES = {
@@ -199,8 +200,6 @@ export function HolidayTab({
   nextStayAllowance, maxCheckOutValue, hasActiveMembership, selectedHolidaySlot,
   onHolidayFieldChange, onBookHoliday, onOpenHolidayModal, onCloseHolidayModal,
 }) {
-  const lengthOfHolidayLabel = profile.membership?.nightsPerYear || nextStayAllowance.label;
-
   return (
     <div className="space-y-6">
       <Card title="Member Holidays">
@@ -239,7 +238,7 @@ export function HolidayTab({
                       {["Holiday No.", "Length Of Stay", "Valid From", "Valid To", "Booking Details", "Status"].map((h) => (
                         <th
                           key={h}
-                          className="px-5 py-3.5 text-left text-[9px] font-bold uppercase tracking-widest text-white"
+                          className="px-3 py-3 md:px-5 md:py-3.5 text-left text-[9px] font-bold uppercase tracking-widest text-white whitespace-nowrap"
                           style={{ fontFamily: "'DM Sans', sans-serif" }}
                         >
                           {h}
@@ -256,21 +255,21 @@ export function HolidayTab({
                       return (
                         <tr key={slot.slotNumber} className="hover:bg-[#f8fafc] transition-colors">
                           <td
-                            className="px-5 py-4 font-bold text-[#0A1628]"
+                            className="px-3 py-3 md:px-5 md:py-4 font-bold text-[#0A1628]"
                             style={{ fontFamily: "'Playfair Display', serif" }}
                           >
                             #{slot.slotNumber}
                           </td>
-                          <td className="px-5 py-4 text-[#4B5563]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                            {lengthOfHolidayLabel}
+                          <td className="whitespace-nowrap px-3 py-3 md:px-5 md:py-4 text-[#4B5563]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                            {getStayAllowance(profile.membership, slot.slotNumber).label}
                           </td>
-                          <td className="px-5 py-4 text-[#4B5563]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                          <td className="whitespace-nowrap px-3 py-3 md:px-5 md:py-4 text-[#4B5563]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                             {formatHolidayDate(slot.validFrom)}
                           </td>
-                          <td className="px-5 py-4 text-[#4B5563]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                          <td className="whitespace-nowrap px-3 py-3 md:px-5 md:py-4 text-[#4B5563]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                             {formatHolidayDate(slot.validTo)}
                           </td>
-                          <td className="px-5 py-4" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                          <td className="px-3 py-3 md:px-5 md:py-4" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                             {booking ? (
                               <div className="space-y-1">
                                 <div className="font-bold text-blue-900">{booking.place || "N/A"}</div>
@@ -287,7 +286,7 @@ export function HolidayTab({
                               <span className="text-[#9CA3AF] text-xs">No booking yet</span>
                             )}
                           </td>
-                          <td className="px-5 py-4">
+                          <td className="px-3 py-3 md:px-5 md:py-4">
                             {slotState.canBook ? (
                               <button
                                 type="button"
@@ -408,7 +407,7 @@ export function HolidayTab({
                   min="1"
                 />
                 <ProfileInput
-                  label="Kids"
+                  label="Kids (Below 10 Years)"
                   type="number"
                   value={holidayForm.kids}
                   onChange={(v) => onHolidayFieldChange("kids", v)}

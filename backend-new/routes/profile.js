@@ -64,23 +64,45 @@ const parseStayAllowance = (value) => {
   };
 };
 
-const getStayAllowance = (membership = {}, bookingCount = 0) => {
+const getStayAllowance = (membership = {}, slotNumber = 1) => {
+  if (Array.isArray(membership.features) && membership.features.length >= 1) {
+    const parseFeature = (f) => {
+      const match = String(f).match(/(\d+)\s*Nights?\s*\/\s*(\d+)\s*Days?(?:\s*for\s*(\d+)\s*Years?)?/i);
+      if (!match) return null;
+      return {
+        nights: Number(match[1]),
+        days: Number(match[2]),
+        years: Number(match[3]) || 1,
+        label: `${Number(match[1])} Nights / ${Number(match[2])} Days`
+      };
+    };
+
+    const p1 = parseFeature(membership.features[0]);
+    const p2 = parseFeature(membership.features[1]);
+
+    if (p1) {
+      if (slotNumber <= p1.years) return p1;
+      if (p2 && slotNumber <= (p1.years + p2.years)) return p2;
+      return p2 || p1;
+    }
+  }
+
   const tierId = String(membership?.tierId || "").trim().toLowerCase();
   const tierName = String(membership?.name || "").trim().toLowerCase();
 
   if (tierId === "ohc-privilege" || tierName.includes("privilege")) {
-    if (bookingCount < 2) {
+    if (slotNumber <= 3) {
       return {
-        nights: 4,
-        days: 5,
-        label: "4 Nights / 5 Days",
+        nights: 3,
+        days: 4,
+        label: "3 Nights / 4 Days",
       };
     }
 
     return {
-      nights: 3,
-      days: 4,
-      label: "3 Nights / 4 Days",
+      nights: 4,
+      days: 5,
+      label: "4 Nights / 5 Days",
     };
   }
 
@@ -296,7 +318,7 @@ router.get(
       message: "Profile fetched successfully.",
       user: {
         ...user.toObject(),
-        membership: (() => {
+        membership: await (async () => {
           const currentMembership = user.membership?.toObject
             ? user.membership.toObject()
             : (user.membership || {});
@@ -308,6 +330,16 @@ router.get(
               ...enrichedMembership,
             };
             user.save().catch(() => {});
+          }
+
+          try {
+            const CmsEntry = require("../models/CmsEntry");
+            const entry = await CmsEntry.findOne({ collection: "membership", key: "tiers" });
+            const tiers = entry?.data || [];
+            const matchingTier = tiers.find(t => t.id === enrichedMembership.tierId || String(t.name).toLowerCase() === String(enrichedMembership.name).toLowerCase());
+            enrichedMembership.features = matchingTier?.features || [];
+          } catch (error) {
+            enrichedMembership.features = [];
           }
 
           return enrichedMembership;
@@ -454,7 +486,7 @@ router.post(
 
     const stayAllowance = getStayAllowance(
       enrichedMembership,
-      existingHolidayBookings.length,
+      slotNumber,
     );
     const bookingDurationMs = checkOut.getTime() - checkIn.getTime();
     const maxDurationMs = stayAllowance.days * 24 * 60 * 60 * 1000;

@@ -43,7 +43,7 @@ const DEFAULT_PLAN = {
     bonusYears: 0,
     period: "",
     description: "",
-    features: [""],
+    features: ["", ""],
     icon: "star",
     buttonText: "",
     popular: false,
@@ -143,7 +143,7 @@ const ManageMembership = () => {
             ...plan,
             priceType: plan.priceType || 'regular',
             actuallyPrice: plan.actuallyPrice || '',
-            features: plan.features.length > 0 ? plan.features : [""],
+            features: plan.features.length >= 2 ? plan.features : [...plan.features, ...Array(2 - plan.features.length).fill("")],
             invoiceTerms: plan.invoiceTerms?.length === 4 ? plan.invoiceTerms : ["", "", "", ""]
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -350,7 +350,10 @@ const ManageMembership = () => {
                                     {/* Dynamic Features */}
                                     <div className="pt-4 border-t-2 border-gray-50">
                                         <div className="flex items-center justify-between mb-3">
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Key Features</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase">
+                                                Key Features
+                                                <span className="block mt-1 text-[10px] text-red-500 font-normal normal-case">First 2 features determine holiday lengths (e.g. "3 Nights / 4 Days for 3 Years")</span>
+                                            </label>
                                             <button
                                                 type="button"
                                                 onClick={addFeature}
@@ -367,7 +370,12 @@ const ManageMembership = () => {
                                                         value={feature}
                                                         onChange={(e) => updateFeature(idx, e.target.value)}
                                                         className="flex-1 px-3 py-1.5 border-2 border-gray-300 rounded-none focus:border-[#C8102E] outline-none text-sm font-medium bg-white transition-all"
-                                                        placeholder="Feature description..."
+                                                        placeholder={
+                                                            idx === 0 ? "e.g. 3 Nights / 4 Days for 3 Years (Required)" :
+                                                            idx === 1 ? "e.g. 4 Nights / 5 Days for 2 Years (Required)" :
+                                                            "Feature description..."
+                                                        }
+                                                        required={idx === 0 || idx === 1}
                                                     />
                                                     {planForm.features.length > 1 && (
                                                         <button

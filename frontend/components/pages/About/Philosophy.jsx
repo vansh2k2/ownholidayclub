@@ -174,19 +174,19 @@ export default function App() {
                 icon: <Users size={24} />,
                 title: "Our Vision",
                 subtitle: "An Extended Family",
-                desc: "We plan to create not a clientele but an extended family by providing unforgettable experiences with nonmonetary value. We plan and execute flawlessly while keeping in mind your needs.",
+                desc: "We plan to create not a clientele but an extended family by providing unforgettable experiences with nonmonetary value. To ensure the same, we have professionals who plan and execute everything flawlessly while keeping in mind your needs and pocket.",
               },
               {
                 icon: <Target size={24} />,
                 title: "Our Mission",
                 subtitle: "Anecdotes in Your Life",
-                desc: "We aim to create experiences that become anecdotes in your life. Keeping an eye for details and personalization, we strive to provide satiating experiences for each one of you.",
+                desc: "We aim to create experiences that become anecdotes in your life. Keeping an eye for details and personalization, we strive to provide satiating experiences for each one of you, across the globe.",
               },
               {
                 icon: <ShieldCheck size={24} />,
                 title: "Our Promise",
                 subtitle: "Dreams to Reality",
-                desc: "We offer innovative and customized events planned extensively to leave a beautiful imprint on your mind. Whether you have a theme in mind or not, we provide an experience of a lifetime.",
+                desc: "We offer innovative and customized events planned extensively to leave a beautiful imprint on your mind. Focused on creating memorable experiences, we ensure that your dream transforms into reality. Whether you have a destination or theme in mind or not, our experts and selection of picturesque destinations will surely provide you with an experience of a lifetime!",
               },
             ].map((item, idx) => (
               <ScrollAnimate key={idx} animation="fade-up" delay={idx * 200}>

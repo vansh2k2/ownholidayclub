@@ -145,44 +145,6 @@ export default function Benefits() {
           </div>
         </ScrollAnimate>
 
-        {/* ── Signature Quote ── */}
-        {(settings.membershipQuoteTitle || settings.membershipQuoteMain || settings.membershipQuoteDescription) && (
-          <ScrollAnimate animation="fade-up" delay={80}>
-            <div style={{
-              background: "linear-gradient(135deg, #fffbeb 0%, #ffffff 50%, #fff7ed 100%)",
-              border: "1px solid #fde68a",
-              borderRadius: 16,
-              padding: "28px 32px",
-              marginBottom: 32,
-              position: "relative",
-              overflow: "hidden",
-            }}>
-              {/* Decorative bg number */}
-              <div style={{ position: "absolute", right: 24, top: "50%", transform: "translateY(-50%)", fontSize: 120, fontWeight: 900, color: "rgba(245,158,11,0.06)", fontFamily: "'DM Serif Display', serif", lineHeight: 1, userSelect: "none" }}>
-                "
-              </div>
-              {settings.membershipQuoteTitle && (
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.3em", color: "#b45309", textTransform: "uppercase", fontFamily: "'DM Sans', sans-serif", marginBottom: 10 }}>
-                  {settings.membershipQuoteTitle}
-                </div>
-              )}
-              {settings.membershipQuoteMain && (
-                <p style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(16px,2vw,22px)", fontWeight: 400, color: "#1e293b", lineHeight: 1.5, margin: "0 0 14px" }}>
-                  <span style={{ color: "#f59e0b" }}>&ldquo;</span>
-                  {settings.membershipQuoteMain}
-                  <span style={{ color: "#f59e0b" }}>&rdquo;</span>
-                </p>
-              )}
-              {settings.membershipQuoteMain && <div style={{ width: 48, height: 2, background: "linear-gradient(90deg, transparent, #f59e0b, transparent)", marginBottom: 14 }} />}
-              {settings.membershipQuoteDescription && (
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#64748b", lineHeight: 1.7, margin: 0, maxWidth: 560 }}>
-                  {settings.membershipQuoteDescription}
-                </p>
-              )}
-            </div>
-          </ScrollAnimate>
-        )}
-
         {/* ── Two column layout ── */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24 }}
           className="benefits-main-grid">

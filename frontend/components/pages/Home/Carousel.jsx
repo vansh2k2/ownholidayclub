@@ -89,6 +89,13 @@ const styles = `
     margin: 0 auto 32px;
     padding: 0 24px;
     position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .ohc-timeline-wrap::-webkit-scrollbar {
+    display: none;
   }
 
   .ohc-timeline-track {
@@ -96,6 +103,7 @@ const styles = `
     display: flex;
     align-items: center;
     justify-content: space-between;
+    min-width: 600px; /* Prevents squishing on mobile */
   }
 
   .ohc-timeline-bg-line {
@@ -268,6 +276,35 @@ const styles = `
     }
     .ohc-card-body {
       padding: 28px 20px 24px;
+    }
+    .ohc-card-footer {
+      padding: 16px 20px 20px !important;
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start !important;
+    }
+    .ohc-nav-btns {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .ohc-timeline-wrap {
+      padding: 0 10px;
+      overflow-x: visible;
+    }
+    .ohc-timeline-track {
+      min-width: unset;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px 10px;
+    }
+    .ohc-timeline-bg-line,
+    .ohc-timeline-progress-line {
+      display: none;
+    }
+    .ohc-step-circle {
+      width: 36px;
+      height: 36px;
+      font-size: 12px;
     }
   }
 
@@ -478,6 +515,7 @@ const styles = `
     gap: 6px;
     padding: 0;
   }
+
 `;
 
 export default function OwnHolidayClubCarousel() {

@@ -293,13 +293,13 @@ export default function Footer() {
                     href={item.path}
                     style={{
                       fontSize: 13,
-                      color: "#94a3b8",
+                      color: "#ffffff",
                       textDecoration: "none",
                       fontFamily: "'Inter', sans-serif",
                       transition: "color 0.2s",
                     }}
                     onMouseEnter={e => e.target.style.color = "#f59e0b"}
-                    onMouseLeave={e => e.target.style.color = "#94a3b8"}
+                    onMouseLeave={e => e.target.style.color = "#ffffff"}
                   >
                     {item.label}
                   </Link>
@@ -330,13 +330,13 @@ export default function Footer() {
                     href={item.path}
                     style={{
                       fontSize: 13,
-                      color: "#94a3b8",
+                      color: "#ffffff",
                       textDecoration: "none",
                       fontFamily: "'Inter', sans-serif",
                       transition: "color 0.2s",
                     }}
                     onMouseEnter={e => e.target.style.color = "#f59e0b"}
-                    onMouseLeave={e => e.target.style.color = "#94a3b8"}
+                    onMouseLeave={e => e.target.style.color = "#ffffff"}
                   >
                     {item.label}
                   </Link>
