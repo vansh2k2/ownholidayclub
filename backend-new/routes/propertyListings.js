@@ -2,16 +2,8 @@ const express = require("express");
 
 const PropertyListing = require("../models/PropertyListing");
 const asyncHandler = require("../utils/asyncHandler");
-const { uploadDocumentToCloudinary } = require("../utils/cloudinary");
 
 const router = express.Router();
-
-const normalisePhoto = (photo = {}) => ({
-  name: String(photo?.name || "").trim(),
-  type: String(photo?.type || "").trim(),
-  size: Number(photo?.size || 0),
-  dataUrl: String(photo?.dataUrl || "").trim(),
-});
 
 const normaliseListingPayload = (body = {}) => ({
   firstName: String(body.firstName || "").trim(),
@@ -21,14 +13,9 @@ const normaliseListingPayload = (body = {}) => ({
   propertyName: String(body.propertyName || "").trim(),
   propertyType: String(body.propertyType || "").trim(),
   address: String(body.address || "").trim(),
-  city: String(body.city || "").trim(),
-  country: String(body.country || "").trim(),
+  targetDestination: String(body.targetDestination || "").trim(),
+  leadPackage: String(body.leadPackage || "").trim(),
   description: String(body.description || "").trim(),
-  basePrice: Number(body.basePrice || 0),
-  amenities: Array.isArray(body.amenities)
-    ? body.amenities.map((item) => String(item || "").trim()).filter(Boolean)
-    : [],
-  photos: Array.isArray(body.photos) ? body.photos.map(normalisePhoto) : [],
 });
 
 router.post(
@@ -43,33 +30,22 @@ router.post(
       !payload.phone ||
       !payload.propertyName ||
       !payload.propertyType ||
-      !payload.city ||
-      !payload.country
+      !payload.targetDestination ||
+      !payload.leadPackage
     ) {
       return res.status(400).json({
         message:
-          "firstName, lastName, email, phone, propertyName, propertyType, city, and country are required.",
+          "firstName, lastName, email, phone, propertyName, propertyType, targetDestination, and leadPackage are required.",
       });
     }
 
-    const uploadedPhotos = await Promise.all(
-      payload.photos.map((photo, index) =>
-        uploadDocumentToCloudinary({
-          file: photo,
-          folder: "ownholidayclub/property-listings",
-          documentType: `photo-${index + 1}`,
-        }),
-      ),
-    );
-
     const listing = await PropertyListing.create({
       ...payload,
-      photos: uploadedPhotos,
       status: "pending",
     });
 
     return res.status(201).json({
-      message: "Property listing submitted successfully.",
+      message: "Lead Partnership request submitted successfully.",
       listing,
     });
   }),
@@ -81,7 +57,7 @@ router.get(
     const listings = await PropertyListing.find().sort({ createdAt: -1 });
 
     return res.status(200).json({
-      message: "Property listings fetched successfully.",
+      message: "Lead Partnerships fetched successfully.",
       listings,
     });
   }),
@@ -94,15 +70,57 @@ router.get(
 
     if (!listing) {
       return res.status(404).json({
-        message: "Property listing not found.",
+        message: "Lead Partnership not found.",
       });
     }
 
     return res.status(200).json({
-      message: "Property listing fetched successfully.",
+      message: "Lead Partnership fetched successfully.",
       listing,
     });
   }),
+);
+
+// Route to update status for Admin Approval
+router.put(
+  "/:id/status",
+  asyncHandler(async (req, res) => {
+    const { status } = req.body;
+    
+    if (!status || !["pending", "approved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const listing = await PropertyListing.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!listing) {
+      return res.status(404).json({ message: "Lead Partnership not found" });
+    }
+
+    return res.status(200).json({
+      message: "Status updated successfully.",
+      listing,
+    });
+  })
+);
+
+router.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const listing = await PropertyListing.findByIdAndDelete(req.params.id);
+
+    if (!listing) {
+      return res.status(404).json({ message: "Lead Partnership not found" });
+    }
+
+    return res.status(200).json({
+      message: "Lead Partnership deleted successfully.",
+    });
+  })
 );
 
 module.exports = router;

@@ -150,6 +150,12 @@ export const menuItems = [
   },
   {
     type: "item",
+    label: "Lead Partners",
+    icon: Users,
+    path: "/lead-partners",
+  },
+  {
+    type: "item",
     label: "Destination Enquiry",
     icon: MessageSquare,
     path: "/destination-enquiries",

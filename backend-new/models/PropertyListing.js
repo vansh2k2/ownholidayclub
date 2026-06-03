@@ -1,45 +1,5 @@
 const mongoose = require("mongoose");
 
-const listingPhotoSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    type: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    size: {
-      type: Number,
-      default: 0,
-    },
-    url: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    publicId: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    resourceType: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    format: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-  },
-  { _id: false },
-);
-
 const propertyListingSchema = new mongoose.Schema(
   {
     firstName: {
@@ -78,12 +38,12 @@ const propertyListingSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
-    city: {
+    targetDestination: {
       type: String,
       required: true,
       trim: true,
     },
-    country: {
+    leadPackage: {
       type: String,
       required: true,
       trim: true,
@@ -92,18 +52,6 @@ const propertyListingSchema = new mongoose.Schema(
       type: String,
       default: "",
       trim: true,
-    },
-    basePrice: {
-      type: Number,
-      default: 0,
-    },
-    amenities: {
-      type: [String],
-      default: [],
-    },
-    photos: {
-      type: [listingPhotoSchema],
-      default: [],
     },
     status: {
       type: String,

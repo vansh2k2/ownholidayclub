@@ -26,6 +26,7 @@ import FaqManagement from "../pages/FaqManagement";
 import WhyChooseUsManagement from "../pages/WhyChooseUsManagement";
 import ServiceEnquiries from "../pages/ServiceEnquiries";
 import CallbackRequests from "../pages/CallbackRequests";
+import LeadPartners from "../pages/LeadPartners";
 import HeroImages from "../pages/HeroImages";
 import AddBlog from "../pages/AddBlog";
 import BlogsList from "../pages/BlogsList";
@@ -57,6 +58,7 @@ export default function AppRoutes() {
           <Route path="why-choose-us" element={<WhyChooseUsManagement />} />
           <Route path="service-enquiries" element={<ServiceEnquiries />} />
           <Route path="callback-requests" element={<CallbackRequests />} />
+          <Route path="lead-partners" element={<LeadPartners />} />
           <Route path="hero-images" element={<HeroImages />} />
           <Route path="hero-images/:id" element={<HeroImages />} />
           <Route path="add-membership" element={<ManageMembership />} />

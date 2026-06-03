@@ -32,13 +32,10 @@ export default function Overview({ destinationData }) {
                 of Island Luxury
               </h2>
 
-              <div className="space-y-6 text-lg text-slate-600 font-light leading-relaxed">
-                {(destinationData.fullDescription || destinationData.description || "")
-                  .split("\n\n")
-                  .map((para, i) => (
-                    <p key={i} dangerouslySetInnerHTML={{ __html: para }} />
-                  ))}
-              </div>
+              <div 
+                className="text-lg text-slate-600 font-light leading-relaxed rich-text-content text-justify" 
+                dangerouslySetInnerHTML={{ __html: destinationData.fullDescription || destinationData.description || "" }} 
+              />
             </ScrollAnimate>
           </div>
 

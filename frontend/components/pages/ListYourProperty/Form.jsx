@@ -5,11 +5,7 @@ import {
   ArrowRight,
   Award,
   Check,
-  CheckCircle2,
-  Image as ImageIcon,
   Send,
-  UploadCloud,
-  X,
 } from "lucide-react";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
 
@@ -18,11 +14,7 @@ export default function Form({
   formError,
   step,
   formData,
-  amenitiesList,
   onInputChange,
-  onToggleAmenity,
-  onMockFileUpload,
-  onRemovePhoto,
   onNext,
   onPrev,
   onSubmit,
@@ -38,18 +30,16 @@ export default function Form({
         <div className="text-center mb-12">
           <ScrollAnimate animation="fade-up">
             <span className="text-amber-500 font-bold uppercase tracking-[0.4em] text-[10px] font-sans mb-4 block">
-              Comprehensive Onboarding
+              B2B Partner Onboarding
             </span>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 font-serif mb-4">
-              List Your{" "}
+              Get Verified{" "}
               <span className="text-amber-500 italic font-light">
-                Property
+                Leads
               </span>
             </h2>
             <p className="text-slate-500 font-sans max-w-xl mx-auto">
-              Provide comprehensive details about your luxury property. Once
-              submitted, our admin team will review and approve your listing
-              before it goes live.
+              Partner with Own Holiday Club to receive premium, verified guest leads for your destination.
             </p>
           </ScrollAnimate>
         </div>
@@ -61,24 +51,21 @@ export default function Form({
                 <Check size={40} />
               </div>
               <h3 className="text-4xl font-black font-serif text-slate-900 mb-4">
-                Listing Pending Approval
+                Request Pending Approval
               </h3>
               <p className="text-slate-500 font-sans max-w-lg mx-auto mb-8 text-lg leading-relaxed">
-                Your comprehensive property details and photos have been
-                securely uploaded. Our administration team is currently
-                reviewing your application against our 5-star standards.
+                Your partnership request has been received securely. Our team is reviewing your application.
                 <br />
                 <br />
                 <strong className="text-slate-800">
-                  You will be notified via email once your listing is approved
-                  and live on the platform.
+                  We will contact you shortly to finalize your lead package and activate your account.
                 </strong>
               </p>
               <button
                 onClick={onReset}
                 className="px-8 py-4 bg-slate-900 text-white rounded-full font-bold text-xs uppercase tracking-widest hover:bg-amber-500 transition-colors shadow-lg"
               >
-                List Another Property
+                Submit Another Request
               </button>
             </div>
           ) : (
@@ -90,7 +77,7 @@ export default function Form({
 
                 <div className="relative z-10">
                   <h3 className="text-2xl font-serif font-black mb-10">
-                    Listing Setup
+                    Partnership Setup
                   </h3>
 
                   <div className="space-y-8 font-sans">
@@ -102,18 +89,13 @@ export default function Form({
                       },
                       {
                         num: 2,
-                        title: "Property Basics",
-                        desc: "Location & Type",
+                        title: "Partnership Details",
+                        desc: "Location & Property",
                       },
                       {
                         num: 3,
-                        title: "Amenities",
-                        desc: "Features & Services",
-                      },
-                      {
-                        num: 4,
-                        title: "Media & Pricing",
-                        desc: "Photos & Rates",
+                        title: "Lead Package",
+                        desc: "Pricing Selection",
                       },
                     ].map((s) => (
                       <div
@@ -154,10 +136,10 @@ export default function Form({
                   <div className="mt-12 p-6 bg-white/5 rounded-2xl border border-white/10">
                     <div className="flex items-center gap-3 text-amber-400">
                       <Award size={18} />
-                      <p className="text-sm font-bold">Trusted Partner</p>
+                      <p className="text-sm font-bold">Verified Partners</p>
                     </div>
                     <p className="text-xs text-slate-400 mt-3">
-                      Average listing approval time: 48 hours.
+                      High-converting leads delivered directly to you.
                     </p>
                   </div>
                 </div>
@@ -245,17 +227,17 @@ export default function Form({
                     </div>
                   )}
 
-                  {/* STEP 2: Property Basics */}
+                  {/* STEP 2: Partnership Details */}
                   {step === 2 && (
                     <div className="space-y-6">
                       <h4 className="text-2xl font-black font-serif text-slate-900 mb-6">
-                        Property Details
+                        Partnership Details
                       </h4>
 
                       <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2 col-span-2 md:col-span-1 group">
                           <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                            Property Name{" "}
+                            Hotel / Property Name{" "}
                             <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -265,7 +247,7 @@ export default function Form({
                             onChange={onInputChange}
                             type="text"
                             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:bg-white focus:border-amber-500 outline-none transition-all text-slate-900 font-medium"
-                            placeholder="Grand Azure Villa"
+                            placeholder="Grand Azure Resort"
                           />
                         </div>
                         <div className="space-y-2 col-span-2 md:col-span-1 group">
@@ -291,40 +273,25 @@ export default function Form({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2 group">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                            City <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            required
-                            name="city"
-                            value={formData.city}
-                            onChange={onInputChange}
-                            type="text"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:bg-white focus:border-amber-500 outline-none transition-all text-slate-900 font-medium"
-                            placeholder="Ubud"
-                          />
-                        </div>
-                        <div className="space-y-2 group">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                            Country <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            required
-                            name="country"
-                            value={formData.country}
-                            onChange={onInputChange}
-                            type="text"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:bg-white focus:border-amber-500 outline-none transition-all text-slate-900 font-medium"
-                            placeholder="Indonesia"
-                          />
-                        </div>
+                      <div className="space-y-2 group">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                          Target Destination (Where do you need leads for?){" "}
+                          <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          required
+                          name="targetDestination"
+                          value={formData.targetDestination}
+                          onChange={onInputChange}
+                          type="text"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:bg-white focus:border-amber-500 outline-none transition-all text-slate-900 font-medium"
+                          placeholder="e.g. Manali, Goa, Maldives"
+                        />
                       </div>
 
                       <div className="space-y-2 group">
                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                          Full Address
+                          Full Hotel Address
                         </label>
                         <input
                           name="address"
@@ -338,7 +305,7 @@ export default function Form({
 
                       <div className="space-y-2 group">
                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                          Property Description
+                          Additional Notes
                         </label>
                         <textarea
                           name="description"
@@ -346,139 +313,106 @@ export default function Form({
                           onChange={onInputChange}
                           rows="3"
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:bg-white focus:border-amber-500 outline-none transition-all text-slate-900 font-medium resize-none"
-                          placeholder="Describe what makes your property unique..."
+                          placeholder="Any specific types of guests or leads you are looking for?"
                         ></textarea>
                       </div>
                     </div>
                   )}
 
-                  {/* STEP 3: Amenities */}
+                  {/* STEP 3: Lead Package */}
                   {step === 3 && (
                     <div className="space-y-6">
                       <h4 className="text-2xl font-black font-serif text-slate-900 mb-2">
-                        Amenities & Services
+                        Select Lead Package
                       </h4>
                       <p className="text-slate-500 text-sm mb-6">
-                        Select the premium features available at your property.
+                        Choose how you would like to receive your leads. Pricing varies based on destination and exclusivity.
                       </p>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        {amenitiesList.map((amenity) => {
-                          const isSelected = formData.amenities.includes(
-                            amenity.id,
-                          );
-                          return (
-                            <div
-                              key={amenity.id}
-                              onClick={() => onToggleAmenity(amenity.id)}
-                              className={`cursor-pointer border-2 rounded-xl p-4 flex items-center gap-3 transition-all duration-300 ${
-                                isSelected
-                                  ? "border-amber-500 bg-amber-50/30 text-amber-900"
-                                  : "border-slate-100 bg-white text-slate-600 hover:border-slate-300"
-                              }`}
-                            >
-                              <div
-                                className={`${
-                                  isSelected
-                                    ? "text-amber-500"
-                                    : "text-slate-400"
-                                }`}
-                              >
-                                {amenity.icon}
-                              </div>
-                              <span className="font-bold text-sm select-none">
-                                {amenity.label}
+                      <div className="space-y-4">
+                        <label
+                          className={`cursor-pointer border-2 rounded-xl p-6 flex flex-col gap-2 transition-all duration-300 ${
+                            formData.leadPackage === "pay-per-lead"
+                              ? "border-amber-500 bg-amber-50/30"
+                              : "border-slate-100 bg-white hover:border-slate-300"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="radio"
+                                name="leadPackage"
+                                value="pay-per-lead"
+                                checked={formData.leadPackage === "pay-per-lead"}
+                                onChange={onInputChange}
+                                className="w-5 h-5 text-amber-500 focus:ring-amber-500 border-gray-300"
+                              />
+                              <span className="font-bold text-lg text-slate-900">
+                                Pay Per Lead
                               </span>
-                              {isSelected && (
-                                <CheckCircle2
-                                  size={16}
-                                  className="ml-auto text-amber-500"
-                                />
-                              )}
                             </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* STEP 4: Media & Pricing */}
-                  {step === 4 && (
-                    <div className="space-y-6">
-                      <h4 className="text-2xl font-black font-serif text-slate-900 mb-6">
-                        Final Details
-                      </h4>
-
-                      <div className="space-y-2 group mb-8">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                          Average Base Nightly Rate (USD)
-                        </label>
-                        <input
-                          name="basePrice"
-                          value={formData.basePrice}
-                          onChange={onInputChange}
-                          type="number"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:bg-white focus:border-amber-500 outline-none transition-all text-slate-900 font-medium"
-                          placeholder="$500"
-                        />
-                      </div>
-
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                          Property Photos
+                          </div>
+                          <p className="text-sm text-slate-500 pl-8">
+                            Pay only for the leads you receive. Ideal for specific campaigns or flexible occupancy needs.
+                          </p>
                         </label>
 
-                        {/* Mock Drag & Drop Area */}
-                        <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-slate-50 relative hover:bg-slate-100 transition-colors">
-                          <input
-                            type="file"
-                            multiple
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            onChange={onMockFileUpload}
-                            accept="image/*"
-                          />
-                          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-slate-400">
-                            <UploadCloud size={24} />
+                        <label
+                          className={`cursor-pointer border-2 rounded-xl p-6 flex flex-col gap-2 transition-all duration-300 ${
+                            formData.leadPackage === "monthly-subscription"
+                              ? "border-amber-500 bg-amber-50/30"
+                              : "border-slate-100 bg-white hover:border-slate-300"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="radio"
+                                name="leadPackage"
+                                value="monthly-subscription"
+                                checked={formData.leadPackage === "monthly-subscription"}
+                                onChange={onInputChange}
+                                className="w-5 h-5 text-amber-500 focus:ring-amber-500 border-gray-300"
+                              />
+                              <span className="font-bold text-lg text-slate-900">
+                                Monthly Subscription
+                              </span>
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 bg-amber-100 px-3 py-1 rounded-full">
+                              Best Value
+                            </span>
                           </div>
-                          <p className="font-bold text-slate-700 text-sm mb-1">
-                            Click or drag images to upload
+                          <p className="text-sm text-slate-500 pl-8">
+                            Get unlimited access to shared leads in your destination for a flat monthly fee.
                           </p>
-                          <p className="text-xs text-slate-500">
-                            High resolution JPG or PNG. Max 2MB per file.
-                          </p>
-                        </div>
-
-                        {/* Uploaded Files Preview */}
-                        {formData.photos.length > 0 && (
-                          <div className="mt-4 space-y-2">
-                            {formData.photos.map((photo, i) => (
-                              <div
-                                key={i}
-                                className="flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-100"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <ImageIcon
-                                    size={16}
-                                    className="text-slate-400"
-                                  />
-                                  <span className="text-sm font-medium text-slate-700 truncate max-w-[200px]">
-                                    {photo.name}
-                                  </span>
-                                  <span className="text-xs text-slate-400">
-                                    ({photo.size})
-                                  </span>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => onRemovePhoto(i)}
-                                  className="text-slate-400 hover:text-red-500 transition-colors"
-                                >
-                                  <X size={16} />
-                                </button>
-                              </div>
-                            ))}
+                        </label>
+                        
+                        <label
+                          className={`cursor-pointer border-2 rounded-xl p-6 flex flex-col gap-2 transition-all duration-300 ${
+                            formData.leadPackage === "exclusive"
+                              ? "border-amber-500 bg-amber-50/30"
+                              : "border-slate-100 bg-white hover:border-slate-300"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="radio"
+                                name="leadPackage"
+                                value="exclusive"
+                                checked={formData.leadPackage === "exclusive"}
+                                onChange={onInputChange}
+                                className="w-5 h-5 text-amber-500 focus:ring-amber-500 border-gray-300"
+                              />
+                              <span className="font-bold text-lg text-slate-900">
+                                Exclusive Leads
+                              </span>
+                            </div>
                           </div>
-                        )}
+                          <p className="text-sm text-slate-500 pl-8">
+                            Premium pricing for exclusive leads sent ONLY to your hotel. Guarantee maximum conversion.
+                          </p>
+                        </label>
                       </div>
                     </div>
                   )}
@@ -497,7 +431,7 @@ export default function Form({
                       <div></div>
                     )}
 
-                    {step < 4 ? (
+                    {step < 3 ? (
                       <button
                         key={`next-step-${step}`}
                         type="button"
@@ -516,7 +450,7 @@ export default function Form({
                       >
                         {formStatus === "submitting"
                           ? "Submitting..."
-                          : "Submit Listing"}
+                          : "Submit Request"}
                         {formStatus !== "submitting" && <Send size={16} />}
                       </button>
                     )}
