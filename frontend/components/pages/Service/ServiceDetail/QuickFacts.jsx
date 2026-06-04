@@ -4,7 +4,7 @@ import React from "react";
 import { Calendar, Heart, Shield, Clock } from "lucide-react";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
 
-export default function QuickFacts({ serviceData }) {
+export default function QuickFacts({ serviceData, selectedSubEvent }) {
   const facts = [
     {
       label: "Duration",
@@ -15,7 +15,7 @@ export default function QuickFacts({ serviceData }) {
     },
     {
       label: "Category",
-      value: serviceData.category || "Premium",
+      value: selectedSubEvent || serviceData.category || "Premium",
       icon: Heart,
       color: "text-blue-500",
       bg: "bg-blue-50"

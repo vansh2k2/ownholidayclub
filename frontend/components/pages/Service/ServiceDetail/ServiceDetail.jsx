@@ -7,8 +7,8 @@ import ServiceDetailHeroSection from "./Hero";
 import ServiceDetailLeadForm from "./LeadForm";
 import ServiceDetailModal from "./Modal";
 import ServiceDetailOverviewSection from "./Overview";
-import ServiceDetailPortfolioSection from "./Portfolio";
 import ServiceDetailQuickFacts from "./QuickFacts";
+import ServiceDetailSubEvents from "./SubEvents";
 import { createImageFallback } from "@/lib/createImageFallback";
 import { fetchServiceById } from "@/lib/services";
 
@@ -30,6 +30,7 @@ export default function ServiceDetailPage({ serviceId }) {
     kids: "0",
     travelType: "Holiday",
     budget: "",
+    subEvent: "",
     message: "",
   });
   const [activeModal, setActiveModal] = useState(null);
@@ -137,7 +138,7 @@ export default function ServiceDetailPage({ serviceId }) {
           travelType,
           budget,
           message,
-          serviceName: serviceData?.title || "",
+          serviceName: formData.subEvent ? `${serviceData?.title || ""} - ${formData.subEvent}` : serviceData?.title || "",
           serviceId: serviceData?._id || null,
         }),
       });
@@ -160,6 +161,7 @@ export default function ServiceDetailPage({ serviceId }) {
           kids: "0",
           travelType: "Holiday",
           budget: "",
+          subEvent: "",
           message: "",
         });
         setFormError("");
@@ -191,7 +193,18 @@ export default function ServiceDetailPage({ serviceId }) {
         serviceData={serviceData}
         onImageError={handleImageError}
       />
-      <ServiceDetailQuickFacts serviceData={serviceData} />
+      <ServiceDetailQuickFacts serviceData={serviceData} selectedSubEvent={formData.subEvent} />
+      <ServiceDetailSubEvents 
+        serviceData={serviceData}
+        onSelectCategory={(subEvent) => {
+          setFormData(prev => ({ 
+            ...prev, 
+            subEvent: subEvent.sub_event_name,
+            message: `I would like to inquire about the ${subEvent.sub_event_name} package.` 
+          }));
+          scrollToForm();
+        }}
+      />
       <ServiceDetailLeadForm
         serviceData={serviceData}
         formData={formData}
@@ -205,12 +218,7 @@ export default function ServiceDetailPage({ serviceId }) {
         serviceData={serviceData}
         onImageError={handleImageError}
       />
-      <ServiceDetailPortfolioSection
-        serviceData={serviceData}
-        onImageError={handleImageError}
-        setActiveModal={setActiveModal}
-        setModalFilter={setModalFilter}
-      />
+
       <ServiceDetailBottomCtaSection
         serviceData={serviceData}
         onScrollToForm={scrollToForm}

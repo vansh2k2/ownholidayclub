@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
+import subEventsData from "@/lib/subEvents.json";
+import { Layers } from "lucide-react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -146,6 +148,18 @@ export default function LeadForm({
 
   const [localFeedback, setLocalFeedback] = useState("");
 
+  const slugToEventName = {
+    "weddings": "Weddings",
+    "corporate-events": "Corporate Events",
+    "private-parties": "Parties",
+    "parties": "Parties",
+    "outings": "Outing",
+    "outing": "Outing",
+  };
+  const slug = serviceData?.slug || serviceData?.title?.toLowerCase()?.replace(/\s+/g, "-");
+  const mappedEventName = slugToEventName[slug];
+  const subEventsList = mappedEventName ? subEventsData.filter((event) => event.event_name === mappedEventName && event.status !== "De Active") : [];
+
   // Reset verification if phone/email changes
   useEffect(() => {
     setIsMobileVerified(false);
@@ -266,7 +280,7 @@ export default function LeadForm({
   return (
     <section
       id="inquiry-form"
-      className="py-8 md:py-12 relative z-20 scroll-mt-20"
+      className="pt-2 pb-8 md:pt-4 md:pb-12 relative z-20 scroll-mt-20"
     >
       <div className="site-width mx-auto px-4 md:px-8 max-w-[48rem]">
         <div
@@ -718,7 +732,7 @@ export default function LeadForm({
                             className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
                             style={{ fontFamily: "'Inter', sans-serif" }}
                           >
-                            Estimated Budget
+                            Budget
                           </label>
                           <div className="relative group">
                             <IndianRupee
@@ -743,6 +757,39 @@ export default function LeadForm({
                           </div>
                         </div>
                       </div>
+                      
+                      {subEventsList.length > 0 && (
+                        <div className="flex flex-col gap-1.5">
+                          <label
+                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
+                            style={{ fontFamily: "'Inter', sans-serif" }}
+                          >
+                            Service Category
+                          </label>
+                          <div className="relative group">
+                            <Layers
+                              size={14}
+                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
+                            />
+                            <select
+                              name="subEvent"
+                              value={formData?.subEvent || ""}
+                              onChange={handleInputChange}
+                              disabled={formStep === "submitting"}
+                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
+                              style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                            >
+                              <option value="">Select a category...</option>
+                              {subEventsList.map((evt, idx) => (
+                                <option key={idx} value={evt.sub_event_name}>
+                                  {evt.sub_event_name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+
 
                       {/* Message */}
                       <InputField
