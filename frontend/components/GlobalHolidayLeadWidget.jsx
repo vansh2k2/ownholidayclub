@@ -50,7 +50,7 @@ const createInitialLeadForm = () => ({
   checkOut: "",
   adults: 1,
   kids: 0,
-  travelType: "Holiday",
+  travelType: "",
   budget: "",
   message: "",
 });
@@ -103,7 +103,7 @@ export default function GlobalHolidayLeadWidget() {
 
   // Sync default budget when category changes
   useEffect(() => {
-    const defaultBudget = BUDGET_OPTIONS[leadForm.travelType]?.[0]?.value || "";
+    const defaultBudget = leadForm.travelType ? BUDGET_OPTIONS[leadForm.travelType]?.[0]?.value || "" : "";
     setLeadForm((prev) => ({ ...prev, budget: defaultBudget }));
   }, [leadForm.travelType]);
 
@@ -840,7 +840,8 @@ export default function GlobalHolidayLeadWidget() {
                                 onChange={(e) => handleLeadFieldChange("budget", e.target.value)}
                                 className="w-full h-10 px-3 border border-slate-200 text-xs font-bold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none tracking-wide"
                               >
-                                {BUDGET_OPTIONS[leadForm.travelType].map((opt) => (
+                                <option value="" disabled>Select a budget...</option>
+                                {leadForm.travelType && BUDGET_OPTIONS[leadForm.travelType]?.map((opt) => (
                                   <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                   </option>

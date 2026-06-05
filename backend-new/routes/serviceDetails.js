@@ -38,13 +38,18 @@ router.get(
       return res.status(404).json({ success: false, message: "Service not found" });
     }
 
-    // Try to find the matching ExploreService card to get its image
+    // Try to find the matching ExploreService card to get its image and subServices
     const exploreData = await ExploreService.findOne({ isPublished: true });
     let exploreImage = "";
+    let subServicesConfig = {};
+    let subServices = [];
+
     if (exploreData && exploreData.services) {
       const matchingCard = exploreData.services.find(s => s.title === service.serviceTitle);
       if (matchingCard) {
         exploreImage = matchingCard.image;
+        subServicesConfig = matchingCard.subServicesConfig || {};
+        subServices = matchingCard.subServices || [];
       }
     }
 
@@ -52,7 +57,9 @@ router.get(
       success: true, 
       data: {
         ...service.toObject(),
-        exploreImage // Add this so frontend can use it as hero image
+        exploreImage,
+        subServicesConfig,
+        subServices
       } 
     });
   })

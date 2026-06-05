@@ -12,6 +12,7 @@ import {
   Users,
   Utensils,
 } from "lucide-react";
+import Link from "next/link";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
 
 export default function Services() {
@@ -112,17 +113,18 @@ export default function Services() {
                   </h4>
                   <div className="flex flex-wrap gap-4 font-sans">
                     {[
-                      "Wedding Planning",
-                      "Corporate Events",
-                      "Destination Weddings",
-                      "Parties",
+                      { name: "Wedding Planning", url: "/services/weddings" },
+                      { name: "Corporate Events", url: "/services/corporate-events" },
+                      { name: "Destination Weddings", url: "/services/destination-weddings" },
+                      { name: "Parties", url: "/services/private-parties" },
                     ].map((tag, i) => (
-                      <span
+                      <Link
                         key={i}
-                        className="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full text-sm font-bold text-white border border-white/20 hover:bg-amber-500 hover:border-amber-500 transition-colors cursor-default"
+                        href={tag.url}
+                        className="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full text-sm font-bold text-white border border-white/20 hover:bg-amber-500 hover:border-amber-500 transition-colors cursor-pointer"
                       >
-                        {tag}
-                      </span>
+                        {tag.name}
+                      </Link>
                     ))}
                   </div>
                 </div>

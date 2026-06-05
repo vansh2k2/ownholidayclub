@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
-import subEventsData from "@/lib/subEvents.json";
 import { Layers } from "lucide-react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081";
@@ -95,7 +94,7 @@ const InputField = ({ icon: Icon, label, textarea, rows, ...props }) => (
     {label && (
       <label
         className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-        style={{ fontFamily: "'Inter', sans-serif" }}
+        
       >
         {label}
       </label>
@@ -112,13 +111,13 @@ const InputField = ({ icon: Icon, label, textarea, rows, ...props }) => (
           rows={rows || 2}
           {...props}
           className="w-full p-2.5 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 resize-none disabled:opacity-50"
-          style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+          style={{ borderRadius: "6px" }}
         />
       ) : (
         <input
           {...props}
           className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-          style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+          style={{ borderRadius: "6px" }}
         />
       )}
     </div>
@@ -148,17 +147,9 @@ export default function LeadForm({
 
   const [localFeedback, setLocalFeedback] = useState("");
 
-  const slugToEventName = {
-    "weddings": "Weddings",
-    "corporate-events": "Corporate Events",
-    "private-parties": "Parties",
-    "parties": "Parties",
-    "outings": "Outing",
-    "outing": "Outing",
-  };
-  const slug = serviceData?.slug || serviceData?.title?.toLowerCase()?.replace(/\s+/g, "-");
-  const mappedEventName = slugToEventName[slug];
-  const subEventsList = mappedEventName ? subEventsData.filter((event) => event.event_name === mappedEventName && event.status !== "De Active") : [];
+  const subEventsList = serviceData?.subServices 
+    ? [...serviceData.subServices].sort((a, b) => (a.order || 0) - (b.order || 0)) 
+    : [];
 
   // Reset verification if phone/email changes
   useEffect(() => {
@@ -307,7 +298,7 @@ export default function LeadForm({
 
               <h2
                 className="text-2xl md:text-3xl font-bold text-slate-900 leading-[1.1] mb-3"
-                style={{ fontFamily: "'Inter', sans-serif" }}
+                
               >
                 Plan Your Event
                 <br />
@@ -323,7 +314,7 @@ export default function LeadForm({
 
               <p
                 className="text-slate-500 text-[13px] leading-relaxed mb-10"
-                style={{ fontFamily: "'Inter', sans-serif" }}
+                
               >
                 Connect with our dedicated experience team. We'll understand your goals and curate a tailored proposal.
               </p>
@@ -340,7 +331,7 @@ export default function LeadForm({
                       </div>
                       <span
                         className="text-[12px] text-slate-600 font-semibold"
-                        style={{ fontFamily: "'Inter', sans-serif" }}
+                        
                       >
                         {perk}
                       </span>
@@ -362,7 +353,7 @@ export default function LeadForm({
               </div>
               <p
                 className="text-[12px] text-slate-500 leading-relaxed"
-                style={{ fontFamily: "'Inter', sans-serif" }}
+                
               >
                 Trusted by{" "}
                 <span className="font-bold text-slate-800">280,000+</span>{" "}
@@ -402,7 +393,7 @@ export default function LeadForm({
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
                       className="text-2xl font-bold text-slate-900 mb-3 text-center"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
+                      
                     >
                       Successfully Sent!
                     </motion.h3>
@@ -412,7 +403,7 @@ export default function LeadForm({
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.4 }}
                       className="text-slate-500 text-center mb-8 max-w-xs mx-auto text-[13px] leading-relaxed"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
+                      
                     >
                       Thank you,{" "}
                       <span className="font-semibold text-slate-800">
@@ -426,7 +417,7 @@ export default function LeadForm({
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.5 }}
                       className="flex items-center gap-2 text-sm text-slate-400"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
+                      
                     >
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                       Form will reset automatically...
@@ -443,15 +434,13 @@ export default function LeadForm({
                     <div className="mb-5">
                       <h3
                         className="text-lg font-bold text-slate-900 mb-0.5"
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                        }}
+                        
                       >
                         Inquiry Details
                       </h3>
                       <p
                         className="text-[11px] text-slate-400 font-medium"
-                        style={{ fontFamily: "'Inter', sans-serif" }}
+                        
                       >
                         Please provide your event details for a custom proposal.
                       </p>
@@ -463,8 +452,7 @@ export default function LeadForm({
                           className="border border-red-200 bg-red-50 px-4 py-3 text-[12px] font-medium text-red-600"
                           style={{
                             borderRadius: "8px",
-                            fontFamily: "'Inter', sans-serif",
-                          }}
+                            }}
                         >
                           {formError}
                         </div>
@@ -474,8 +462,7 @@ export default function LeadForm({
                           className="border border-blue-200 bg-blue-50 px-4 py-3 text-[12px] font-medium text-blue-600"
                           style={{
                             borderRadius: "8px",
-                            fontFamily: "'Inter', sans-serif",
-                          }}
+                            }}
                         >
                           {localFeedback}
                         </div>
@@ -499,7 +486,7 @@ export default function LeadForm({
                         <div className="flex flex-col gap-1.5">
                           <label
                             className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            style={{ fontFamily: "'Inter', sans-serif" }}
+                            
                           >
                             Phone Number
                           </label>
@@ -518,7 +505,7 @@ export default function LeadForm({
                                 onChange={handleInputChange}
                                 placeholder="10-digit mobile"
                                 className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-                                style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                                style={{ borderRadius: "6px" }}
                               />
                             </div>
                             {!isMobileVerified ? (
@@ -567,7 +554,7 @@ export default function LeadForm({
                       <div className="flex flex-col gap-1.5">
                         <label
                           className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                          style={{ fontFamily: "'Inter', sans-serif" }}
+                          
                         >
                           Email Address
                         </label>
@@ -586,7 +573,7 @@ export default function LeadForm({
                               onChange={handleInputChange}
                               placeholder="you@example.com"
                               className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-                              style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                              style={{ borderRadius: "6px" }}
                             />
                           </div>
                           {!isEmailVerified && !isEmailSkipped ? (
@@ -652,7 +639,7 @@ export default function LeadForm({
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <InputField
                           icon={Calendar}
-                          label="Preferred Date"
+                          label="Check-in Date"
                           type="datetime-local"
                           name="checkIn"
                           value={formData?.checkIn || ""}
@@ -661,7 +648,7 @@ export default function LeadForm({
                         />
                         <InputField
                           icon={Calendar}
-                          label="End Date (Optional)"
+                          label="Check-out Date (Optional)"
                           type="datetime-local"
                           name="checkOut"
                           value={formData?.checkOut || ""}
@@ -671,10 +658,10 @@ export default function LeadForm({
                       </div>
 
                       {/* Guests */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="grid grid-cols-1 gap-5">
                         <InputField
                           icon={User}
-                          label="Expected Guests"
+                          label="No of Guests"
                           type="number"
                           name="adults"
                           min="1"
@@ -683,17 +670,6 @@ export default function LeadForm({
                           disabled={formStep === "submitting"}
                           placeholder="2"
                         />
-                        <InputField
-                          icon={User}
-                          label="Staff/Misc (Optional)"
-                          type="number"
-                          name="kids"
-                          min="0"
-                          value={formData?.kids || ""}
-                          onChange={handleInputChange}
-                          disabled={formStep === "submitting"}
-                          placeholder="0"
-                        />
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -701,7 +677,7 @@ export default function LeadForm({
                         <div className="flex flex-col gap-1.5">
                           <label
                             className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            style={{ fontFamily: "'Inter', sans-serif" }}
+                            
                           >
                             Travel Type
                           </label>
@@ -712,12 +688,13 @@ export default function LeadForm({
                             />
                             <select
                               name="travelType"
-                              value={formData?.travelType || "Holiday"}
+                              value={formData?.travelType || ""}
                               onChange={handleInputChange}
                               disabled={formStep === "submitting"}
                               className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
-                              style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                              style={{ borderRadius: "6px" }}
                             >
+                              <option value="" disabled>Select a travel type...</option>
                               <option value="Holiday">Holiday</option>
                               <option value="Events">Events</option>
                               <option value="Wedding">Wedding</option>
@@ -730,7 +707,7 @@ export default function LeadForm({
                         <div className="flex flex-col gap-1.5">
                           <label
                             className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            style={{ fontFamily: "'Inter', sans-serif" }}
+                            
                           >
                             Budget
                           </label>
@@ -745,10 +722,10 @@ export default function LeadForm({
                               onChange={handleInputChange}
                               disabled={formStep === "submitting"}
                               className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
-                              style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                              style={{ borderRadius: "6px" }}
                             >
                               <option value="">Select a budget...</option>
-                              {BUDGET_OPTIONS[formData?.travelType || "Holiday"]?.map((opt, idx) => (
+                              {formData?.travelType && BUDGET_OPTIONS[formData?.travelType]?.map((opt, idx) => (
                                 <option key={idx} value={opt.value}>
                                   {opt.label}
                                 </option>
@@ -762,7 +739,7 @@ export default function LeadForm({
                         <div className="flex flex-col gap-1.5">
                           <label
                             className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            style={{ fontFamily: "'Inter', sans-serif" }}
+                            
                           >
                             Service Category
                           </label>
@@ -777,12 +754,12 @@ export default function LeadForm({
                               onChange={handleInputChange}
                               disabled={formStep === "submitting"}
                               className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
-                              style={{ fontFamily: "'Inter', sans-serif", borderRadius: "6px" }}
+                              style={{ borderRadius: "6px" }}
                             >
                               <option value="">Select a category...</option>
                               {subEventsList.map((evt, idx) => (
-                                <option key={idx} value={evt.sub_event_name}>
-                                  {evt.sub_event_name}
+                                <option key={evt._id || idx} value={evt.title}>
+                                  {evt.title}
                                 </option>
                               ))}
                             </select>
@@ -810,7 +787,7 @@ export default function LeadForm({
                           type="submit"
                           disabled={formStep === "submitting" || !isMobileVerified || (!isEmailVerified && !isEmailSkipped)}
                           className="w-full md:flex-1 flex items-center justify-center gap-3 bg-red-600 text-white px-6 py-2.5 hover:bg-red-700 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-red-600/10"
-                          style={{ borderRadius: "7px", fontFamily: "'Inter', sans-serif" }}
+                          style={{ borderRadius: "7px", }}
                         >
                           <span className="text-[11px] font-black uppercase tracking-[0.2em]">
                             {formStep === "submitting"
@@ -824,7 +801,7 @@ export default function LeadForm({
                           <Shield size={14} className="text-green-600" />
                           <span
                             className="text-[10px] text-slate-400 font-medium uppercase tracking-widest"
-                            style={{ fontFamily: "'Inter', sans-serif" }}
+                            
                           >
                             100% Secure
                           </span>

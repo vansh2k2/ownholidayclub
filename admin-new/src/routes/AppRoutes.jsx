@@ -19,6 +19,7 @@ import DestinationDetails from "../pages/DestinationDetails";
 import DestinationsList from "../pages/DestinationsList";
 import ServiceDetails from "../pages/ServiceDetails";
 import ServicesList from "../pages/ServicesList";
+import SubServicesManagement from "../pages/Services/SubServicesManagement";
 import DestinationEnquiries from "../pages/DestinationEnquiries";
 import ContactEnquiries from "../pages/ContactEnquiries";
 import Settings from "../pages/Settings";
@@ -74,6 +75,7 @@ export default function AppRoutes() {
           <Route path="destinations-list" element={<DestinationsList />} />
           <Route path="service-details" element={<ServiceDetails />} />
           <Route path="services-list" element={<ServicesList />} />
+          <Route path="service-categories" element={<SubServicesManagement />} />
           <Route path="add-blogs" element={<AddBlog />} />
           <Route path="blogs-list" element={<BlogsList />} />
           <Route path="add-meta" element={<AddSeo />} />

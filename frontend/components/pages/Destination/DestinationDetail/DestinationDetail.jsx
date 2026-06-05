@@ -28,7 +28,7 @@ export default function DestinationDetailPage({ destinationId }) {
     checkOut: "",
     adults: "2",
     kids: "0",
-    travelType: "Holiday",
+    travelType: "",
     budget: "",
     message: "",
   });
@@ -94,7 +94,7 @@ export default function DestinationDetailPage({ destinationId }) {
     const checkOut = String(formData.checkOut || "").trim();
     const adults = Number(formData.adults || 0);
     const kids = Number(formData.kids || 0);
-    const travelType = String(formData.travelType || "Holiday").trim();
+    const travelType = String(formData.travelType || "").trim();
     const budget = String(formData.budget || "").trim();
     const message = String(formData.message || "").trim();
 
@@ -130,6 +130,11 @@ export default function DestinationDetailPage({ destinationId }) {
 
     if (!Number.isInteger(kids) || kids < 0) {
       setFormError("Please enter a valid number of kids.");
+      return;
+    }
+
+    if (!travelType) {
+      setFormError("Please select a travel type.");
       return;
     }
 
@@ -174,7 +179,7 @@ export default function DestinationDetailPage({ destinationId }) {
           checkOut: "",
           adults: "2",
           kids: "0",
-          travelType: "Holiday",
+          travelType: "",
           budget: "",
           message: "",
         });

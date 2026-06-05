@@ -38,6 +38,21 @@ const serviceCardSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    subServicesConfig: {
+      heading: { type: String, default: "" },
+      description: { type: String, default: "" },
+    },
+    subServices: [
+      {
+        title: { type: String, required: true },
+        description: { type: String, required: true },
+        image: { type: String, required: true },
+        altText: { type: String, default: "" },
+        buttonText: { type: String, default: "PLAN THIS EVENT" },
+        buttonUrl: { type: String, default: "#" },
+        order: { type: Number, default: 0 },
+      }
+    ]
   },
   { timestamps: true }
 );

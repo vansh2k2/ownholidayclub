@@ -13,7 +13,7 @@ import ScrollAnimate from "@/components/common/ScrollAnimate";
 
 export default function Overview({ serviceData }) {
   return (
-    <section className="py-20 md:py-24 relative bg-white">
+    <section className="pt-4 pb-10 md:pt-8 md:pb-16 relative bg-white">
       <div className="site-width mx-auto">
         <div className="grid lg:grid-cols-12 gap-16 lg:gap-24">
           <div className="lg:col-span-7">

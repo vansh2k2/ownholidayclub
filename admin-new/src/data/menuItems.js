@@ -140,6 +140,7 @@ export const menuItems = [
       { label: "Add Service", path: "/explore-services" },
       { label: "Service Details", path: "/service-details" },
       { label: "Services List", path: "/services-list" },
+      { label: "Manage Categories", path: "/service-categories" },
     ],
   },
 
