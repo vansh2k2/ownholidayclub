@@ -61,8 +61,17 @@ const extractProviderMessage = (data) => {
   return "";
 };
 
-const isProviderFailure = (data) =>
-  typeof data?.status === "string" && /^AZQ\d+$/i.test(data.status);
+const isProviderFailure = (data) => {
+  if (!data) return true;
+  // Check specific AZQ format (if applicable)
+  if (typeof data?.status === "string" && /^AZQ\d+$/i.test(data.status)) return true;
+  // Common failure flags from Fast2SMS/MSG91/Custom gateways
+  if (data?.return === false) return true;
+  if (data?.success === false) return true;
+  if (String(data?.status).toLowerCase() === "error" || String(data?.status).toLowerCase() === "failure") return true;
+  
+  return false;
+};
 
 const sendOtpSms = async (mobile, otp) => {
   const normalizedMobile = normaliseMobile(mobile);
@@ -99,7 +108,12 @@ const sendOtpSms = async (mobile, otp) => {
           ? config.timeoutMs
           : DEFAULT_SMS_TIMEOUT_MS,
     });
+    
+    // 🔥 YAHAN PE LOG ADD KIYA HAI TAQI ASLI ERROR DIKHE 🔥
+    console.log(`[SMS Gateway Response for ${mobile}]:`, JSON.stringify(response.data));
+    
   } catch (error) {
+    console.error(`[SMS Gateway Crash for ${mobile}]:`, error.message);
     const providerMessage = extractProviderMessage(error?.response?.data);
 
     throw createHttpError(
@@ -114,9 +128,12 @@ const sendOtpSms = async (mobile, otp) => {
   }
 
   if (isProviderFailure(response?.data)) {
+    const errorMsg = extractProviderMessage(response.data) || "SMS provider rejected the OTP request.";
+    console.error(`[SMS Gateway Rejected for ${mobile}]:`, errorMsg);
+    
     throw createHttpError(
       502,
-      extractProviderMessage(response.data) || "SMS provider rejected the OTP request.",
+      errorMsg,
       {
         provider: "custom-sms",
         providerStatus: response?.status || null,
