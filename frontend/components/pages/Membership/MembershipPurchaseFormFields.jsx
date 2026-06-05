@@ -667,6 +667,148 @@ export function SelectFileRow({
   );
 }
 
+export function CountrySelectField({
+  label,
+  value,
+  onChange,
+  required = false,
+  disabled = false,
+  labelHidden = false,
+  wrapperClassName = "",
+  icon: Icon = null,
+  iconClassName = "",
+  placeholder = "Select Country",
+}) {
+  const containerRef = useRef(null);
+  const searchRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [countries, setCountries] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch("https://restcountries.com/v3.1/all?fields=name")
+      .then((res) => res.json())
+      .then((data) => {
+        const sorted = data
+          .map((c) => c.name.common)
+          .sort((a, b) => a.localeCompare(b));
+        setCountries(sorted);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (!containerRef.current?.contains(event.target)) {
+        setIsOpen(false);
+        setSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen && searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const filtered = search
+    ? countries.filter((c) => c.toLowerCase().includes(search.toLowerCase()))
+    : countries;
+
+  const handleOpen = () => {
+    if (!disabled) {
+      setIsOpen((o) => !o);
+      setSearch("");
+    }
+  };
+
+  return (
+    <label ref={containerRef} className={`relative block ${wrapperClassName}`}>
+      <span
+        className={
+          labelHidden
+            ? "sr-only"
+            : "mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800"
+        }
+      >
+        {label}
+        {required ? <span className="ml-1 text-[#C8102E]">*</span> : null}
+      </span>
+      <div className="relative">
+        {Icon ? (
+          <span
+            className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 ${
+              disabled ? "text-slate-300" : ""
+            } ${iconClassName}`}
+          >
+            <Icon size={16} />
+          </span>
+        ) : null}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={handleOpen}
+          className={`h-8 w-full appearance-none rounded-none border border-slate-400 bg-white ${
+            Icon ? "pl-10 pr-9" : "px-3 pr-9"
+          } py-0 leading-tight text-[12px] font-medium text-left outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+            value ? "text-slate-900" : "text-slate-400"
+          }`}
+        >
+          {value || (loading ? "Loading countries..." : placeholder)}
+        </button>
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <ChevronDown size={14} />
+        </span>
+        {isOpen ? (
+          <div className="absolute left-0 right-0 top-[calc(100%+2px)] z-30 overflow-hidden rounded-none border-2 border-slate-200 bg-white shadow-xl">
+            <div className="border-b border-slate-100 p-1.5">
+              <input
+                ref={searchRef}
+                type="text"
+                placeholder="Search country..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-7 w-full rounded-none border border-slate-300 bg-white px-2 text-[12px] font-medium text-slate-900 outline-none placeholder:text-slate-400 focus:border-[#C8102E]"
+              />
+            </div>
+            <div className="max-h-52 overflow-y-auto">
+              {filtered.length === 0 ? (
+                <div className="px-3 py-2 text-sm text-slate-400">No countries found</div>
+              ) : (
+                filtered.map((country) => (
+                  <button
+                    key={country}
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      onChange(country);
+                      setIsOpen(false);
+                      setSearch("");
+                    }}
+                    className={`flex w-full items-center border-b border-slate-100 px-3 py-1.5 text-left text-[12px] transition hover:bg-amber-50 last:border-b-0 ${
+                      value === country
+                        ? "bg-amber-50 font-semibold text-amber-700"
+                        : "text-slate-700"
+                    }`}
+                  >
+                    {country}
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </label>
+  );
+}
+
 export const VerificationIcons = {
   Smartphone,
   Mail,

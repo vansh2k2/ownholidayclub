@@ -26,6 +26,7 @@ import {
 } from "./membershipPurchaseConfig";
 import {
   AddressAutocompleteField,
+  CountrySelectField,
   InputField,
   SelectField,
 } from "./MembershipPurchaseFormFields";
@@ -324,11 +325,10 @@ export default function MembershipPurchaseStepOne({
           required
           icon={Map}
         />
-        <InputField
+        <CountrySelectField
           label="Country"
           value={form.addressDetails.residence.country}
           onChange={(value) => updateAddress("residence", "country", value)}
-          placeholder="Country"
           required
           icon={Globe}
         />
@@ -395,11 +395,10 @@ export default function MembershipPurchaseStepOne({
                 labelHidden
                 icon={Map}
               />
-              <InputField
+              <CountrySelectField
                 label="Office Country"
                 value={form.addressDetails.office.country}
                 onChange={(value) => updateAddress("office", "country", value)}
-                placeholder="Country"
                 labelHidden
                 icon={Globe}
               />
