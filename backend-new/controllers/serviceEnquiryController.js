@@ -17,6 +17,7 @@ exports.createEnquiry = asyncHandler(async (req, res) => {
         "Phone": enquiry.phone,
         "Service": enquiry.serviceName,
         "Service ID": enquiry.serviceId,
+        "Location": enquiry.location || "Not specified",
       },
       message: enquiry.message,
     });

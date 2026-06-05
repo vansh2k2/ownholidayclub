@@ -58,7 +58,7 @@ export default function ServiceDetailSubEvents({ serviceData, onSelectCategory }
 
                 {/* Card Container */}
                 <div 
-                  className="bg-white rounded-2xl flex flex-col h-[380px] relative transition-transform duration-300 group-hover:-translate-y-2 cursor-pointer overflow-hidden"
+                  className="bg-white rounded-2xl flex flex-col h-full relative transition-transform duration-300 group-hover:-translate-y-2 cursor-pointer overflow-hidden"
                   style={{ boxShadow: "rgba(0, 0, 0, 0.04) 0px 4px 12px 0px, rgba(27, 31, 35, 0.08) 0px 0px 0px 1px" }}
                   onClick={() => handleCardClick(subEvent)}
                 >

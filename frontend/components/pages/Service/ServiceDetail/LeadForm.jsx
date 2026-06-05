@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Calendar,
   CheckCircle2,
@@ -14,6 +14,7 @@ import {
   CheckCircle,
   IndianRupee,
   Compass,
+  MapPin,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
@@ -146,6 +147,47 @@ export default function LeadForm({
   const [isEmailSkipped, setIsEmailSkipped] = useState(false);
 
   const [localFeedback, setLocalFeedback] = useState("");
+
+  const [locationInput, setLocationInput] = useState(formData?.location || "");
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const skipFetch = useRef(false);
+
+  useEffect(() => {
+    if (skipFetch.current) {
+      skipFetch.current = false;
+      return;
+    }
+    if (!locationInput || locationInput.length < 2) {
+      setLocationOptions([]);
+      setIsLocationDropdownOpen(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': 'AIzaSyDarNwOH5Gfi1KseDZ82fkh2b0wn66uudg'
+          },
+          body: JSON.stringify({ input: locationInput })
+        });
+        const data = await res.json();
+        if (data.suggestions) {
+          setLocationOptions(data.suggestions.map(s => s.placePrediction.text.text));
+          setIsLocationDropdownOpen(true);
+        } else {
+          setLocationOptions([]);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [locationInput, formData?.location]);
 
   const subEventsList = serviceData?.subServices 
     ? [...serviceData.subServices].sort((a, b) => (a.order || 0) - (b.order || 0)) 
@@ -657,8 +699,8 @@ export default function LeadForm({
                         />
                       </div>
 
-                      {/* Guests */}
-                      <div className="grid grid-cols-1 gap-5">
+                      {/* Guests & Location */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <InputField
                           icon={User}
                           label="No of Guests"
@@ -670,6 +712,56 @@ export default function LeadForm({
                           disabled={formStep === "submitting"}
                           placeholder="2"
                         />
+                        <div className="flex flex-col gap-1.5 relative">
+                          <label className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">
+                            Location
+                          </label>
+                          <div className="relative group">
+                            <MapPin size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10" />
+                            <input
+                              type="text"
+                              value={locationInput}
+                              onChange={(e) => {
+                                setLocationInput(e.target.value);
+                                handleInputChange({ target: { name: 'location', value: e.target.value } });
+                              }}
+                              onFocus={() => {
+                                if (locationOptions.length > 0) setIsLocationDropdownOpen(true);
+                              }}
+                              onBlur={() => setTimeout(() => setIsLocationDropdownOpen(false), 200)}
+                              disabled={formStep === "submitting"}
+                              placeholder="Search location..."
+                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
+                              style={{ borderRadius: "6px" }}
+                            />
+                            <AnimatePresence>
+                              {isLocationDropdownOpen && locationOptions.length > 0 && (
+                                <motion.div
+                                  initial={{ opacity: 0, y: -5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -5 }}
+                                  className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-slate-200 shadow-xl max-h-48 overflow-y-auto"
+                                  style={{ borderRadius: "6px" }}
+                                >
+                                  {locationOptions.map((opt, i) => (
+                                    <div
+                                      key={i}
+                                      className="px-3 py-2 text-[12px] text-slate-700 hover:bg-amber-50 cursor-pointer border-b border-slate-100 last:border-0"
+                                      onClick={() => {
+                                        skipFetch.current = true;
+                                        setLocationInput(opt);
+                                        handleInputChange({ target: { name: 'location', value: opt } });
+                                        setIsLocationDropdownOpen(false);
+                                      }}
+                                    >
+                                      {opt}
+                                    </div>
+                                  ))}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

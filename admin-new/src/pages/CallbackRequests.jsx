@@ -188,7 +188,12 @@ const CallbackRequests = () => {
           <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
             {row.location || "N/A"}
           </span>
-          <span className="text-[10px] text-blue-600 font-bold uppercase">
+          {row.searchLocation && (
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-tight">
+              {row.searchLocation}
+            </span>
+          )}
+          <span className="text-[10px] text-blue-600 font-bold uppercase mt-0.5">
             {row.locationType || "Domestic"}
           </span>
         </div>
@@ -478,6 +483,9 @@ const CallbackRequests = () => {
                             <div className="bg-slate-50 p-3 border border-slate-100">
                                 <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1">Location</label>
                                 <p className="text-xs font-bold text-slate-800 uppercase tracking-tight">{selectedLead.location || "N/A"} ({selectedLead.locationType || "Domestic"})</p>
+                                {selectedLead.searchLocation && (
+                                  <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-tight mt-1 bg-emerald-50 px-1 py-0.5 inline-block rounded border border-emerald-100">{selectedLead.searchLocation}</p>
+                                )}
                             </div>
                             <div className="bg-slate-50 p-3 border border-slate-100">
                                 <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1">Budget</label>

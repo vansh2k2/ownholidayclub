@@ -12,7 +12,7 @@ const router = express.Router();
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { name, email, phone, destinationId, destinationName, checkIn, checkOut, adults, kids, message, travelType, budget } = req.body;
+    const { name, email, phone, destinationId, destinationName, checkIn, checkOut, adults, kids, message, travelType, budget, location } = req.body;
 
     if (!name || !email || !phone || !destinationId || !destinationName) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
@@ -31,6 +31,7 @@ router.post(
       message,
       travelType,
       budget,
+      location,
     });
 
     try {
@@ -46,6 +47,7 @@ router.post(
           "Kids": kids,
           "Travel Type": travelType,
           "Budget": budget,
+          "Location": location || "Not specified",
           "Check In": checkIn ? new Date(checkIn).toLocaleDateString() : "",
           "Check Out": checkOut ? new Date(checkOut).toLocaleDateString() : "",
         },

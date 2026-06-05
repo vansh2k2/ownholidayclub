@@ -30,6 +30,7 @@ export default function ServiceDetailPage({ serviceId }) {
     kids: "0",
     travelType: "",
     budget: "",
+    location: "",
     subEvent: "",
     message: "",
   });
@@ -81,6 +82,7 @@ export default function ServiceDetailPage({ serviceId }) {
     const kids = Number(formData.kids || 0);
     const travelType = String(formData.travelType || "").trim();
     const budget = String(formData.budget || "").trim();
+    const location = String(formData.location || "").trim();
     const message = String(formData.message || "").trim();
 
     if (name.length < 2) {
@@ -142,6 +144,7 @@ export default function ServiceDetailPage({ serviceId }) {
           kids,
           travelType,
           budget,
+          location,
           message,
           serviceName: formData.subEvent ? `${serviceData?.title || ""} - ${formData.subEvent}` : serviceData?.title || "",
           serviceId: serviceData?._id || null,
@@ -166,6 +169,7 @@ export default function ServiceDetailPage({ serviceId }) {
           kids: "0",
           travelType: "",
           budget: "",
+          location: "",
           subEvent: "",
           message: "",
         });

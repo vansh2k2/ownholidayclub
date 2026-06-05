@@ -62,6 +62,10 @@ const serviceEnquirySchema = new mongoose.Schema(
       enum: ["new", "pending", "contacted", "resolved"],
       lowercase: true,
     },
+    location: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

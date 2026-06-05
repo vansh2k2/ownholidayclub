@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { 
   CheckCircle2, MessageSquare, X, Send, User, Mail, 
   Smartphone, PhoneCall, ChevronRight, ChevronLeft, 
@@ -80,6 +80,11 @@ export default function GlobalHolidayLeadWidget() {
   const [isVerifyingEmailOtp, setIsVerifyingEmailOtp] = useState(false);
   const [isEmailSkipped, setIsEmailSkipped] = useState(false);
 
+  const [locationInput, setLocationInput] = useState("");
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const skipFetch = useRef(false);
+
   // Fetch destinations from API
   useEffect(() => {
     const fetchDests = async () => {
@@ -147,6 +152,7 @@ export default function GlobalHolidayLeadWidget() {
   }, [leadFeedback.message]);
 
   const openLeadModal = () => {
+    setLeadForm(createInitialLeadForm());
     setLeadFeedback({ type: "", message: "" });
     setStep(1);
     setIsLeadModalOpen(true);
@@ -157,6 +163,7 @@ export default function GlobalHolidayLeadWidget() {
     setIsEmailOtpSent(false);
     setIsEmailVerified(false);
     setIsEmailSkipped(false);
+    setLocationInput("");
   };
 
   const closeLeadModal = () => {
@@ -167,6 +174,7 @@ export default function GlobalHolidayLeadWidget() {
     setIsLeadModalOpen(false);
     setLeadFeedback({ type: "", message: "" });
     setLeadForm(createInitialLeadForm());
+    setLocationInput("");
   };
 
   const handleLeadFieldChange = (field, value) => {
@@ -192,6 +200,42 @@ export default function GlobalHolidayLeadWidget() {
       setIsEmailSkipped(false);
     }
   };
+
+  useEffect(() => {
+    if (skipFetch.current) {
+      skipFetch.current = false;
+      return;
+    }
+    if (!locationInput || locationInput.length < 2) {
+      setLocationOptions([]);
+      setIsLocationDropdownOpen(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': 'AIzaSyDarNwOH5Gfi1KseDZ82fkh2b0wn66uudg'
+          },
+          body: JSON.stringify({ input: locationInput })
+        });
+        const data = await res.json();
+        if (data.suggestions) {
+          setLocationOptions(data.suggestions.map(s => s.placePrediction.text.text));
+          setIsLocationDropdownOpen(true);
+        } else {
+          setLocationOptions([]);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [locationInput]);
 
   // OTP Sending & Verification Actions
   const handleSendMobileOtp = async () => {
@@ -328,15 +372,15 @@ export default function GlobalHolidayLeadWidget() {
   const handleLeadSubmit = async (event) => {
     event.preventDefault();
 
-    if (!leadForm.location) {
-      setLeadFeedback({ type: "error", message: "Please select a destination location." });
+    if (!leadForm.budget) {
+      setLeadFeedback({ type: "error", message: "Please select a budget." });
       return;
     }
 
-    setIsSubmittingLead(true);
-    setLeadFeedback({ type: "", message: "" });
-
     try {
+      setIsSubmittingLead(true);
+      setLeadFeedback({ type: "", message: "" });
+
       const response = await fetch(`${API_BASE_URL}/api/holiday-leads`, {
         method: "POST",
         headers: {
@@ -347,6 +391,7 @@ export default function GlobalHolidayLeadWidget() {
           email: leadForm.email,
           phone: leadForm.phone,
           location: leadForm.location,
+          searchLocation: locationInput,
           locationType: leadForm.locationType,
           checkIn: leadForm.checkIn,
           checkOut: leadForm.checkOut,
@@ -488,10 +533,16 @@ export default function GlobalHolidayLeadWidget() {
                       <span className="text-[10px] font-bold uppercase tracking-widest text-white/95">Verify Identity</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className={`h-8 w-8 rounded-full border flex items-center justify-center text-xs font-black transition-all ${step === 2 ? "bg-white text-slate-950 border-white" : "border-white/30 text-white/40"}`}>
-                        2
+                      <div className={`h-8 w-8 rounded-full border flex items-center justify-center text-xs font-black transition-all ${step === 2 ? "bg-white text-slate-950 border-white" : step > 2 ? "bg-emerald-500 border-emerald-500 text-white" : "border-white/30 text-white/40"}`}>
+                        {step > 2 ? <Check size={14} /> : "2"}
                       </div>
-                      <span className={`text-[10px] font-bold uppercase tracking-widest ${step === 2 ? "text-white" : "text-white/40"}`}>Preferences</span>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${step >= 2 ? "text-white" : "text-white/40"}`}>Preferences</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`h-8 w-8 rounded-full border flex items-center justify-center text-xs font-black transition-all ${step === 3 ? "bg-white text-slate-950 border-white" : "border-white/30 text-white/40"}`}>
+                        3
+                      </div>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${step === 3 ? "text-white" : "text-white/40"}`}>Final Details</span>
                     </div>
                   </div>
 
@@ -544,7 +595,7 @@ export default function GlobalHolidayLeadWidget() {
                         <div>
                           <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#C8102E]">Own Holiday Club</span>
                           <h4 className="text-2xl font-black text-slate-950 tracking-tighter uppercase leading-none mt-1">
-                            {step === 1 ? "Verify Contact Info" : "Holiday Preferences"}
+                            {step === 1 ? "Verify Contact Info" : step === 2 ? "Holiday Preferences" : "Final Details"}
                           </h4>
                           <div className="h-1 w-12 bg-[#C8102E] mt-3" />
                         </div>
@@ -767,6 +818,38 @@ export default function GlobalHolidayLeadWidget() {
                               </select>
                             </div>
 
+                            {/* Specific Location (Google API) */}
+                            <div className="space-y-1 relative">
+                              <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Specific Location</label>
+                              <div className="relative">
+                                <input
+                                  type="text"
+                                  value={locationInput}
+                                  onChange={(e) => setLocationInput(e.target.value)}
+                                  placeholder="Search precise location..."
+                                  className="w-full h-10 px-3 border border-slate-200 text-xs font-semibold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none placeholder:text-slate-400"
+                                />
+                              </div>
+                              {isLocationDropdownOpen && locationOptions.length > 0 && (
+                                <ul className="absolute z-50 w-full bg-white border border-slate-200 mt-1 shadow-lg max-h-48 overflow-y-auto">
+                                  {locationOptions.map((opt, i) => (
+                                    <li
+                                      key={i}
+                                      onClick={() => {
+                                        skipFetch.current = true;
+                                        setLocationInput(opt);
+                                        handleLeadFieldChange("searchLocation", opt);
+                                        setIsLocationDropdownOpen(false);
+                                      }}
+                                      className="px-4 py-2 hover:bg-amber-50 cursor-pointer text-[12px] text-slate-700 font-medium border-b border-slate-50 last:border-0"
+                                    >
+                                      {opt}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+
                             {/* Dates */}
                             <div className="grid grid-cols-2 gap-3">
                               <div>
@@ -819,6 +902,36 @@ export default function GlobalHolidayLeadWidget() {
                               </div>
                             </div>
 
+                            {/* ACTION BUTTONS (Back & Next Step) */}
+                            <div className="flex gap-3 pt-2">
+                              <button
+                                type="button"
+                                onClick={() => setStep(1)}
+                                className="h-12 px-6 border border-slate-300 hover:border-slate-800 text-slate-700 hover:text-slate-900 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-1 transition-all rounded-md"
+                              >
+                                <ChevronLeft size={14} /> Back
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setStep(3)}
+                                className="group flex-1 h-12 bg-slate-950 hover:bg-[#C8102E] text-white text-xs font-bold uppercase tracking-[0.25em] flex items-center justify-center gap-2 transition-all rounded-md"
+                              >
+                                Next Step
+                                <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+
+                        {/* STEP 3: FINAL DETAILS */}
+                        {step === 3 && (
+                          <motion.div
+                            key="step3-fields"
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="space-y-4"
+                          >
                             {/* Category selector & budget dropdown options */}
                             <div className="space-y-2">
                               <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Travel Type & Budget</label>
@@ -868,7 +981,7 @@ export default function GlobalHolidayLeadWidget() {
                             <div className="flex gap-3 pt-2">
                               <button
                                 type="button"
-                                onClick={() => setStep(1)}
+                                onClick={() => setStep(2)}
                                 className="h-12 px-6 border border-slate-300 hover:border-slate-800 text-slate-700 hover:text-slate-900 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-1 transition-all rounded-md"
                               >
                                 <ChevronLeft size={14} /> Back

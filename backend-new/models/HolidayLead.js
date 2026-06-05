@@ -59,6 +59,11 @@ const holidayLeadSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    searchLocation: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     locationType: {
       type: String,
       default: "Domestic",

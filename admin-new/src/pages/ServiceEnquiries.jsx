@@ -14,7 +14,8 @@ import {
   Users,
   Briefcase,
   IndianRupee,
-  Compass
+  Compass,
+  MapPin
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from "../lib/api";
@@ -194,6 +195,11 @@ const ServiceEnquiries = () => {
       label: "PREFERENCES",
       render: (row) => (
         <div className="flex flex-col gap-1.5">
+          {row.location && (
+            <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded flex items-center gap-1 w-fit truncate max-w-[150px]">
+              <MapPin size={10} className="text-emerald-500 flex-shrink-0" /> <span className="truncate">{row.location}</span>
+            </span>
+          )}
           <span className="text-[9px] font-black text-gray-700 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded flex items-center gap-1.5 w-fit">
             <Compass size={10} className="text-gray-500" /> {row.travelType || "Holiday"}
           </span>
@@ -469,6 +475,9 @@ const ServiceEnquiries = () => {
                             <div className="flex flex-col gap-2 pt-3 border-t border-blue-200/50">
                                 <label className="text-[10px] font-semibold text-blue-400 uppercase tracking-widest block" style={{ fontFamily: "'Inter', sans-serif" }}>Trip Preferences</label>
                                 <div className="flex items-center gap-2 flex-wrap">
+                                    {selectedEnquiry.location && (
+                                        <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><MapPin size={12} /> {selectedEnquiry.location}</span>
+                                    )}
                                     <span className="text-[10px] font-black uppercase text-blue-800 bg-blue-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><Compass size={12} /> {selectedEnquiry.travelType || "Holiday"}</span>
                                     <span className="text-[10px] font-black uppercase text-amber-700 bg-amber-100/50 px-2 py-1 flex items-center gap-1 rounded"><IndianRupee size={12} /> {selectedEnquiry.budget || "Not Specified"}</span>
                                 </div>

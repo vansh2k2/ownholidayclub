@@ -218,6 +218,7 @@ router.post(
     const checkInInput = normaliseText(req.body?.checkIn);
     const checkOutInput = normaliseText(req.body?.checkOut);
     const location = normaliseText(req.body?.location);
+    const searchLocation = normaliseText(req.body?.searchLocation);
     const locationType = normaliseText(req.body?.locationType || "Domestic");
     const budget = normaliseText(req.body?.budget);
     const travelType = normaliseText(req.body?.travelType);
@@ -310,6 +311,7 @@ router.post(
       message,
       source,
       location,
+      searchLocation,
       locationType,
       budget,
       travelType,
@@ -327,6 +329,7 @@ router.post(
           "Context": contextName || contextType,
           "Location Type": locationType,
           "Location": location,
+          "Specific Location": searchLocation,
           "Budget": budget,
           "Travel Type": travelType,
           "Adults": adults,

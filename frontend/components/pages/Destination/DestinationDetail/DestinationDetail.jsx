@@ -30,6 +30,7 @@ export default function DestinationDetailPage({ destinationId }) {
     kids: "0",
     travelType: "",
     budget: "",
+    location: "",
     message: "",
   });
   const [activeModal, setActiveModal] = useState(null);
@@ -96,6 +97,7 @@ export default function DestinationDetailPage({ destinationId }) {
     const kids = Number(formData.kids || 0);
     const travelType = String(formData.travelType || "").trim();
     const budget = String(formData.budget || "").trim();
+    const location = String(formData.location || "").trim();
     const message = String(formData.message || "").trim();
 
     if (name.length < 2) {
@@ -157,6 +159,7 @@ export default function DestinationDetailPage({ destinationId }) {
           kids,
           travelType,
           budget,
+          location,
           message,
           destinationId: destinationData?._id,
           destinationName: destinationData?.name || "",
@@ -181,6 +184,7 @@ export default function DestinationDetailPage({ destinationId }) {
           kids: "0",
           travelType: "",
           budget: "",
+          location: "",
           message: "",
         });
         setFormError("");
