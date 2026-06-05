@@ -679,7 +679,7 @@ export default function LeadForm({
                             className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
                             
                           >
-                            Travel Type
+                            Select Service
                           </label>
                           <div className="relative group">
                             <Compass
@@ -694,7 +694,7 @@ export default function LeadForm({
                               className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
                               style={{ borderRadius: "6px" }}
                             >
-                              <option value="" disabled>Select a travel type...</option>
+                              <option value="" disabled>Select a service...</option>
                               <option value="Holiday">Holiday</option>
                               <option value="Events">Events</option>
                               <option value="Wedding">Wedding</option>
