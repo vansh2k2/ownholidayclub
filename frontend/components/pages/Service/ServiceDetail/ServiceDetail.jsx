@@ -213,8 +213,8 @@ export default function ServiceDetailPage({ serviceId }) {
         onSelectCategory={(subEvent) => {
           setFormData(prev => ({ 
             ...prev, 
-            subEvent: subEvent.sub_event_name,
-            message: `I would like to inquire about the ${subEvent.sub_event_name} package.` 
+            subEvent: subEvent.title,
+            message: `I would like to inquire about the ${subEvent.title} package.` 
           }));
           scrollToForm();
         }}

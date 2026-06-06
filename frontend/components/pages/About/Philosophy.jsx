@@ -234,6 +234,35 @@ export default function App() {
                 </div>
               </ScrollAnimate>
             ))}
+
+            {/* Stats Block - Origin Style */}
+            <ScrollAnimate animation="fade-up" delay={600}>
+              <div
+                className="flex flex-wrap items-center justify-end gap-4 pt-5 mt-4"
+                style={{ borderTop: "1px solid rgba(203,213,225,0.45)" }}
+              >
+                <div className="flex">
+                  {[16, 17, 18].map((u, i) => (
+                    <div
+                      key={u}
+                      className="overflow-hidden rounded-full"
+                      style={{ width: 32, height: 32, border: "2px solid white", marginLeft: i === 0 ? 0 : -8 }}
+                    >
+                      <img src={`https://i.pravatar.cc/100?u=${u}`} alt="Member" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+                {[{ num: "70,000+", lbl: "Members" }, { num: "12+", lbl: "Years Active" }, { num: "500+", lbl: "Properties" }].map((s, i) => (
+                  <React.Fragment key={s.lbl}>
+                    {i > 0 && <div style={{ width: 1, height: 32, background: "rgba(203,213,225,0.5)", flexShrink: 0 }} />}
+                    <div className="text-left">
+                      <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, color: "#0f172a", lineHeight: 1, marginBottom: 3 }}>{s.num}</p>
+                      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.14em", color: "#b45309" }}>{s.lbl}</p>
+                    </div>
+                  </React.Fragment>
+                ))}
+              </div>
+            </ScrollAnimate>
           </div>
         </div>
       </div>

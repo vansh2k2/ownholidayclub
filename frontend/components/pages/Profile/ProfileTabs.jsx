@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Calendar, Mail, Phone, User } from "lucide-react";
 
 import {
@@ -200,6 +200,47 @@ export function HolidayTab({
   nextStayAllowance, maxCheckOutValue, hasActiveMembership, selectedHolidaySlot,
   onHolidayFieldChange, onBookHoliday, onOpenHolidayModal, onCloseHolidayModal,
 }) {
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const skipFetch = useRef(false);
+
+  useEffect(() => {
+    if (skipFetch.current) {
+      skipFetch.current = false;
+      return;
+    }
+    const locationInput = holidayForm?.place || "";
+    if (locationInput.length < 2) {
+      setLocationOptions([]);
+      setIsLocationDropdownOpen(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': 'AIzaSyDarNwOH5Gfi1KseDZ82fkh2b0wn66uudg'
+          },
+          body: JSON.stringify({ input: locationInput })
+        });
+        const data = await res.json();
+        if (data.suggestions) {
+          setLocationOptions(data.suggestions.map(s => s.placePrediction.text.text));
+          setIsLocationDropdownOpen(true);
+        } else {
+          setLocationOptions([]);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [holidayForm?.place]);
+
   return (
     <div className="space-y-6">
       <Card title="Member Holidays">
@@ -375,13 +416,33 @@ export function HolidayTab({
               </p>
 
               <div className="grid gap-5 md:grid-cols-2">
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 relative">
                   <ProfileInput
                     label="Destination / Place"
                     value={holidayForm.place}
-                    onChange={(v) => onHolidayFieldChange("place", v)}
+                    onChange={(v) => {
+                      onHolidayFieldChange("place", v);
+                      if (!isLocationDropdownOpen) setIsLocationDropdownOpen(true);
+                    }}
                     placeholder="Enter your preferred destination"
                   />
+                  {isLocationDropdownOpen && locationOptions.length > 0 && (
+                    <ul className="absolute z-50 w-full bg-white border border-slate-200 mt-1 shadow-lg max-h-48 overflow-y-auto">
+                      {locationOptions.map((opt, i) => (
+                        <li
+                          key={i}
+                          onClick={() => {
+                            skipFetch.current = true;
+                            onHolidayFieldChange("place", opt);
+                            setIsLocationDropdownOpen(false);
+                          }}
+                          className="px-4 py-2 hover:bg-amber-50 cursor-pointer text-[12px] text-slate-700 font-medium border-b border-slate-50 last:border-0"
+                        >
+                          {opt}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
                 <ProfileInput
                   label="Check-In Date"

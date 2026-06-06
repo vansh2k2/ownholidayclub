@@ -12,9 +12,9 @@ export default function SignatureThought() {
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-50/50 rounded-full blur-[80px] opacity-60 -translate-x-1/3 translate-y-1/3"></div>
       </div>
 
-      <div className="site-width mx-auto px-4 md:px-8 relative z-10">
+      <div className="site-width mx-auto px-4 md:px-8 relative z-10 w-full">
         <ScrollAnimate animation="fade-up">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="w-full">
             <div className="inline-flex items-center gap-2 mb-6">
               <span className="w-8 h-[1px] bg-amber-400"></span>
               <span className="text-amber-600 font-bold tracking-[0.2em] uppercase text-xs font-sans">
@@ -29,9 +29,9 @@ export default function SignatureThought() {
               <span className="text-amber-500 ml-2">”</span>
             </h2>
             
-            <div className="w-16 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto mb-8"></div>
+            <div className="w-16 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-8"></div>
             
-            <div className="text-[15px] md:text-[17px] text-slate-600 leading-relaxed font-medium space-y-4 text-left md:text-center" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <div className="text-[15px] md:text-[17px] text-slate-600 leading-relaxed font-medium space-y-4 text-justify" style={{ fontFamily: "'Inter', sans-serif" }}>
               <p>
                 <span className="font-bold text-slate-800">"The less stress, the more life"</span> this is exactly what we believe in. We offer our services to each and every event which matters to you the most because you matter to us the most. From planning your Holiday vacays to Weddings, Small Parties to Big corporate meetings - Own Holiday Club is just a call away to lend the best of our services.
               </p>
@@ -41,7 +41,7 @@ export default function SignatureThought() {
               <p>
                 You choose the best for you and we will offer the best of us. Yes, you could join any of the following Membership programs, starting from 5 years of duration to that of 35 years and you are all set to go for it. And to add some bling to your happiness, we also add your spouse along with two of your children (below 10 years) to our membership offers.
               </p>
-              <p className="font-bold text-amber-600 bg-amber-50 p-4 rounded-lg inline-block mx-auto">
+              <p className="font-bold text-amber-600 bg-amber-50 p-4 rounded-lg inline-block">
                 Note: The membership offer applies on "Member + Spouse + 2 kids (below 10 years of age)"
               </p>
               <p className="font-bold text-slate-800 text-lg mt-6">

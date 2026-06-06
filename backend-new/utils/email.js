@@ -616,11 +616,122 @@ const sendLeadThankYouEmail = async ({ to, name }) => {
   return sendGenericThankYouEmail({ to, name, type: "Holiday" });
 };
 
+const sendHolidayBookingAdminEmail = async ({
+  user,
+  booking,
+  stayAllowance,
+  validFrom,
+  validTo
+}) => {
+  const from = getFromAddress();
+  const to = "Info@ownholidayclub.com";
+  const subject = `New Holiday Booking Request - ${user.name || "Member"}`;
+
+  const formatDate = (dateInput) => {
+    if (!dateInput) return "N/A";
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return "N/A";
+    return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  };
+
+  const formatDateTime = (dateInput) => {
+    if (!dateInput) return "N/A";
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return "N/A";
+    return d.toLocaleString("en-US", { 
+      year: "numeric", month: "short", day: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  };
+
+  const html = `
+    <div style="margin:0;padding:8px;background:#f8fafc;font-family:Arial,sans-serif;color:#0f172a;">
+      <div style="max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;overflow:hidden;box-shadow:0 20px 50px rgba(15,23,42,0.10);">
+        <div style="padding:18px 24px;background:#ffffff;text-align:center;border-bottom:1px solid #e2e8f0;">
+          <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:148px;max-width:100%;height:auto;display:block;margin:0 auto;" />
+        </div>
+
+        <div style="padding:28px 32px 24px;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);text-align:center;">
+          <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#fbbf24;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
+            New Booking Request
+          </div>
+          <h1 style="margin:18px 0 8px;font-size:30px;line-height:1.15;color:#ffffff;">Holiday Request Received</h1>
+          <p style="margin:0;font-size:14px;line-height:1.7;color:#cbd5e1;">
+            A member has requested to book a holiday.
+          </p>
+        </div>
+
+        <div style="padding:32px;">
+          <p style="margin:0 0 22px;font-size:15px;line-height:1.8;color:#475569;text-align:center;">
+            <strong>${user.name || "Member"}</strong> (${user.email}, ${user.mobile}) has submitted a holiday booking request. Details are below:
+          </p>
+
+          <div style="margin:0 auto 24px;padding:20px;border-radius:20px;border:1px solid #fde68a;background:linear-gradient(180deg,#fffdf6 0%,#fffbeb 100%);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Holiday No.</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; font-weight: 700; color: #0f172a;">#${booking.slotNumber}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Length Of Stay</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${stayAllowance?.label || "N/A"}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Valid From</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${formatDate(validFrom)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Valid To</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${formatDate(validTo)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Destination</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a; font-weight: 700;">${booking.place}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Check-In</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${formatDateTime(booking.checkIn)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Check-Out</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${formatDateTime(booking.checkOut)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Guests</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${booking.adults} Adults / ${booking.kids} Kids</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Status</td>
+                <td style="padding: 8px 0; color: #0f172a; font-weight: 700;">Requested</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="padding:18px 20px;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:22px;">
+            <div style="font-size:14px;line-height:1.8;color:#475569; text-align: center;">
+              Please log in to the admin panel to review and approve/reject this booking request.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return sendMailWithLogging({
+    from,
+    to,
+    subject,
+    text: `New Holiday Booking Request from ${user.name}. Destination: ${booking.place}. Check-In: ${formatDateTime(booking.checkIn)}.`,
+    html,
+  });
+};
+
 module.exports = {
   sendOtpEmail,
   sendWelcomePasswordEmail,
   sendLeadNotificationEmail,
   sendLeadThankYouEmail,
   sendGenericThankYouEmail,
+  sendHolidayBookingAdminEmail,
 };
 

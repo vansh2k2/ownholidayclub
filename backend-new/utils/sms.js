@@ -5,7 +5,7 @@ const { normaliseMobile } = require("./security");
 const DEFAULT_SMS_TIMEOUT_MS = 20000;
 const DEFAULT_SMS_API_URL = "http://3.110.17.247/V2/http-api-post.php";
 const DEFAULT_SMS_MESSAGE_TEMPLATE =
-  "OTP for inquiry with OWN HOLIDAY CLUB is {otp}. OHCLUB";
+  "OTP for inquiry with OWN HOLIDAY CLUB is {otp} OHCLUB";
 
 const getOptionalEnv = (name) => String(process.env[name] || "").trim();
 

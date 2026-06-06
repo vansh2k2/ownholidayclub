@@ -778,46 +778,6 @@ export default function GlobalHolidayLeadWidget() {
                             exit={{ opacity: 0, x: -10 }}
                             className="space-y-4"
                           >
-                            {/* Location Domestic/International toggle & dropdown */}
-                            <div className="space-y-2">
-                              <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Destination Location</label>
-                              <div className="flex gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => handleLeadFieldChange("locationType", "Domestic")}
-                                  className={`flex-1 py-1.5 border text-[10px] font-bold uppercase tracking-widest transition-all ${leadForm.locationType === "Domestic" ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-600"}`}
-                                >
-                                  Domestic
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleLeadFieldChange("locationType", "International")}
-                                  className={`flex-1 py-1.5 border text-[10px] font-bold uppercase tracking-widest transition-all ${leadForm.locationType === "International" ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-600"}`}
-                                >
-                                  International
-                                </button>
-                              </div>
-                              <select
-                                value={leadForm.location}
-                                required
-                                onChange={(e) => handleLeadFieldChange("location", e.target.value)}
-                                className="w-full h-10 px-3 border border-slate-200 text-xs font-bold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none tracking-wide"
-                              >
-                                <option value="" disabled>-- Select Destination --</option>
-                                {isLoadingDestinations ? (
-                                  <option disabled>Loading destinations...</option>
-                                ) : filteredLocations.length > 0 ? (
-                                  filteredLocations.map((dest) => (
-                                    <option key={dest._id || dest.name} value={dest.name}>
-                                      {dest.name} {dest.location ? `(${dest.location})` : ""}
-                                    </option>
-                                  ))
-                                ) : (
-                                  <option disabled>No {leadForm.locationType} destinations found</option>
-                                )}
-                              </select>
-                            </div>
-
                             {/* Specific Location (Google API) */}
                             <div className="space-y-1 relative">
                               <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Specific Location</label>

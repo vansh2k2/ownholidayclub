@@ -5,6 +5,7 @@ const requireCmsAdmin = require("../middleware/requireCmsAdmin");
 const asyncHandler = require("../utils/asyncHandler");
 const { generateMembershipInvoicePdf } = require("../utils/invoice");
 const { getTierBaseDurationYears, getTierBonusYears } = require("../utils/membership");
+const { sendHolidayBookingAdminEmail } = require("../utils/email");
 
 const router = express.Router();
 
@@ -510,6 +511,15 @@ router.post(
     });
 
     await user.save();
+
+    // Send email notification to admin asynchronously
+    sendHolidayBookingAdminEmail({
+      user,
+      booking: user.holidayBookings[0],
+      stayAllowance,
+      validFrom: requestedSlot.validFrom,
+      validTo: requestedSlot.validTo
+    }).catch(err => console.error("Failed to send admin holiday booking email:", err));
 
     return res.status(201).json({
       message:
