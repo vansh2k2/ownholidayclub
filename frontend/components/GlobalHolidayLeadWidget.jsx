@@ -50,7 +50,7 @@ const createInitialLeadForm = () => ({
   checkOut: "",
   adults: 1,
   kids: 0,
-  travelType: "",
+  travelType: "Holiday",
   budget: "",
   message: "",
 });
@@ -108,7 +108,7 @@ export default function GlobalHolidayLeadWidget() {
 
   // Sync default budget when category changes
   useEffect(() => {
-    const defaultBudget = leadForm.travelType ? BUDGET_OPTIONS[leadForm.travelType]?.[0]?.value || "" : "";
+    const defaultBudget = "";
     setLeadForm((prev) => ({ ...prev, budget: defaultBudget }));
   }, [leadForm.travelType]);
 
@@ -595,7 +595,7 @@ export default function GlobalHolidayLeadWidget() {
                         <div>
                           <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#C8102E]">Own Holiday Club</span>
                           <h4 className="text-2xl font-black text-slate-950 tracking-tighter uppercase leading-none mt-1">
-                            {step === 1 ? "Verify Contact Info" : step === 2 ? "Holiday Preferences" : "Final Details"}
+                            {step === 1 ? "SEND YOUR QUERY" : step === 2 ? "Holiday Preferences" : "Final Details"}
                           </h4>
                           <div className="h-1 w-12 bg-[#C8102E] mt-3" />
                         </div>
@@ -896,7 +896,7 @@ export default function GlobalHolidayLeadWidget() {
                             <div className="space-y-2">
                               <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Travel Type & Budget</label>
                               <div className="flex gap-1.5 flex-wrap">
-                                {["Holiday", "Events", "Wedding", "Outing"].map((cat) => (
+                                {["Holiday"].map((cat) => (
                                   <button
                                     key={cat}
                                     type="button"
@@ -913,7 +913,7 @@ export default function GlobalHolidayLeadWidget() {
                                 onChange={(e) => handleLeadFieldChange("budget", e.target.value)}
                                 className="w-full h-10 px-3 border border-slate-200 text-xs font-bold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none tracking-wide"
                               >
-                                <option value="" disabled>Select a budget...</option>
+                                <option value="" disabled>Select your budget</option>
                                 {leadForm.travelType && BUDGET_OPTIONS[leadForm.travelType]?.map((opt) => (
                                   <option key={opt.value} value={opt.value}>
                                     {opt.label}

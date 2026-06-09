@@ -67,14 +67,32 @@ export async function fetchServiceById(slug) {
       };
     }
 
-    // Fallback to old behavior if new API fails or no data
     const services = await fetchServices();
     const serviceId = slugifyValue(slug);
-    return (
-      services.find(
-        (service) => slugifyValue(service.id || service.title) === serviceId,
-      ) || null
+    const fallbackService = services.find(
+      (service) => slugifyValue(service.id || service.title) === serviceId,
     );
+
+    if (fallbackService) {
+      try {
+        const exploreRes = await fetch(`${API_BASE_URL}/api/explore-services`, { cache: "no-store" });
+        const exploreData = await exploreRes.json();
+        if (exploreRes.ok && exploreData.success && exploreData.data?.services) {
+          const matchingCard = exploreData.data.services.find(
+            s => slugifyValue(s.title) === slugifyValue(fallbackService.title)
+          );
+          if (matchingCard) {
+            fallbackService.subServicesConfig = matchingCard.subServicesConfig || {};
+            fallbackService.subServices = matchingCard.subServices || [];
+          }
+        }
+      } catch (err) {
+        console.error("Failed to attach subservices to fallback:", err);
+      }
+      return fallbackService;
+    }
+
+    return null;
   } catch (error) {
     console.error("Failed to fetch service by id:", error);
     return null;
