@@ -45,7 +45,7 @@ router.get(
     let subServices = [];
 
     if (exploreData && exploreData.services) {
-      const matchingCard = exploreData.services.find(s => s.title === service.serviceTitle);
+      const matchingCard = exploreData.services.find(s => s.title.trim().toLowerCase() === service.serviceTitle.trim().toLowerCase());
       if (matchingCard) {
         exploreImage = matchingCard.image;
         subServicesConfig = matchingCard.subServicesConfig || {};
