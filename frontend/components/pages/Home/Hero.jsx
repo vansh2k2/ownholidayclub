@@ -317,20 +317,22 @@ export default function Hero() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -30, opacity: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="mb-4 sm:mb-6 font-sans text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white tracking-tight uppercase [&_p]:m-0"
+                className={`${(activeSlide?.description && activeSlide.description.replace(/<[^>]*>?/gm, '').trim().length > 0) ? 'mb-4 sm:mb-6' : 'mb-6 sm:mb-8'} font-sans text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white tracking-tight uppercase [&_p]:m-0`}
               >
                 <span className="block mb-2" dangerouslySetInnerHTML={{ __html: activeSlide?.title1 || activeSlide?.title?.[0] }}></span>
                 <span className="block text-white/80 font-medium" dangerouslySetInnerHTML={{ __html: activeSlide?.title2 || activeSlide?.title?.[1] }}></span>
               </motion.h1>
 
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="max-w-xl text-white/70 text-xs md:text-sm mb-6 sm:mb-8 md:mb-10 leading-relaxed mx-auto"
-                dangerouslySetInnerHTML={{ __html: activeSlide?.description }}
-              />
+              {(activeSlide?.description && activeSlide.description.replace(/<[^>]*>?/gm, '').trim().length > 0) && (
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                  className="max-w-xl text-white/70 text-xs md:text-sm mb-6 sm:mb-8 md:mb-10 leading-relaxed mx-auto"
+                  dangerouslySetInnerHTML={{ __html: activeSlide.description }}
+                />
+              )}
 
               <motion.div 
                 initial={{ y: 20, opacity: 0 }}
