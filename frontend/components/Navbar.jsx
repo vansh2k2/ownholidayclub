@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Info, MapPin, Briefcase, Star, Building2,
   Phone, User, CalendarDays, Globe, ChevronDown,
-  LayoutGrid, X, Lock, ExternalLink
+  LayoutGrid, X, Lock, ExternalLink, BookOpen
 } from "lucide-react";
 
 const NAV_LINKS = [
@@ -16,6 +16,7 @@ const NAV_LINKS = [
   { label: "Destinations", href: "/destinations", icon: Globe, badge: "New" },
   { label: "Services", href: "/services", icon: Briefcase },
   { label: "Membership", href: "/membership", icon: Star, badge: "VIP" },
+  { label: "Blogs", href: "/blog", icon: BookOpen },
   { label: "List Your Property", href: "/list-your-property", icon: Building2 },
   { label: "Contact Us", href: "/contactus", icon: Phone },
 ];
@@ -99,12 +100,12 @@ export default function Navbar({ onLoginClick }) {
             </Link>
 
             {/* Desktop links */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden lg:flex items-center space-x-2 xl:space-x-5">
               {NAV_LINKS.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="tracking-[0.12em] font-semibold text-[12px] uppercase transition-all duration-300 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-amber-400 after:transition-all after:duration-300 hover:after:w-full text-black hover:text-red-700"
+                  className="tracking-[0.05em] xl:tracking-[0.1em] font-bold xl:font-semibold text-[10px] xl:text-[12px] uppercase transition-all duration-300 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-amber-400 after:transition-all after:duration-300 hover:after:w-full text-black hover:text-red-700 whitespace-nowrap"
                 >
                   {item.label}
                 </Link>
@@ -159,7 +160,7 @@ export default function Navbar({ onLoginClick }) {
             </div>
 
             {/* Mobile: Register button + Hamburger */}
-            <div className="md:hidden flex items-center gap-2 pr-4">
+            <div className="lg:hidden flex items-center gap-2 pr-4">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="bg-amber-500 text-slate-900 border-[1.5px] border-red-600 rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase tracking-tight active:scale-95 transition-all flex items-center gap-1"
@@ -185,7 +186,7 @@ export default function Navbar({ onLoginClick }) {
       </nav>
 
       {/* ─── MOBILE BOTTOM TAB BAR ─── */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[90] bg-white/95 backdrop-blur-xl border-t border-slate-100">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[90] bg-white/95 backdrop-blur-xl border-t border-slate-100">
         <div className="flex items-center justify-between px-1 sm:px-2 pt-1 pb-3">
           {BOTTOM_TABS.map((tab) => {
             const isActive = pathname === tab.href;
@@ -229,7 +230,7 @@ export default function Navbar({ onLoginClick }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="md:hidden fixed inset-0 z-[95] bg-black/50 backdrop-blur-sm"
+              className="lg:hidden fixed inset-0 z-[95] bg-black/50 backdrop-blur-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
@@ -239,7 +240,7 @@ export default function Navbar({ onLoginClick }) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 280 }}
-              className="md:hidden fixed bottom-0 left-0 right-0 z-[99] bg-white rounded-t-[28px] max-h-[90vh] overflow-y-auto"
+              className="lg:hidden fixed bottom-0 left-0 right-0 z-[99] bg-white rounded-t-[28px] max-h-[90vh] overflow-y-auto"
             >
               {/* Drag Handle */}
               <div className="sticky top-0 bg-white z-10 rounded-t-[28px]">

@@ -519,7 +519,7 @@ export default function GlobalHolidayLeadWidget() {
                   <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-red-950/80" />
                   
                   <div className="relative z-10">
-                    <img src="/logo.png" className="w-32 invert brightness-0" alt="Own Holiday Club" />
+                    <img src="/logo.png" className="w-36 drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]" alt="Own Holiday Club" />
                     <h3 className="mt-10 text-3xl font-black leading-[1.1] tracking-tighter uppercase">
                       Your Next <br/>Grand <br/>Escape.
                     </h3>

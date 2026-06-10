@@ -401,7 +401,7 @@ const sendGenericThankYouEmail = async ({ to, name, type = "Holiday" }) => {
   const safeName = String(name || "Traveler").trim() || "Traveler";
  
   let subtext = "We've received your inquiry and our experts are already reviewing it.";
-  let bodyText = "Thank you for choosing <strong style=\"color:#0c1a2e;\">Own Holiday Club</strong>. We've successfully received your inquiry and our team will reach out to you <strong style=\"color:#0c1a2e;\">within 24 hours</strong> to assist you.";
+  let bodyText = "Thank you for choosing <strong style=\"color:#0c1a2e;\">us</strong>. We've successfully received your inquiry and our team will reach out to you <strong style=\"color:#0c1a2e;\">within 24 hours</strong> to assist you.";
   let step3Icon = "✅";
   let step3Title = "Resolved";
   let step3Desc = "Your query is resolved";
@@ -409,198 +409,95 @@ const sendGenericThankYouEmail = async ({ to, name, type = "Holiday" }) => {
 
   if (type === "Holiday" || type === "Destination") {
     subtext = "We've received your inquiry and our luxury travel experts are already reviewing it.";
-    bodyText = "Thank you for choosing <strong style=\"color:#0c1a2e;\">Own Holiday Club</strong>. We've successfully received your inquiry and our dedicated luxury travel concierge team will reach out to you <strong style=\"color:#0c1a2e;\">within 24 hours</strong> to help craft your perfect holiday escape.";
+    bodyText = "Thank you for choosing <strong style=\"color:#0c1a2e;\">us</strong>. We've successfully received your inquiry and our dedicated luxury travel concierge team will reach out to you <strong style=\"color:#0c1a2e;\">within 24 hours</strong> to help craft your perfect holiday escape.";
     step3Icon = "✈️";
     step3Title = "Escape";
     step3Desc = "Your dream holiday is planned";
     plainText = `Hello ${safeName}, thank you for contacting Own Holiday Club. We have received your inquiry and our luxury travel concierge team will reach out to you within 24 hours.`;
   } else if (type === "Service") {
-    bodyText = "Thank you for choosing <strong style=\"color:#0c1a2e;\">Own Holiday Club</strong>. We've successfully received your service inquiry and our dedicated team will reach out to you <strong style=\"color:#0c1a2e;\">within 24 hours</strong>.";
+    bodyText = "Thank you for choosing <strong style=\"color:#0c1a2e;\">us</strong>. We've successfully received your service inquiry and our dedicated team will reach out to you <strong style=\"color:#0c1a2e;\">within 24 hours</strong>.";
     step3Title = "Service";
     step3Desc = "Your required service is delivered";
   } else if (type === "Contact") {
-    bodyText = "Thank you for reaching out to <strong style=\"color:#0c1a2e;\">Own Holiday Club</strong>. We've successfully received your message and our support team will get back to you <strong style=\"color:#0c1a2e;\">within 24 hours</strong>.";
+    bodyText = "Thank you for reaching out to <strong style=\"color:#0c1a2e;\">us</strong>. We've successfully received your message and our support team will get back to you <strong style=\"color:#0c1a2e;\">within 24 hours</strong>.";
     step3Title = "Support";
     step3Desc = "We assist you promptly";
   }
 
   const html = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Thank You – Own Holiday Club</title>
-    </head>
-    <body style="margin:0;padding:0;background-color:#f0f2f5;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
- 
-      <!-- Outer wrapper -->
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f2f5;padding:32px 16px;">
-        <tr>
-          <td align="center">
- 
-            <!-- Email card -->
-            <table width="620" cellpadding="0" cellspacing="0" border="0" style="max-width:620px;width:100%;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.10);">
- 
-              <!-- ═══════════════════════════════════════ -->
-              <!-- TOP ACCENT BAR -->
-              <!-- ═══════════════════════════════════════ -->
-              <tr>
-                <td style="height:5px;background:linear-gradient(90deg,#c8960c 0%,#f5c842 50%,#c8960c 100%);"></td>
-              </tr>
- 
-              <!-- ═══════════════════════════════════════ -->
-              <!-- LOGO HEADER -->
-              <!-- ═══════════════════════════════════════ -->
-              <tr>
-                <td align="center" style="padding:28px 32px 22px;background:#ffffff;border-bottom:1px solid #eef0f3;">
-                  <img src="${BRAND_LOGO_URL}"
-                    alt="Own Holiday Club"
-                    width="150"
-                    style="display:block;height:auto;margin:0 auto;" />
-                </td>
-              </tr>
- 
-              <!-- ═══════════════════════════════════════ -->
-              <!-- HERO DARK BANNER -->
-              <!-- ═══════════════════════════════════════ -->
-              <tr>
-                <td style="background:#0c1a2e;padding:44px 40px 40px;text-align:center;">
- 
-                  <!-- Golden badge pill -->
-                  <div style="display:inline-block;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.30);border-radius:999px;padding:6px 18px;margin-bottom:22px;">
-                    <span style="font-size:10px;font-weight:700;letter-spacing:0.20em;text-transform:uppercase;color:#f5c842;">
-                      ✦ &nbsp; Inquiry Received
-                    </span>
-                  </div>
- 
-                  <!-- Main heading -->
-                  <h1 style="margin:0 0 14px;font-size:32px;font-weight:700;color:#ffffff;line-height:1.2;letter-spacing:-0.5px;">
-                    Thank You, ${safeName}!
-                  </h1>
- 
-                  <!-- Subtext -->
-                  <p style="margin:0;font-size:15px;line-height:1.7;color:#94a3b8;max-width:420px;margin:0 auto;">
-                    ${subtext}
-                  </p>
- 
-                </td>
-              </tr>
- 
-              <!-- ═══════════════════════════════════════ -->
-              <!-- GOLDEN DIVIDER LINE -->
-              <!-- ═══════════════════════════════════════ -->
-              <tr>
-                <td style="height:3px;background:linear-gradient(90deg,transparent,#f5c842,transparent);"></td>
-              </tr>
- 
-              <!-- ═══════════════════════════════════════ -->
-              <!-- BODY CONTENT -->
-              <!-- ═══════════════════════════════════════ -->
-              <tr>
-                <td style="padding:40px 40px 32px;background:#ffffff;">
- 
-                  <!-- Greeting message -->
-                  <p style="margin:0 0 20px;font-size:16px;line-height:1.8;color:#1e2a3a;">
-                    Hello <strong style="color:#0c1a2e;">${safeName}</strong>,
-                  </p>
-                  <p style="margin:0 0 32px;font-size:15px;line-height:1.85;color:#4a5568;">
-                    ${bodyText}
-                  </p>
- 
-                  <!-- ─── 3-step promise block ─── -->
-                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
-                    <tr>
- 
-                      <!-- Step 1 -->
-                      <td width="33%" style="padding:0 8px 0 0;vertical-align:top;">
-                        <div style="background:#fafbfc;border:1px solid #eef0f3;border-top:3px solid #f5c842;border-radius:12px;padding:20px 16px;text-align:center;">
-                          <div style="font-size:22px;margin-bottom:10px;">📋</div>
-                          <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0c1a2e;margin-bottom:6px;">Review</div>
-                          <div style="font-size:12px;color:#64748b;line-height:1.6;">Our team reviews your inquiry</div>
-                        </div>
-                      </td>
- 
-                      <!-- Step 2 -->
-                      <td width="33%" style="padding:0 4px;vertical-align:top;">
-                        <div style="background:#fafbfc;border:1px solid #eef0f3;border-top:3px solid #f5c842;border-radius:12px;padding:20px 16px;text-align:center;">
-                          <div style="font-size:22px;margin-bottom:10px;">📞</div>
-                          <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0c1a2e;margin-bottom:6px;">Connect</div>
-                          <div style="font-size:12px;color:#64748b;line-height:1.6;">Expert contacts you within 24 hrs</div>
-                        </div>
-                      </td>
- 
-                      <!-- Step 3 -->
-                      <td width="33%" style="padding:0 0 0 8px;vertical-align:top;">
-                        <div style="background:#fafbfc;border:1px solid #eef0f3;border-top:3px solid #f5c842;border-radius:12px;padding:20px 16px;text-align:center;">
-                          <div style="font-size:22px;margin-bottom:10px;">${step3Icon}</div>
-                          <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0c1a2e;margin-bottom:6px;">${step3Title}</div>
-                          <div style="font-size:12px;color:#64748b;line-height:1.6;">${step3Desc}</div>
-                        </div>
-                      </td>
- 
-                    </tr>
-                  </table>
- 
-                  <!-- ─── Contact info block ─── -->
-                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8f9fb;border:1px solid #eef0f3;border-left:4px solid #f5c842;border-radius:0 12px 12px 0;margin-bottom:32px;">
-                    <tr>
-                      <td style="padding:20px 24px;">
-                        <p style="margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0c1a2e;">Need urgent help?</p>
-                        <p style="margin:0;font-size:14px;line-height:1.8;color:#4a5568;">
-                          Reply to this email or call us at
-                          <a href="tel:+919871984074" style="color:#c8960c;font-weight:600;text-decoration:none;">+91 98719 84074</a>.
-                          Our concierge team is available to assist you.
-                        </p>
-                      </td>
-                    </tr>
-                  </table>
- 
-                  <!-- ─── CTA Button ─── -->
-                  <div style="text-align:center;margin-bottom:8px;">
-                    <a href="https://www.ownholidayclub.com"
-                      style="display:inline-block;background:linear-gradient(135deg,#c8960c,#f5c842);color:#0c1a2e;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:0.05em;padding:15px 36px;border-radius:999px;box-shadow:0 4px 16px rgba(200,150,12,0.30);">
-                      EXPLORE OUR DESTINATIONS &nbsp;→
-                    </a>
-                  </div>
- 
-                </td>
-              </tr>
- 
-              <!-- ═══════════════════════════════════════ -->
-              <!-- FOOTER -->
-              <!-- ═══════════════════════════════════════ -->
-              <tr>
-                <td style="background:#0c1a2e;padding:28px 40px;text-align:center;">
- 
-                  <p style="margin:0 0 10px;font-size:13px;color:#94a3b8;line-height:1.7;">
-                    © 2024 Own Holiday Club. All rights reserved.<br />
-                    <a href="mailto:info@ownholidayclub.com" style="color:#f5c842;text-decoration:none;">info@ownholidayclub.com</a>
-                    &nbsp;·&nbsp;
-                    <a href="https://www.ownholidayclub.com" style="color:#f5c842;text-decoration:none;">www.ownholidayclub.com</a>
-                  </p>
- 
-                  <p style="margin:0;font-size:11px;color:#475569;line-height:1.6;">
-                    You're receiving this because you submitted an inquiry on our website.
-                  </p>
- 
-                </td>
-              </tr>
- 
-              <!-- BOTTOM ACCENT BAR -->
-              <tr>
-                <td style="height:4px;background:linear-gradient(90deg,#c8960c 0%,#f5c842 50%,#c8960c 100%);"></td>
-              </tr>
- 
-            </table>
-            <!-- /Email card -->
- 
-          </td>
-        </tr>
-      </table>
- 
-    </body>
-    </html>
+    <div style="margin:0;padding:8px;background:#f8fafc;font-family:Arial,sans-serif;color:#0f172a;">
+      <div style="max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;overflow:hidden;box-shadow:0 20px 50px rgba(15,23,42,0.10);">
+        <div style="padding:18px 24px;background:#ffffff;text-align:center;border-bottom:1px solid #e2e8f0;">
+          <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:148px;max-width:100%;height:auto;display:block;margin:0 auto;" />
+        </div>
+
+        <div style="padding:28px 32px 24px;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);text-align:center;">
+          <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#fbbf24;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
+            Inquiry Received
+          </div>
+          <h1 style="margin:18px 0 8px;font-size:30px;line-height:1.15;color:#ffffff;">Thank You, ${safeName}!</h1>
+          <p style="margin:0;font-size:14px;line-height:1.7;color:#cbd5e1;">
+            ${subtext}
+          </p>
+        </div>
+
+        <div style="padding:32px;">
+          <p style="margin:0 0 18px;font-size:16px;line-height:1.8;color:#334155;">
+            Hello <strong style="color:#0f172a;">${safeName}</strong>,
+          </p>
+          <p style="margin:0 0 24px;font-size:15px;line-height:1.8;color:#475569;">
+            ${bodyText}
+          </p>
+
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+            <tr>
+              <td width="48%" style="padding-right:4%;vertical-align:top;">
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-top:3px solid #f59e0b;border-radius:16px;padding:16px 12px;text-align:center;height:100%;">
+                  <div style="font-size:22px;margin-bottom:8px;">📋</div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0f172a;margin-bottom:4px;">Review</div>
+                  <div style="font-size:11px;color:#64748b;line-height:1.5;">Our team reviews your inquiry</div>
+                </div>
+              </td>
+              <td width="48%" style="vertical-align:top;">
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-top:3px solid #f59e0b;border-radius:16px;padding:16px 12px;text-align:center;height:100%;">
+                  <div style="font-size:22px;margin-bottom:8px;">📞</div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0f172a;margin-bottom:4px;">Connect</div>
+                  <div style="font-size:11px;color:#64748b;line-height:1.5;">Expert contacts you within 24 hrs</div>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <div style="padding:18px 20px;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:24px;">
+            <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#d97706;margin-bottom:6px;">
+              Need urgent help?
+            </div>
+            <div style="font-size:14px;line-height:1.8;color:#475569;">
+              Call us at <a href="tel:+919871984074" style="color:#0f172a;font-weight:600;text-decoration:none;">+91 98719 84074</a>. Our concierge team is available to assist you.
+            </div>
+          </div>
+
+          <div style="text-align:center;margin-bottom:24px;">
+            <a href="https://www.ownholidayclub.com" style="display:inline-block;padding:14px 24px;border-radius:999px;background:#f59e0b;color:#0f172a;text-decoration:none;font-size:14px;font-weight:700;">
+              EXPLORE OUR DESTINATIONS
+            </a>
+          </div>
+
+          <div style="border-top:1px solid #e2e8f0;padding-top:24px;text-align:center;">
+            <p style="margin:0 0 8px;font-size:13px;color:#64748b;line-height:1.7;">
+              © 2026 Own Holiday Club. All rights reserved.<br />
+              <a href="mailto:info@ownholidayclub.com" style="color:#d97706;text-decoration:none;">info@ownholidayclub.com</a>
+              &nbsp;·&nbsp;
+              <a href="https://www.ownholidayclub.com" style="color:#d97706;text-decoration:none;">www.ownholidayclub.com</a>
+            </p>
+            <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.6;">
+              You're receiving this because you submitted an inquiry on our website.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
   `;
  
   return sendMailWithLogging({
