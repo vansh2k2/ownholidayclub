@@ -35,7 +35,9 @@ const normalizePost = (post) => ({
   metaTitle: post?.metaTitle || post?.title,
   metaDescription: post?.metaDescription || post?.excerpt,
   canonicalTag: post?.canonicalTag || "",
-  schemaMarkup: post?.schemaMarkup || "",
+  schemaMarkup: typeof post?.schemaMarkup === 'string' 
+    ? post.schemaMarkup.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').trim() 
+    : post?.schemaMarkup || "",
   ogTitle: post?.ogTitle || post?.title,
   ogDescription: post?.ogDescription || post?.excerpt,
   ogImage: post?.ogImage || post?.image || DEFAULT_IMAGE,
