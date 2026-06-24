@@ -84,7 +84,7 @@ exports.createImage = async (req, res) => {
         documentType: "image"
       });
       imageUrl = uploaded.url;
-      publicId = uploaded.public_id;
+      publicId = uploaded.publicId;
     } else {
       return res.status(400).json({ success: false, message: "Invalid image format. Expected base64." });
     }
@@ -131,7 +131,7 @@ exports.updateImage = async (req, res) => {
         documentType: "image"
       });
       imageUrl = uploaded.url;
-      publicId = uploaded.public_id;
+      publicId = uploaded.publicId;
     }
 
     existingImage.text = text !== undefined ? text : existingImage.text;

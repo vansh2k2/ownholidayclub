@@ -1,9 +1,95 @@
 import { useState, useEffect } from 'react';
-import { ImageIcon, Save, Trash2, Edit, Plus, CheckCircle } from 'lucide-react';
+import { ImageIcon, Save, Trash2, Edit, Plus, CheckCircle, CheckCircle2, Layout } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from "../lib/api";
 import PageHeader from '../components/PageHeader';
 
+const ImageTable = ({ title, images, onEdit, onDelete }) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const totalPages = Math.ceil(images.length / itemsPerPage);
+
+    const currentImages = images.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [images.length]);
+
+    return (
+        <div className="bg-white border-2 border-gray-200 shadow-sm overflow-hidden mb-8">
+            <div className="px-6 py-4 border-b bg-[#C8102E]">
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-[#DE802B]" /> {title}
+                </h2>
+            </div>
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="bg-gray-50 text-gray-600 text-xs uppercase font-bold">
+                            <th className="px-4 py-2 border-b">Order</th>
+                            <th className="px-4 py-2 border-b">Image</th>
+                            <th className="px-4 py-2 border-b">Text</th>
+                            <th className="px-4 py-2 border-b text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {currentImages.length > 0 ? currentImages.map((img) => (
+                            <tr key={img._id} className="hover:bg-gray-50 transition-colors">
+                                <td className="px-4 py-2 font-bold text-[#C8102E]">{img.order}</td>
+                                <td className="px-4 py-2">
+                                    <div className="w-20 h-12 bg-gray-200 overflow-hidden rounded border border-gray-200">
+                                        <img src={img.image?.url} alt="Gallery" className="w-full h-full object-cover" />
+                                    </div>
+                                </td>
+                                <td className="px-4 py-2 font-bold text-gray-900">{img.text || <span className="text-gray-400 italic font-normal">No text</span>}</td>
+                                <td className="px-4 py-2">
+                                    <div className="flex justify-center gap-2">
+                                        <button onClick={() => onEdit(img)} className="p-1.5 text-blue-600 hover:bg-blue-50 transition-colors" title="Edit">
+                                            <Edit className="w-4 h-4" />
+                                        </button>
+                                        <button onClick={() => onDelete(img._id)} className="p-1.5 text-red-600 hover:bg-red-50 transition-colors" title="Delete">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        )) : (
+                            <tr>
+                                <td colSpan="4" className="px-4 py-8 text-center text-gray-500">No images found.</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between px-6 py-3 border-t bg-gray-50">
+                    <span className="text-sm font-semibold text-gray-600">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <div className="flex gap-2">
+                        <button 
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => prev - 1)}
+                            className="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-bold disabled:opacity-50 hover:bg-gray-100 transition-colors text-gray-700"
+                        >
+                            Previous
+                        </button>
+                        <button 
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                            className="px-3 py-1 bg-[#C8102E] text-white border border-[#C8102E] rounded text-xs font-bold disabled:opacity-50 hover:bg-[#a00d24] transition-colors"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 const AppGallery = () => {
     const [isLoading, setIsLoading] = useState(false);
     
@@ -208,52 +294,7 @@ const AppGallery = () => {
         }
     };
 
-    const ImageTable = ({ title, images }) => (
-        <div className="bg-white border-2 border-gray-200 overflow-hidden shadow-lg mb-8">
-            <div className="px-6 py-4 border-b bg-[#C8102E]">
-                <h2 className="text-lg font-semibold text-white">{title}</h2>
-            </div>
-            <div className="p-4 overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-gray-100 text-gray-700 uppercase text-xs">
-                            <th className="p-3 border-b">Order</th>
-                            <th className="p-3 border-b">Image</th>
-                            <th className="p-3 border-b">Text</th>
-                            <th className="p-3 border-b">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {images.length > 0 ? images.map((img) => (
-                            <tr key={img._id} className="border-b hover:bg-gray-50">
-                                <td className="p-3 font-semibold">{img.order}</td>
-                                <td className="p-3">
-                                    <div className="w-24 h-16 bg-gray-200 overflow-hidden rounded">
-                                        <img src={img.image?.url} alt="Gallery" className="w-full h-full object-cover" />
-                                    </div>
-                                </td>
-                                <td className="p-3">{img.text || <span className="text-gray-400 italic">No text</span>}</td>
-                                <td className="p-3">
-                                    <div className="flex gap-2">
-                                        <button onClick={() => editImage(img)} className="p-2 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition">
-                                            <Edit size={16} />
-                                        </button>
-                                        <button onClick={() => deleteImage(img._id)} className="p-2 bg-red-50 text-red-600 rounded hover:bg-red-100 transition">
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        )) : (
-                            <tr>
-                                <td colSpan="4" className="p-6 text-center text-gray-500">No images found.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
+
 
     return (
         <div className="bg-white shadow-md mt-6 p-6 min-h-screen rounded-lg">
@@ -263,15 +304,15 @@ const AppGallery = () => {
             />
 
             {/* Select Section Dropdown */}
-            <div className="bg-white border-2 border-gray-200 p-6 mb-8 shadow-lg">
-                <label className="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Select Section to Manage</label>
+            <div className="mb-8 bg-gray-50 p-4 border-2 border-gray-200">
+                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-tight">Select Section to Manage</label>
                 <select
                     value={selectedSection}
                     onChange={(e) => {
                         setSelectedSection(e.target.value);
                         setIsEditingImage(false);
                     }}
-                    className="w-full max-w-md px-3 py-2 border-2 border-gray-300 focus:outline-[#C8102E] focus:border-[#C8102E] text-sm rounded shadow-sm"
+                    className="w-full lg:w-1/3 px-4 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none font-bold text-[#C8102E]"
                 >
                     <option value="">-- Choose Section --</option>
                     <option value="featured">Featured Experiences</option>
@@ -280,158 +321,140 @@ const AppGallery = () => {
             </div>
 
             {selectedSection && (
-                <>
-                    {/* Headings Section */}
-                    <div className="bg-white border-2 border-gray-200 p-6 mb-8 shadow-lg">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-red-50 text-[#C8102E] rounded-md">
-                                <CheckCircle className="w-5 h-5" />
-                            </div>
-                            <h2 className="text-xl font-bold text-gray-900">
-                                {selectedSection === 'featured' ? 'Featured Experiences Settings' : 'Full Gallery Settings'}
-                            </h2>
-                        </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Section: Headings and Form */}
+                    <div className="lg:col-span-1 space-y-6">
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {selectedSection === 'featured' && (
+                        {/* Headings Section */}
+                        <div className="bg-white border-2 border-gray-200 p-6 shadow-sm">
+                            <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-[#C8102E]">
+                                <Layout className="w-5 h-5" /> Section Settings
+                            </h2>
+                            <div className="space-y-4">
+                                {selectedSection === 'featured' && (
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-tight">Featured Experiences Title</label>
+                                        <input
+                                            type="text"
+                                            name="featuredTitle"
+                                            value={headings.featuredTitle}
+                                            onChange={handleHeadingChange}
+                                            className="w-full px-4 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none"
+                                        />
+                                    </div>
+                                )}
+                                
+                                {selectedSection === 'full' && (
+                                    <>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-tight">Full Gallery Title</label>
+                                            <input
+                                                type="text"
+                                                name="fullGalleryTitle"
+                                                value={headings.fullGalleryTitle}
+                                                onChange={handleHeadingChange}
+                                                className="w-full px-4 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-tight">Full Gallery Subtitle</label>
+                                            <input
+                                                type="text"
+                                                name="fullGallerySubtitle"
+                                                value={headings.fullGallerySubtitle}
+                                                onChange={handleHeadingChange}
+                                                className="w-full px-4 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none"
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                                <button
+                                    onClick={saveHeadings}
+                                    disabled={isLoading}
+                                    className="w-full py-2 bg-[#C8102E] text-white font-bold hover:bg-[#a00d24] transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <Save className="w-4 h-4" /> Save Section Settings
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Add Image Form */}
+                        <div id="image-form" className="bg-white border-2 border-gray-200 p-6 shadow-sm">
+                            <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-[#DE802B]">
+                                {isEditingImage ? <Edit className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                                {isEditingImage ? 'Edit Image' : 'Add New Image'}
+                            </h2>
+                            <form onSubmit={saveImage} className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Featured Experiences Title</label>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase">Optional Text</label>
                                     <input
                                         type="text"
-                                        name="featuredTitle"
-                                        value={headings.featuredTitle}
-                                        onChange={handleHeadingChange}
-                                        className="w-full px-3 py-2 border-2 border-gray-300 focus:outline-[#C8102E] focus:border-[#C8102E] text-sm rounded shadow-sm"
+                                        name="text"
+                                        value={imageForm.text}
+                                        onChange={handleImageInputChange}
+                                        placeholder="e.g. WEDDINGS"
+                                        className="w-full px-3 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none text-sm font-semibold"
                                     />
                                 </div>
-                            )}
-                            
-                            {selectedSection === 'full' && (
-                                <>
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Full Gallery Title</label>
-                                        <input
-                                            type="text"
-                                            name="fullGalleryTitle"
-                                            value={headings.fullGalleryTitle}
-                                            onChange={handleHeadingChange}
-                                            className="w-full px-3 py-2 border-2 border-gray-300 focus:outline-[#C8102E] focus:border-[#C8102E] text-sm rounded shadow-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Full Gallery Subtitle</label>
-                                        <input
-                                            type="text"
-                                            name="fullGallerySubtitle"
-                                            value={headings.fullGallerySubtitle}
-                                            onChange={handleHeadingChange}
-                                            className="w-full px-3 py-2 border-2 border-gray-300 focus:outline-[#C8102E] focus:border-[#C8102E] text-sm rounded shadow-sm"
-                                        />
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <div className="flex justify-end mt-4">
-                            <button
-                                onClick={saveHeadings}
-                                disabled={isLoading}
-                                className="px-6 py-2 bg-[#C8102E] text-white font-bold rounded shadow-lg hover:shadow-xl flex items-center gap-2 uppercase text-xs"
-                            >
-                                <Save size={16} /> Save Settings
-                            </button>
-                        </div>
-                    </div>
-                    {/* Add Image Form */}
-            <div id="image-form" className="bg-white border-2 border-gray-200 p-6 mb-10 shadow-lg">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-red-50 text-[#C8102E] rounded-md">
-                        <ImageIcon className="w-5 h-5" />
-                    </div>
-                    <h2 className="text-xl font-bold text-gray-900">
-                        {isEditingImage ? 'Edit Image' : 'Add New Image'}
-                    </h2>
-                </div>
-
-                <form onSubmit={saveImage}>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Section *</label>
-                            <input
-                                type="text"
-                                readOnly
-                                value={selectedSection === 'featured' ? 'Featured Experiences' : 'Full Gallery'}
-                                className="w-full px-3 py-2 border-2 border-gray-300 bg-gray-100 text-gray-500 text-sm rounded shadow-sm cursor-not-allowed"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Optional Text</label>
-                            <input
-                                type="text"
-                                name="text"
-                                value={imageForm.text}
-                                onChange={handleImageInputChange}
-                                placeholder="e.g. WEDDINGS"
-                                className="w-full px-3 py-2 border-2 border-gray-300 focus:outline-[#C8102E] focus:border-[#C8102E] text-sm rounded shadow-sm"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Order Number</label>
-                            <input
-                                type="number"
-                                name="order"
-                                value={imageForm.order}
-                                onChange={handleImageInputChange}
-                                placeholder="Auto-assigned if empty"
-                                className="w-full px-3 py-2 border-2 border-gray-300 focus:outline-[#C8102E] focus:border-[#C8102E] text-sm rounded shadow-sm"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Upload Image {!isEditingImage && '*'}</label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                className="w-full px-3 py-2 border-2 border-gray-300 text-sm rounded shadow-sm"
-                            />
-                            {imagePreview && (
-                                <div className="mt-2 w-32 h-20 border border-gray-200 rounded overflow-hidden">
-                                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase">Order Number</label>
+                                    <input
+                                        type="number"
+                                        name="order"
+                                        value={imageForm.order}
+                                        onChange={handleImageInputChange}
+                                        placeholder="Auto-assigned if empty"
+                                        className="w-full px-3 py-2 border-2 border-gray-300 focus:border-[#C8102E] outline-none text-sm font-semibold"
+                                    />
                                 </div>
-                            )}
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase">Upload Image {!isEditingImage && '*'}</label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="w-full px-3 py-2 border-2 border-gray-300 outline-none text-sm font-semibold"
+                                    />
+                                    {imagePreview && (
+                                        <div className="mt-2 w-full h-32 border border-gray-200 rounded overflow-hidden">
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <div className="flex gap-2 pt-2">
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="flex-1 py-2 bg-[#DE802B] text-white font-bold hover:bg-[#c66d21] transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <Save size={16} /> {isEditingImage ? 'Update Image' : 'Add Image'}
+                                    </button>
+                                    {isEditingImage && (
+                                        <button
+                                            type="button"
+                                            onClick={resetImageForm}
+                                            className="px-4 py-2 bg-gray-500 text-white font-bold hover:bg-gray-600 transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    )}
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    
-                    <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
-                        {isEditingImage && (
-                            <button
-                                type="button"
-                                onClick={resetImageForm}
-                                className="px-6 py-2 bg-gray-500 text-white font-bold rounded shadow hover:bg-gray-600 uppercase tracking-wider text-xs"
-                            >
-                                Cancel Edit
-                            </button>
+
+                    {/* Right Section: Tables */}
+                    <div className="lg:col-span-2">
+                        {selectedSection === "featured" && (
+                            <ImageTable title="Featured Experiences Images" images={featuredImages} onEdit={editImage} onDelete={deleteImage} />
                         )}
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="px-6 py-2 bg-[#C8102E] text-white font-bold rounded shadow-lg hover:shadow-xl flex items-center gap-2 uppercase tracking-widest text-xs disabled:opacity-50"
-                        >
-                            <Save size={16} /> {isEditingImage ? 'Update Image' : 'Add Image'}
-                        </button>
+                        {selectedSection === "full" && (
+                            <ImageTable title="Full Gallery Images" images={fullGalleryImages} onEdit={editImage} onDelete={deleteImage} />
+                        )}
                     </div>
-                </form>
-            </div>
-
-                    {/* Tables */}
-                    {selectedSection === "featured" && (
-                        <ImageTable title="Featured Experiences Images" images={featuredImages} />
-                    )}
-                    {selectedSection === "full" && (
-                        <ImageTable title="Full Gallery Images" images={fullGalleryImages} />
-                    )}
-                </>
+                </div>
             )}
-
         </div>
     );
 };
