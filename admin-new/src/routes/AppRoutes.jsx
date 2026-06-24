@@ -36,6 +36,7 @@ import SeoList from "../pages/SeoList";
 import SocialMedia from "../pages/SocialMedia";
 import ActivityLogs from "../pages/ActivityLogs";
 import HolidayBookings from "../pages/HolidayBookings";
+import AppGallery from "../pages/AppGallery";
 
 /* Protected */
 import ProtectedRoute from "./ProtectedRoute";
@@ -82,6 +83,7 @@ export default function AppRoutes() {
           <Route path="meta-list" element={<SeoList />} />
           <Route path="social-media" element={<SocialMedia />} />
           <Route path="activity-logs" element={<ActivityLogs />} />
+          <Route path="app-gallery" element={<AppGallery />} />
 
         </Route>
       </Route>

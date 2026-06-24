@@ -256,6 +256,18 @@ export const menuItems = [
     ],
   },
 
+  /* ================= APP GALLERY SECTION ================= */
+  {
+    type: "heading",
+    label: "App Gallery Section",
+  },
+  {
+    type: "item",
+    label: "Add Images",
+    icon: Images,
+    path: "/app-gallery",
+  },
+
   /* ================= SEO SECTION ================= */
   {
     type: "heading",
