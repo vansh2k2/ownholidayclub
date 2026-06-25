@@ -267,6 +267,12 @@ export const menuItems = [
     icon: Images,
     path: "/app-gallery",
   },
+  {
+    type: "item",
+    label: "Add Video",
+    icon: Images,
+    path: "/app-video-gallery",
+  },
 
   /* ================= SEO SECTION ================= */
   {

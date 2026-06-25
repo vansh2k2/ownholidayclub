@@ -39,6 +39,7 @@ const dashboardRoutes          = require("./routes/dashboardRoutes");
 const activityLogRoutes        = require("./routes/activityLogRoutes");
 const whyChooseUsRoutes        = require("./routes/whyChooseUs");
 const appGalleryRoutes         = require("./routes/appGalleryRoutes");
+const appVideoGalleryRoutes    = require("./routes/appVideoGalleryRoutes");
 
 // ─── Port ──────────────────────────────────────────────────────────────────────
 const port = process.env.PORT || 8081;
@@ -101,6 +102,7 @@ app.use("/api/dashboard",               dashboardRoutes);
 app.use("/api/activity-logs",           activityLogRoutes);
 app.use("/api/why-choose-us",           whyChooseUsRoutes);
 app.use("/api/app-gallery",             appGalleryRoutes);
+app.use("/api/app-video-gallery",       appVideoGalleryRoutes);
 
 
 // ─── Test Routes (remove in production) ───────────────────────────────────────
