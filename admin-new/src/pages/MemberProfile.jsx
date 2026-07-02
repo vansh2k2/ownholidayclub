@@ -364,23 +364,35 @@ const MemberProfile = () => {
                             <td style={LC}>ID Proof (Aadhaar/PAN)</td>
                             <td colSpan={2} style={VCD}>
                                 {member.documents?.idProof?.url ? (
-                                    <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "8px 0" }}>
-                                        <a href={member.documents.idProof.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
-                                            <FileText size={14} /> VIEW DOCUMENT ({safe(member.documents.idProof.proofType || 'ID Proof')})
-                                        </a>
-                                        <img src={member.documents.idProof.url} alt="ID Proof" style={{ maxWidth: "100%", maxHeight: "250px", objectFit: "contain", border: "1px solid #e2e8f0", borderRadius: 8, padding: 4 }} />
-                                    </div>
+                                    <a href={member.documents.idProof.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
+                                        <FileText size={14} /> VIEW DOCUMENT ({safe(member.documents.idProof.proofType || 'ID Proof')})
+                                    </a>
                                 ) : "NOT SUBMITTED"}
                             </td>
                             <td style={LC}>Address Proof</td>
                             <td colSpan={2} style={VC}>
                                 {member.documents?.addressProof?.url ? (
-                                    <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "8px 0" }}>
-                                        <a href={member.documents.addressProof.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
-                                            <FileText size={14} /> VIEW DOCUMENT ({safe(member.documents.addressProof.proofType || 'Address Proof')})
-                                        </a>
-                                        <img src={member.documents.addressProof.url} alt="Address Proof" style={{ maxWidth: "100%", maxHeight: "250px", objectFit: "contain", border: "1px solid #e2e8f0", borderRadius: 8, padding: 4 }} />
-                                    </div>
+                                    <a href={member.documents.addressProof.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
+                                        <FileText size={14} /> VIEW DOCUMENT ({safe(member.documents.addressProof.proofType || 'Address Proof')})
+                                    </a>
+                                ) : "NOT SUBMITTED"}
+                            </td>
+                        </tr>
+                        <tr style={{ borderBottom: "1px solid #d1d5db" }}>
+                            <td style={LC}>Spouse ID Proof</td>
+                            <td colSpan={2} style={VCD}>
+                                {member.documents?.spouseId?.url ? (
+                                    <a href={member.documents.spouseId.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
+                                        <FileText size={14} /> VIEW DOCUMENT ({safe(member.documents.spouseId.proofType || 'Spouse ID')})
+                                    </a>
+                                ) : "NOT SUBMITTED"}
+                            </td>
+                            <td style={LC}>Profile Image</td>
+                            <td colSpan={2} style={VC}>
+                                {member.documents?.profileImage?.url ? (
+                                    <a href={member.documents.profileImage.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
+                                        <FileText size={14} /> VIEW PROFILE IMAGE
+                                    </a>
                                 ) : "NOT SUBMITTED"}
                             </td>
                         </tr>

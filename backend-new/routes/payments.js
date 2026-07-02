@@ -202,6 +202,7 @@ const normaliseMemberDetails = (payload = {}) => {
       profileImage: normalizeDocument(documents?.profileImage),
       idProof: normalizeDocument(documents?.idProof),
       addressProof: normalizeDocument(documents?.addressProof),
+      spouseId: normalizeDocument(documents?.spouseId),
     },
     acceptedTerms: Boolean(payload?.acceptedTerms),
   };

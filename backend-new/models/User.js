@@ -403,6 +403,10 @@ const userSchema = new mongoose.Schema(
         type: documentSchema,
         default: () => ({}),
       },
+      spouseId: {
+        type: documentSchema,
+        default: () => ({}),
+      },
     },
     membership: {
       tierId: {
