@@ -794,7 +794,7 @@ export default function MembershipPurchasePageContent({
                   <button
                     type="button"
                     onClick={handleContinue}
-                    disabled={!stepOneValid || isBusy}
+                    disabled={isBusy}
                     className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[12px] bg-amber-500 px-6 text-[14px] font-semibold text-slate-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Next Step
@@ -803,7 +803,7 @@ export default function MembershipPurchasePageContent({
                 ) : (
                   <button
                     type="submit"
-                    disabled={!stepTwoValid || isBusy}
+                    disabled={isBusy}
                     className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[12px] bg-amber-500 px-6 text-[14px] font-semibold text-slate-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {submitting ? (
