@@ -257,7 +257,9 @@ const buildDynamicTerms = ({ membership, payment }) => {
     `4. Member is entitled for ${entitlementText}.`,
     "5. Member have to send the request for booking Minimum 15 days before of Vacation.",
     "6. Member have to pay the utilities charges at the time of booking.",
-    "7. Member can choose the location for vacation from, Goa, Gokarna, Puri, Shimla, Manali, Nanital, shillong. Munnar, ooty, lonavala, Mahabaleshwar, Coorg, kodaikanal, Jimcorbett, Ranthambore, Sundarbans, Agra and Jaipur.",
+    "7. Member can choose the location for vacation from, Goa, Gokarna, Puri, Shimla,",
+    "    Manali, Nanital, shillong. Munnar, ooty, lonavala, Mahabaleshwar, Coorg, kodaikanal,",
+    "    Jimcorbett, Ranthambore, Sundarbans, Agra and Jaipur.",
     "8. Member have to send the booking request by mail on booking@ownholidayclub.com.",
   ];
 };
@@ -453,12 +455,12 @@ const generateMembershipInvoicePdf = async ({
     font: fontBold,
   });
 
-  const termYPositions = [309.13, 291.13, 273.12, 255.11, 237.1, 219.09, 201.08, 183.07];
+  const termYPositions = [309.13, 291.13, 273.12, 255.11, 237.1, 219.09, 201.08, 186.08, 171.08, 156.08];
   const termsArea = {
     x: 44,
-    y: 172,
+    y: 145,
     width: 495,
-    height: 144,
+    height: 171,
   };
 
   drawWhiteBox(

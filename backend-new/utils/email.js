@@ -249,18 +249,18 @@ const sendWelcomePasswordEmail = async ({
     subject: "Your OwnHolidayClub member account is ready",
     text: `Hello ${safeName}, your OwnHolidayClub member account is ready. Membership / Login ID: ${membershipId}. Password: ${password}. Please log in and change your password after signing in. Your membership invoice is attached with this email.`,
     html: `
-      <div style="margin:0;padding:8px;background:#f8fafc;font-family:Arial,sans-serif;color:#0f172a;">
-        <div style="max-width:640px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;overflow:hidden;box-shadow:0 20px 50px rgba(15,23,42,0.10);">
+      <div style="margin:0;padding:8px;background:#f1f5f9;font-family:Arial,sans-serif;color:#0f172a;">
+        <div style="max-width:700px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,0.08);">
           <div style="padding:18px 24px;background:#ffffff;text-align:center;border-bottom:1px solid #e2e8f0;">
             <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:148px;max-width:100%;height:auto;display:block;margin:0 auto;" />
           </div>
 
-          <div style="padding:28px 32px 24px;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);text-align:center;">
-            <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#fbbf24;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
+          <div style="padding:28px 32px 24px;background:#f8fafc;text-align:center;border-bottom:1px solid #e2e8f0;">
+            <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#d97706;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
               Membership Activated
             </div>
-            <h1 style="margin:18px 0 8px;font-size:30px;line-height:1.15;color:#ffffff;">Welcome to Own Holiday Club</h1>
-            <p style="margin:0;font-size:14px;line-height:1.7;color:#cbd5e1;">
+            <h1 style="margin:18px 0 8px;font-size:24px;line-height:1.15;color:#0f172a;">Welcome to Own Holiday Club</h1>
+            <p style="margin:0;font-size:14px;line-height:1.7;color:#475569;">
               Your membership purchase was successful and your account is now ready.
             </p>
           </div>
