@@ -80,10 +80,15 @@ export default function GlobalHolidayLeadWidget() {
   const [isVerifyingEmailOtp, setIsVerifyingEmailOtp] = useState(false);
   const [isEmailSkipped, setIsEmailSkipped] = useState(false);
 
-  const [locationInput, setLocationInput] = useState("");
-  const [locationOptions, setLocationOptions] = useState([]);
-  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
-  const skipFetch = useRef(false);
+  const [fromLocationInput, setFromLocationInput] = useState("");
+  const [fromLocationOptions, setFromLocationOptions] = useState([]);
+  const [isFromLocationDropdownOpen, setIsFromLocationDropdownOpen] = useState(false);
+  const skipFromFetch = useRef(false);
+
+  const [toLocationInput, setToLocationInput] = useState("");
+  const [toLocationOptions, setToLocationOptions] = useState([]);
+  const [isToLocationDropdownOpen, setIsToLocationDropdownOpen] = useState(false);
+  const skipToFetch = useRef(false);
 
   // Fetch destinations from API
   useEffect(() => {
@@ -163,7 +168,8 @@ export default function GlobalHolidayLeadWidget() {
     setIsEmailOtpSent(false);
     setIsEmailVerified(false);
     setIsEmailSkipped(false);
-    setLocationInput("");
+    setFromLocationInput("");
+    setToLocationInput("");
   };
 
   const closeLeadModal = () => {
@@ -174,7 +180,8 @@ export default function GlobalHolidayLeadWidget() {
     setIsLeadModalOpen(false);
     setLeadFeedback({ type: "", message: "" });
     setLeadForm(createInitialLeadForm());
-    setLocationInput("");
+    setFromLocationInput("");
+    setToLocationInput("");
   };
 
   const handleLeadFieldChange = (field, value) => {
@@ -202,13 +209,13 @@ export default function GlobalHolidayLeadWidget() {
   };
 
   useEffect(() => {
-    if (skipFetch.current) {
-      skipFetch.current = false;
+    if (skipFromFetch.current) {
+      skipFromFetch.current = false;
       return;
     }
-    if (!locationInput || locationInput.length < 2) {
-      setLocationOptions([]);
-      setIsLocationDropdownOpen(false);
+    if (!fromLocationInput || fromLocationInput.length < 2) {
+      setFromLocationOptions([]);
+      setIsFromLocationDropdownOpen(false);
       return;
     }
 
@@ -220,14 +227,14 @@ export default function GlobalHolidayLeadWidget() {
             'Content-Type': 'application/json',
             'X-Goog-Api-Key': 'AIzaSyDarNwOH5Gfi1KseDZ82fkh2b0wn66uudg'
           },
-          body: JSON.stringify({ input: locationInput })
+          body: JSON.stringify({ input: fromLocationInput })
         });
         const data = await res.json();
         if (data.suggestions) {
-          setLocationOptions(data.suggestions.map(s => s.placePrediction.text.text));
-          setIsLocationDropdownOpen(true);
+          setFromLocationOptions(data.suggestions.map(s => s.placePrediction.text.text));
+          setIsFromLocationDropdownOpen(true);
         } else {
-          setLocationOptions([]);
+          setFromLocationOptions([]);
         }
       } catch (err) {
         console.error(err);
@@ -235,7 +242,43 @@ export default function GlobalHolidayLeadWidget() {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [locationInput]);
+  }, [fromLocationInput]);
+
+  useEffect(() => {
+    if (skipToFetch.current) {
+      skipToFetch.current = false;
+      return;
+    }
+    if (!toLocationInput || toLocationInput.length < 2) {
+      setToLocationOptions([]);
+      setIsToLocationDropdownOpen(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': 'AIzaSyDarNwOH5Gfi1KseDZ82fkh2b0wn66uudg'
+          },
+          body: JSON.stringify({ input: toLocationInput })
+        });
+        const data = await res.json();
+        if (data.suggestions) {
+          setToLocationOptions(data.suggestions.map(s => s.placePrediction.text.text));
+          setIsToLocationDropdownOpen(true);
+        } else {
+          setToLocationOptions([]);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [toLocationInput]);
 
   // OTP Sending & Verification Actions
   const handleSendMobileOtp = async () => {
@@ -390,8 +433,8 @@ export default function GlobalHolidayLeadWidget() {
           name: leadForm.name,
           email: leadForm.email,
           phone: leadForm.phone,
-          location: leadForm.location,
-          searchLocation: locationInput,
+          location: fromLocationInput,
+          searchLocation: toLocationInput,
           locationType: leadForm.locationType,
           checkIn: leadForm.checkIn,
           checkOut: leadForm.checkOut,
@@ -519,7 +562,7 @@ export default function GlobalHolidayLeadWidget() {
                   <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-red-950/80" />
                   
                   <div className="relative z-10">
-                    <img src="/logo.png" className="w-36 drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]" alt="Own Holiday Club" />
+                    <img src="/logo.png" className="w-36" alt="Own Holiday Club" />
                     <h3 className="mt-10 text-3xl font-black leading-[1.1] tracking-tighter uppercase">
                       Your Next <br/>Grand <br/>Escape.
                     </h3>
@@ -778,36 +821,68 @@ export default function GlobalHolidayLeadWidget() {
                             exit={{ opacity: 0, x: -10 }}
                             className="space-y-4"
                           >
-                            {/* Specific Location (Google API) */}
-                            <div className="space-y-1 relative">
-                              <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Specific Location</label>
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  value={locationInput}
-                                  onChange={(e) => setLocationInput(e.target.value)}
-                                  placeholder="Search precise location..."
-                                  className="w-full h-10 px-3 border border-slate-200 text-xs font-semibold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none placeholder:text-slate-400"
-                                />
+                            {/* Specific Locations (Google API) */}
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1 relative">
+                                <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Your Current Location</label>
+                                <div className="relative">
+                                  <input
+                                    type="text"
+                                    value={fromLocationInput}
+                                    onChange={(e) => setFromLocationInput(e.target.value)}
+                                    placeholder="Where are you now?"
+                                    className="w-full h-10 px-3 border border-slate-200 text-xs font-semibold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none placeholder:text-slate-400"
+                                  />
+                                </div>
+                                {isFromLocationDropdownOpen && fromLocationOptions.length > 0 && (
+                                  <ul className="absolute z-50 w-full bg-white border border-slate-200 mt-1 shadow-lg max-h-48 overflow-y-auto">
+                                    {fromLocationOptions.map((opt, i) => (
+                                      <li
+                                        key={i}
+                                        onClick={() => {
+                                          skipFromFetch.current = true;
+                                          setFromLocationInput(opt);
+                                          handleLeadFieldChange("location", opt);
+                                          setIsFromLocationDropdownOpen(false);
+                                        }}
+                                        className="px-4 py-2 hover:bg-amber-50 cursor-pointer text-[12px] text-slate-700 font-medium border-b border-slate-50 last:border-0"
+                                      >
+                                        {opt}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
                               </div>
-                              {isLocationDropdownOpen && locationOptions.length > 0 && (
-                                <ul className="absolute z-50 w-full bg-white border border-slate-200 mt-1 shadow-lg max-h-48 overflow-y-auto">
-                                  {locationOptions.map((opt, i) => (
-                                    <li
-                                      key={i}
-                                      onClick={() => {
-                                        skipFetch.current = true;
-                                        setLocationInput(opt);
-                                        handleLeadFieldChange("searchLocation", opt);
-                                        setIsLocationDropdownOpen(false);
-                                      }}
-                                      className="px-4 py-2 hover:bg-amber-50 cursor-pointer text-[12px] text-slate-700 font-medium border-b border-slate-50 last:border-0"
-                                    >
-                                      {opt}
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
+                              <div className="space-y-1 relative">
+                                <label className="block text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Where do you want to go?</label>
+                                <div className="relative">
+                                  <input
+                                    type="text"
+                                    value={toLocationInput}
+                                    onChange={(e) => setToLocationInput(e.target.value)}
+                                    placeholder="Search destination..."
+                                    className="w-full h-10 px-3 border border-slate-200 text-xs font-semibold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none placeholder:text-slate-400"
+                                  />
+                                </div>
+                                {isToLocationDropdownOpen && toLocationOptions.length > 0 && (
+                                  <ul className="absolute z-50 w-full bg-white border border-slate-200 mt-1 shadow-lg max-h-48 overflow-y-auto">
+                                    {toLocationOptions.map((opt, i) => (
+                                      <li
+                                        key={i}
+                                        onClick={() => {
+                                          skipToFetch.current = true;
+                                          setToLocationInput(opt);
+                                          handleLeadFieldChange("searchLocation", opt);
+                                          setIsToLocationDropdownOpen(false);
+                                        }}
+                                        className="px-4 py-2 hover:bg-amber-50 cursor-pointer text-[12px] text-slate-700 font-medium border-b border-slate-50 last:border-0"
+                                      >
+                                        {opt}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
                             </div>
 
                             {/* Dates */}

@@ -43,40 +43,60 @@ export default function MembershipPurchaseStepOne({
   setEmailState,
   sendOtp,
   verifyOtp,
+  familyEnabled,
+  updateSpouse,
+  updateChild,
+  addChild,
+  setForm,
 }) {
   const showAnniversary = form.personalDetails.maritalStatus === "Married";
   const [showOfficeAddress, setShowOfficeAddress] = useState(
     Boolean(
-      form.addressDetails.office.addressLine ||
-        form.addressDetails.office.city ||
-        form.addressDetails.office.state ||
-        form.addressDetails.office.country ||
-        form.addressDetails.office.phone ||
-        form.addressDetails.office.pin,
+      form.addressDetails.office?.addressLine ||
+        form.addressDetails.office?.city ||
+        form.addressDetails.office?.state ||
+        form.addressDetails.office?.pin,
+    ),
+  );
+  const [showCorrespondenceAddress, setShowCorrespondenceAddress] = useState(
+    Boolean(
+      form.addressDetails.correspondence?.addressLine ||
+        form.addressDetails.correspondence?.city ||
+        form.addressDetails.correspondence?.state ||
+        form.addressDetails.correspondence?.pin,
     ),
   );
 
   useEffect(() => {
     if (
-      form.addressDetails.office.addressLine ||
-      form.addressDetails.office.city ||
-      form.addressDetails.office.state ||
-      form.addressDetails.office.country ||
-      form.addressDetails.office.phone ||
-      form.addressDetails.office.pin
+      form.addressDetails.office?.addressLine ||
+      form.addressDetails.office?.city ||
+      form.addressDetails.office?.state ||
+      form.addressDetails.office?.pin
     ) {
       setShowOfficeAddress(true);
     }
   }, [form.addressDetails.office]);
 
+  useEffect(() => {
+    if (
+      form.addressDetails.correspondence?.addressLine ||
+      form.addressDetails.correspondence?.city ||
+      form.addressDetails.correspondence?.state ||
+      form.addressDetails.correspondence?.pin
+    ) {
+      setShowCorrespondenceAddress(true);
+    }
+  }, [form.addressDetails.correspondence]);
+
   const hideOfficeAddress = () => {
-    updateAddress("office", "addressLine", "");
-    updateAddress("office", "city", "");
-    updateAddress("office", "state", "");
-    updateAddress("office", "country", "");
-    updateAddress("office", "phone", "");
-    updateAddress("office", "pin", "");
+    updateAddressFields("office", { houseNo: "", addressLine: "", city: "", state: "", country: "", phone: "", pin: "" });
     setShowOfficeAddress(false);
+  };
+
+  const hideCorrespondenceAddress = () => {
+    updateAddressFields("correspondence", { houseNo: "", addressLine: "", city: "", state: "", country: "", pin: "" });
+    setShowCorrespondenceAddress(false);
   };
 
   const handleAddressSelect = (group, place) => {
@@ -96,7 +116,7 @@ export default function MembershipPurchaseStepOne({
           Personal Information
         </h3>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <SelectField
           label="Title"
           value={form.personalDetails.title}
@@ -120,17 +140,60 @@ export default function MembershipPurchaseStepOne({
           placeholder="Last Name"
           icon={User}
         />
-        <InlineDateField
-          label="DOB"
-          value={form.personalDetails.dob}
-          onChange={(value) => updatePersonal("dob", value)}
-          placeholder="DOB"
-          required
-          icon={CalendarDays}
-        />
-      </div>
+        <InlineVerifyField
+          label="Email Address"
+          value={
+            emailState.requested && !emailState.verified
+              ? emailState.otp
+              : form.contactDetails.email
+          }
+          placeholder={
+            emailState.requested && !emailState.verified ? "Enter OTP" : "Email Address"
+          }
+          buttonText={
+            emailState.verified
+              ? "Verified"
+              : emailState.requested
+                ? "Verify"
+                : "Send OTP"
+          }
+          disabled={emailState.verified}
+          loading={emailState.sending || emailState.verifying}
+          onChange={(value) => {
+            if (emailState.requested && !emailState.verified) {
+              setEmailState((prev) => ({
+                ...prev,
+                otp: value.replace(/\D/g, "").slice(0, 6),
+              }));
+              return;
+            }
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            updateContact("email", value.trim().toLowerCase());
+          }}
+          onAction={() => {
+            if (emailState.requested && !emailState.verified) {
+              verifyOtp({
+                channel: "email",
+                value: form.contactDetails.email,
+                otp: emailState.otp,
+              });
+              return;
+            }
+
+            sendOtp({
+              channel: "email",
+              value: form.contactDetails.email,
+            });
+          }}
+          actionDisabled={
+            emailState.verified
+              ? true
+              : emailState.requested
+                ? emailState.verifying || String(emailState.otp).length < 4
+                : emailState.sending || !isEmailValid(form.contactDetails.email)
+          }
+          icon={Mail}
+        />
         <InlineVerifyField
           label="Mobile Number"
           value={
@@ -187,62 +250,17 @@ export default function MembershipPurchaseStepOne({
           }
           icon={Phone}
         />
+      </div>
 
-        <InlineVerifyField
-          label="Email Address"
-          value={
-            emailState.requested && !emailState.verified
-              ? emailState.otp
-              : form.contactDetails.email
-          }
-          placeholder={
-            emailState.requested && !emailState.verified ? "Enter OTP" : "Email Address"
-          }
-          buttonText={
-            emailState.verified
-              ? "Verified"
-              : emailState.requested
-                ? "Verify"
-                : "Send OTP"
-          }
-          disabled={emailState.verified}
-          loading={emailState.sending || emailState.verifying}
-          onChange={(value) => {
-            if (emailState.requested && !emailState.verified) {
-              setEmailState((prev) => ({
-                ...prev,
-                otp: value.replace(/\D/g, "").slice(0, 6),
-              }));
-              return;
-            }
-
-            updateContact("email", value.trim().toLowerCase());
-          }}
-          onAction={() => {
-            if (emailState.requested && !emailState.verified) {
-              verifyOtp({
-                channel: "email",
-                value: form.contactDetails.email,
-                otp: emailState.otp,
-              });
-              return;
-            }
-
-            sendOtp({
-              channel: "email",
-              value: form.contactDetails.email,
-            });
-          }}
-          actionDisabled={
-            emailState.verified
-              ? true
-              : emailState.requested
-                ? emailState.verifying || String(emailState.otp).length < 4
-                : emailState.sending || !isEmailValid(form.contactDetails.email)
-          }
-          icon={Mail}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <InlineDateField
+          label="DOB"
+          value={form.personalDetails.dob}
+          onChange={(value) => updatePersonal("dob", value)}
+          placeholder="DOB"
+          required
+          icon={CalendarDays}
         />
-
         <SelectField
           label="Occupation"
           value={form.personalDetails.occupation}
@@ -259,9 +277,6 @@ export default function MembershipPurchaseStepOne({
           required
           icon={Users}
         />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <SelectField
           label="Marital Status"
           value={form.personalDetails.maritalStatus}
@@ -280,7 +295,6 @@ export default function MembershipPurchaseStepOne({
           />
         ) : null}
       </div>
-
       </div>
 
       <div className="space-y-2.5">
@@ -293,27 +307,23 @@ export default function MembershipPurchaseStepOne({
           label="House No. / Block No."
           value={form.addressDetails.residence.houseNo}
           onChange={(value) => updateAddress("residence", "houseNo", value)}
-          placeholder="House No. / Block No."
+          placeholder="House No."
           icon={Building2}
         />
-
-        <div className="lg:col-span-2">
-          <AddressAutocompleteField
-            label="Residence Address"
-            value={form.addressDetails.residence.addressLine}
-            onChange={(value) => updateAddress("residence", "addressLine", value)}
-            onAddressSelect={(place) => handleAddressSelect("residence", place)}
-            placeholder="Residence Address"
-            required
-            icon={MapPin}
-          />
-        </div>
-
+        <AddressAutocompleteField
+          label="Permanent Address"
+          value={form.addressDetails.residence.addressLine}
+          onChange={(value) => updateAddress("residence", "addressLine", value)}
+          onAddressSelect={(place) => handleAddressSelect("residence", place)}
+          placeholder="Address"
+          required
+          icon={MapPin}
+        />
         <InputField
-          label="Residence City"
+          label="City"
           value={form.addressDetails.residence.city}
           onChange={(value) => updateAddress("residence", "city", value)}
-          placeholder="Residence City"
+          placeholder="City"
           required
           icon={MapPinned}
         />
@@ -338,11 +348,57 @@ export default function MembershipPurchaseStepOne({
           onChange={(value) =>
             updateAddress("residence", "pin", value.replace(/\D/g, "").slice(0, 6))
           }
-          placeholder="Pin (Opt)"
+          placeholder="Pin"
           icon={MapPin}
         />
       </div>
 
+      {/* Correspondence Address */}
+      <div className="pt-0.5">
+        {!showCorrespondenceAddress ? (
+          <button
+            type="button"
+            onClick={() => setShowCorrespondenceAddress(true)}
+            className="inline-flex items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-slate-500 transition hover:text-amber-600"
+          >
+            <MapPin size={14} />
+            + Add Correspondence Address (Optional)
+          </button>
+        ) : (
+          <div className="space-y-2 rounded-none border border-slate-100 bg-slate-50/30 p-3 mt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-2 gap-2">
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Correspondence Address (Optional)</h4>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="h-3 w-3 cursor-pointer"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        updateAddressFields("correspondence", form.addressDetails.residence);
+                      } else {
+                        updateAddressFields("correspondence", { houseNo: "", addressLine: "", city: "", state: "", country: "", pin: "" });
+                      }
+                    }}
+                  />
+                  <span className="text-[10px] uppercase font-bold text-slate-500">Same as Permanent</span>
+                </label>
+                <button type="button" onClick={hideCorrespondenceAddress} className="text-[10px] font-bold uppercase tracking-widest text-[#C8102E] transition hover:text-[#A00D25]">Remove</button>
+              </div>
+            </div>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 pt-1">
+              <InputField label="House No." value={form.addressDetails.correspondence?.houseNo || ""} onChange={(v) => updateAddress("correspondence", "houseNo", v)} placeholder="House No." icon={Building2} />
+              <AddressAutocompleteField label="Address" value={form.addressDetails.correspondence?.addressLine || ""} onChange={(v) => updateAddress("correspondence", "addressLine", v)} onAddressSelect={(place) => handleAddressSelect("correspondence", place)} placeholder="Correspondence Address" icon={MapPin} />
+              <InputField label="City" value={form.addressDetails.correspondence?.city || ""} onChange={(v) => updateAddress("correspondence", "city", v)} placeholder="City" icon={MapPinned} />
+              <SelectField label="State" value={form.addressDetails.correspondence?.state || ""} onChange={(v) => updateAddress("correspondence", "state", v)} options={INDIA_STATE_AND_UT_OPTIONS} icon={Map} />
+              <CountrySelectField label="Country" value={form.addressDetails.correspondence?.country || ""} onChange={(v) => updateAddress("correspondence", "country", v)} icon={Globe} />
+              <InputField label="Pin Code" value={form.addressDetails.correspondence?.pin || ""} onChange={(v) => updateAddress("correspondence", "pin", v.replace(/\D/g, "").slice(0, 6))} placeholder="Pin" icon={MapPin} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Office Address */}
       <div className="pt-0.5">
         {!showOfficeAddress ? (
           <button
@@ -354,79 +410,143 @@ export default function MembershipPurchaseStepOne({
             + Add Office Address (Optional)
           </button>
         ) : (
-          <div className="space-y-2 rounded-none border border-slate-100 bg-slate-50/30 p-3">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                Office Address (Optional)
-              </h4>
-              <button
-                type="button"
-                onClick={hideOfficeAddress}
-                className="text-[10px] font-bold uppercase tracking-widest text-[#C8102E] transition hover:text-[#A00D25]"
-              >
-                Remove
-              </button>
+          <div className="space-y-2 rounded-none border border-slate-100 bg-slate-50/30 p-3 mt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-2 gap-2">
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Office Address (Optional)</h4>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="h-3 w-3 cursor-pointer"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        updateAddressFields("office", form.addressDetails.residence);
+                      } else {
+                        updateAddressFields("office", { houseNo: "", addressLine: "", city: "", state: "", country: "", phone: "", pin: "" });
+                      }
+                    }}
+                  />
+                  <span className="text-[10px] uppercase font-bold text-slate-500">Same as Permanent</span>
+                </label>
+                <button type="button" onClick={hideOfficeAddress} className="text-[10px] font-bold uppercase tracking-widest text-[#C8102E] transition hover:text-[#A00D25]">Remove</button>
+              </div>
             </div>
-
-            <AddressAutocompleteField
-              label="Office Address"
-              value={form.addressDetails.office.addressLine}
-              onChange={(value) => updateAddress("office", "addressLine", value)}
-              onAddressSelect={(place) => handleAddressSelect("office", place)}
-              placeholder="Office Address"
-              labelHidden
-              icon={Building2}
-            />
-
-            <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
-              <InputField
-                label="Office City"
-                value={form.addressDetails.office.city}
-                onChange={(value) => updateAddress("office", "city", value)}
-                placeholder="Office City"
-                labelHidden
-                icon={MapPinned}
-              />
-              <SelectField
-                label="Office State"
-                value={form.addressDetails.office.state}
-                onChange={(value) => updateAddress("office", "state", value)}
-                options={INDIA_STATE_AND_UT_OPTIONS}
-                labelHidden
-                icon={Map}
-              />
-              <CountrySelectField
-                label="Office Country"
-                value={form.addressDetails.office.country}
-                onChange={(value) => updateAddress("office", "country", value)}
-                labelHidden
-                icon={Globe}
-              />
-              <InputField
-                label="Office Phone"
-                value={form.addressDetails.office.phone}
-                onChange={(value) =>
-                  updateAddress("office", "phone", value.replace(/\D/g, "").slice(0, 10))
-                }
-                placeholder="Phone"
-                labelHidden
-                icon={Phone}
-              />
-              <InputField
-                label="Office Pin"
-                value={form.addressDetails.office.pin}
-                onChange={(value) =>
-                  updateAddress("office", "pin", value.replace(/\D/g, "").slice(0, 6))
-                }
-                placeholder="Pin"
-                labelHidden
-                icon={MapPin}
-              />
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 pt-1">
+              <InputField label="House No." value={form.addressDetails.office?.houseNo || ""} onChange={(v) => updateAddress("office", "houseNo", v)} placeholder="House No." icon={Building2} />
+              <AddressAutocompleteField label="Address" value={form.addressDetails.office?.addressLine || ""} onChange={(v) => updateAddress("office", "addressLine", v)} onAddressSelect={(place) => handleAddressSelect("office", place)} placeholder="Office Address" icon={MapPin} />
+              <InputField label="City" value={form.addressDetails.office?.city || ""} onChange={(v) => updateAddress("office", "city", v)} placeholder="City" icon={MapPinned} />
+              <SelectField label="State" value={form.addressDetails.office?.state || ""} onChange={(v) => updateAddress("office", "state", v)} options={INDIA_STATE_AND_UT_OPTIONS} icon={Map} />
+              <CountrySelectField label="Country" value={form.addressDetails.office?.country || ""} onChange={(v) => updateAddress("office", "country", v)} icon={Globe} />
+              <InputField label="Pin Code" value={form.addressDetails.office?.pin || ""} onChange={(v) => updateAddress("office", "pin", v.replace(/\D/g, "").slice(0, 6))} placeholder="Pin" icon={MapPin} />
             </div>
           </div>
         )}
       </div>
       </div>
+
+      {form.personalDetails.maritalStatus && (
+        <div className="space-y-2.5 pt-2">
+          <h3 className="border-b border-slate-100 pb-1.5 text-sm font-bold uppercase tracking-[0.05em] text-[#C8102E]">
+            Family Details{" "}
+            {form.personalDetails.maritalStatus === "Married" ? (
+              <span className="text-xs text-slate-500 font-medium normal-case">(Compulsory for Married)</span>
+            ) : (
+              <span className="text-xs text-slate-500 font-medium normal-case">(Optional)</span>
+            )}
+          </h3>
+          
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 pt-2">
+            <InputField
+              label="Spouse Name"
+              value={form.familyDetails?.spouse?.name || ""}
+              onChange={(value) => updateSpouse && updateSpouse("name", value)}
+              placeholder="Spouse Name"
+              required={form.personalDetails.maritalStatus === "Married"}
+              icon={User}
+            />
+            <InlineDateField
+              label="Spouse DOB"
+              value={form.familyDetails?.spouse?.dob || ""}
+              onChange={(value) => updateSpouse && updateSpouse("dob", value)}
+              placeholder="DOB"
+              required={form.personalDetails.maritalStatus === "Married"}
+              icon={CalendarDays}
+            />
+            <InputField
+              label="Spouse Mobile"
+              value={form.familyDetails?.spouse?.mobile || ""}
+              onChange={(value) => updateSpouse && updateSpouse("mobile", value.replace(/\D/g, "").slice(0, 10))}
+              placeholder="Mobile Number"
+              required={form.personalDetails.maritalStatus === "Married"}
+              icon={Phone}
+            />
+            <InputField
+              label="Spouse Email"
+              value={form.familyDetails?.spouse?.email || ""}
+              onChange={(value) => updateSpouse && updateSpouse("email", value.toLowerCase())}
+              placeholder="Email Address"
+              required={form.personalDetails.maritalStatus === "Married"}
+              icon={Mail}
+            />
+          </div>
+
+          <div className="mt-4 border border-slate-100 bg-slate-50/50 p-3">
+            <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Children Details</h4>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">No. of Children:</span>
+                <select 
+                  className="h-6 w-12 border border-slate-300 text-xs text-center outline-none"
+                  value={form.familyDetails?.children?.length || 0}
+                  onChange={(e) => {
+                    const count = parseInt(e.target.value, 10);
+                    const currentLen = form.familyDetails?.children?.length || 0;
+                    if (count > currentLen) {
+                      for (let i = 0; i < count - currentLen; i++) addChild && addChild();
+                    } else if (count < currentLen) {
+                      setForm && setForm(prev => ({
+                        ...prev,
+                        familyDetails: {
+                          ...prev.familyDetails,
+                          children: prev.familyDetails.children.slice(0, count)
+                        }
+                      }));
+                    }
+                  }}
+                >
+                  {[0, 1, 2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {form.familyDetails?.children?.map((child, index) => (
+              <div key={index} className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-3 pb-3 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0">
+                <InputField
+                  label={`Child ${index + 1} Name`}
+                  value={child.name || ""}
+                  onChange={(value) => updateChild && updateChild(index, "name", value)}
+                  placeholder="Full Name"
+                  icon={User}
+                />
+                <SelectField
+                  label="Gender"
+                  value={child.gender || ""}
+                  onChange={(value) => updateChild && updateChild(index, "gender", value)}
+                  options={GENDER_OPTIONS}
+                  icon={Users}
+                />
+                <InlineDateField
+                  label="DOB"
+                  value={child.dob || ""}
+                  onChange={(value) => updateChild && updateChild(index, "dob", value)}
+                  placeholder="Date of Birth"
+                  icon={CalendarDays}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

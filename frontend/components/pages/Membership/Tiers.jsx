@@ -596,7 +596,7 @@ export default function Tiers({
                         }
                       }}
                     >
-                      {isProcessing ? "Processing..." : "Select Tier"}
+                      {isProcessing ? "Processing..." : "Select Plan"}
                       {!isProcessing && <ArrowRight size={13} strokeWidth={2.5} />}
                     </button>
                   </div>

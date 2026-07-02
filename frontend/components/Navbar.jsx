@@ -88,15 +88,15 @@ export default function Navbar({ onLoginClick }) {
       <nav
         className={`fixed left-0 w-full z-[100] transition-all duration-500 ease-in-out font-sans bg-white border-b border-slate-200 text-black ${
           isScrolled
-            ? "top-0 py-1 shadow-[0_6px_24px_rgba(15,23,42,0.12)]"
-            : "top-[36px] py-2 shadow-sm"
+            ? "top-0 py-1.5 shadow-[0_6px_24px_rgba(15,23,42,0.12)]"
+            : "top-[36px] pt-1 pb-1 shadow-sm"
         }`}
       >
         <div className="site-width mx-auto">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 px-5 py-1 rounded-2xl transition-all duration-300 bg-transparent">
-              <img src={logo} className="w-40" alt="Own Holiday Club Logo" />
+            <Link href="/" className="flex items-center gap-2 pl-2 pr-5 py-0.5 rounded-2xl transition-all duration-300 bg-transparent">
+              <img src={logo} className="w-44" alt="Own Holiday Club Logo" />
             </Link>
 
             {/* Desktop links */}

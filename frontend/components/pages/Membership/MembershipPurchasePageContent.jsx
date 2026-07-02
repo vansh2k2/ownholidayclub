@@ -499,6 +499,9 @@ export default function MembershipPurchasePageContent({
       officeAddress: {
         ...form.addressDetails.office,
       },
+      correspondenceAddress: {
+        ...form.addressDetails.correspondence,
+      },
     },
     familyDetails: {
       spouse: {
@@ -668,7 +671,7 @@ export default function MembershipPurchasePageContent({
 
         <div className="overflow-hidden rounded-[1.6rem] bg-white shadow-[0_18px_50px_rgba(0,0,0,0.08)]">
           <div className="px-4 pb-5 pt-4 md:px-6 md:pb-6 md:pt-5">
-            <div className="mb-4 grid gap-3 lg:grid-cols-[1.45fr,1.1fr,0.9fr]">
+            <div className="mb-4 grid gap-3 lg:grid-cols-3">
               <PurchaseOverviewCard
                 icon={TierVisualIcon}
                 label="Package Name"
@@ -677,21 +680,18 @@ export default function MembershipPurchasePageContent({
                 tone="featured"
               />
               <PurchaseOverviewCard
-                icon={Wallet}
-                label="Total Payable"
-                value={totalPayableLabel}
-                hint={`${memberFeeLabel} + ${adminFeeLabel}`}
-                tone="accent"
+                icon={currentStep === 1 ? LoaderCircle : Sparkles}
+                label="Step 1"
+                value="Personal Details"
+                hint="Provide your information"
+                tone={currentStep === 1 ? "accent" : "default"}
               />
               <PurchaseOverviewCard
-                icon={Sparkles}
-                label="Progress"
-                value={`Step ${currentStep} of 2`}
-                hint={
-                  currentStep === 1
-                    ? "Personal details"
-                    : "Family and documents"
-                }
+                icon={currentStep === 2 ? LoaderCircle : CreditCard}
+                label="Step 2"
+                value="Finalize & Pay"
+                hint="Documents and payment"
+                tone={currentStep === 2 ? "accent" : "default"}
               />
             </div>
 
@@ -725,6 +725,11 @@ export default function MembershipPurchasePageContent({
                   setEmailState={setEmailState}
                   sendOtp={sendOtp}
                   verifyOtp={verifyOtp}
+                  familyEnabled={familyEnabled}
+                  updateSpouse={updateSpouse}
+                  updateChild={updateChild}
+                  addChild={addChild}
+                  setForm={setForm}
                 />
               ) : (
                 <MembershipPurchaseStepTwo

@@ -295,38 +295,53 @@ const MemberProfile = () => {
 
                     {/* ── ADDRESS DETAILS ─────────────────────────────────── */}
                     <Section title="Address Information">
-                        <TR1 label="Residence Address" value={`${safe(member.residenceAddress?.houseNo)}, ${safe(member.residenceAddress?.addressLine)}, ${safe(member.residenceAddress?.city)}, ${safe(member.residenceAddress?.state)} - ${safe(member.residenceAddress?.pin)}`} />
-                        <TR1 label="Office Address" value={`${safe(member.officeAddress?.houseNo)}, ${safe(member.officeAddress?.addressLine)}, ${safe(member.officeAddress?.city)}, ${safe(member.officeAddress?.state)} - ${safe(member.officeAddress?.pin)}`} />
+                        <TR1 label="Permanent Address" value={[
+                            safe(member.residenceAddress?.houseNo),
+                            safe(member.residenceAddress?.addressLine),
+                            safe(member.residenceAddress?.city),
+                            safe(member.residenceAddress?.state),
+                            safe(member.residenceAddress?.country),
+                            member.residenceAddress?.pin ? `PIN: ${member.residenceAddress.pin}` : null
+                        ].filter(v => v && v !== '—').join(', ') || '—'} />
+                        <TR1 label="Correspondence Address" value={[
+                            safe(member.officeAddress?.houseNo),
+                            safe(member.officeAddress?.addressLine),
+                            safe(member.officeAddress?.city),
+                            safe(member.officeAddress?.state),
+                            safe(member.officeAddress?.country),
+                            member.officeAddress?.pin ? `PIN: ${member.officeAddress.pin}` : null
+                        ].filter(v => v && v !== '—').join(', ') || '—'} />
                     </Section>
 
                     {/* ── FAMILY DETAILS ─────────────────────────────────── */}
                     <Section title="Family & Spouse Details">
                         <TR3 l1="Spouse Name" v1={safe(member.spouse?.name)} l2="Spouse DOB" v2={fmtDate(member.spouse?.dob)} l3="Spouse Contact" v3={safe(member.spouse?.mobile)} />
+                        <TR2 l1="Spouse Email" v1={safe(member.spouse?.email)} l2="Total Children" v2={String(member.familyDetails?.children?.length || member.children?.length || 0)} />
                         <tr style={{ borderBottom: "1px solid #d1d5db" }}>
-                            <td style={LC}>Other Members</td>
+                            <td style={LC}>Children</td>
                             <td colSpan={5} style={{ padding: 0 }}>
                                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                     <thead>
                                         <tr style={{ background: "#f9fafb", borderBottom: "1px solid #d1d5db" }}>
-                                            <th style={{ ...LC, fontSize: 10, width: "30%" }}>Name</th>
-                                            <th style={{ ...LC, fontSize: 10, width: "20%" }}>Relationship</th>
-                                            <th style={{ ...LC, fontSize: 10, width: "20%" }}>DOB</th>
-                                            <th style={{ ...LC, fontSize: 10, width: "30%", borderRight: "none" }}>Gender</th>
+                                            <th style={{ ...LC, fontSize: 10, width: "10%" }}>#</th>
+                                            <th style={{ ...LC, fontSize: 10, width: "40%" }}>Name</th>
+                                            <th style={{ ...LC, fontSize: 10, width: "25%" }}>DOB</th>
+                                            <th style={{ ...LC, fontSize: 10, width: "25%", borderRight: "none" }}>Gender</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {member.familyMembers?.length > 0 ? (
-                                            member.familyMembers.map((fm, i) => (
-                                                <tr key={i} style={{ borderBottom: i === member.familyMembers.length - 1 ? "none" : "1px solid #eee" }}>
-                                                    <td style={VCD}>{fm.name}</td>
-                                                    <td style={VCD}>{fm.relationship}</td>
-                                                    <td style={VCD}>{fmtDate(fm.dob)}</td>
-                                                    <td style={VC}>{fm.gender}</td>
+                                        {(member.familyDetails?.children || member.children || []).length > 0 ? (
+                                            (member.familyDetails?.children || member.children || []).map((ch, i) => (
+                                                <tr key={i} style={{ borderBottom: i === (member.familyDetails?.children || member.children || []).length - 1 ? "none" : "1px solid #eee" }}>
+                                                    <td style={VCD}>{i + 1}</td>
+                                                    <td style={VCD}>{safe(ch.name)}</td>
+                                                    <td style={VCD}>{fmtDate(ch.dob)}</td>
+                                                    <td style={{ ...VC }}>{safe(ch.gender)}</td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan={4} style={{ ...VC, textAlign: "center", fontStyle: "italic", color: "#999" }}>No additional family members</td>
+                                                <td colSpan={4} style={{ ...VC, textAlign: "center", fontStyle: "italic", color: "#999" }}>No children added</td>
                                             </tr>
                                         )}
                                     </tbody>

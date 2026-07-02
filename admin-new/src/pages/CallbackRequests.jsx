@@ -184,10 +184,19 @@ const CallbackRequests = () => {
       key: "location",
       label: "LOCATION",
       render: (row) => (
-        <div className="flex flex-col">
-          <span className="text-xs font-bold text-emerald-700 uppercase tracking-tight">
-            {row.searchLocation || row.location || "N/A"}
-          </span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] font-bold text-slate-500 uppercase">FROM -</span>
+            <span className="text-xs font-bold text-blue-600 uppercase tracking-tight">
+              {row.location || "N/A"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] font-bold text-slate-500 uppercase">TO -</span>
+            <span className="text-xs font-bold text-[#C8102E] uppercase tracking-tight">
+              {row.searchLocation || "N/A"}
+            </span>
+          </div>
         </div>
       ),
     },
@@ -470,16 +479,20 @@ const CallbackRequests = () => {
                             </div>
                         </div>
 
-                        {/* Location and Budget */}
+                        {/* Location From & To */}
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-slate-50 p-3 border border-slate-100">
-                                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1">Location</label>
-                                <p className="text-xs font-bold text-emerald-700 uppercase tracking-tight">{selectedLead.searchLocation || selectedLead.location || "N/A"}</p>
+                            <div className="bg-blue-50 p-3 border border-blue-100">
+                                <label className="text-[10px] font-semibold text-blue-400 uppercase tracking-widest block mb-1">From (Departure)</label>
+                                <p className="text-xs font-bold text-blue-800 uppercase tracking-tight">{selectedLead.location || "N/A"}</p>
                             </div>
-                            <div className="bg-slate-50 p-3 border border-slate-100">
+                            <div className="bg-emerald-50 p-3 border border-emerald-100">
+                                <label className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest block mb-1">To (Destination)</label>
+                                <p className="text-xs font-bold text-emerald-800 uppercase tracking-tight">{selectedLead.searchLocation || "N/A"}</p>
+                            </div>
+                        </div>
+                        <div className="bg-slate-50 p-3 border border-slate-100">
                                 <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1">Budget</label>
                                 <p className="text-xs font-bold text-slate-800 uppercase tracking-tight">{selectedLead.budget || "N/A"} ({selectedLead.travelType || "Holiday"})</p>
-                            </div>
                         </div>
 
                         {/* Dates */}

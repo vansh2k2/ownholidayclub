@@ -324,7 +324,8 @@ const sendLeadNotificationEmail = async ({
   message,
 }) => {
   const from = getFromAddress();
-  const to = "Info@ownholidayclub.com";
+  // const to = "Info@ownholidayclub.com";
+  const to = "vanshchaudhary2k2@gmail.com";
   const subject = `New Lead: [${leadType}] - ${leadDetails.Name || leadDetails.fullName || 'User'}`;
 
   // Format details into HTML table rows
@@ -333,8 +334,8 @@ const sendLeadNotificationEmail = async ({
     if (value !== undefined && value !== null && String(value).trim() !== "") {
       detailsHtml += `
         <tr>
-          <td width="40%" style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; font-weight: bold; color: #475569; width: 40%; text-transform: uppercase; vertical-align: top; word-break: break-word;">${key}</td>
-          <td width="60%" style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; word-break: break-word; vertical-align: top;">${value}</td>
+          <td width="28%" style="padding: 9px 6px 9px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: middle; white-space: nowrap;">${key}</td>
+          <td width="72%" style="padding: 9px 0 9px 6px; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #0f172a; vertical-align: middle; word-break: break-all; overflow-wrap: anywhere;">${value}</td>
         </tr>
       `;
     }
@@ -346,15 +347,15 @@ const sendLeadNotificationEmail = async ({
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="margin:0;padding:0;">
-    <div style="margin:0;padding:10px;background:#f8fafc;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0f172a;width:100%;box-sizing:border-box;">
-      <div style="max-width:650px;width:100%;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,0.05);box-sizing:border-box;">
+    <div style="margin:0;padding:10px;background:#f1f5f9;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0f172a;width:100%;box-sizing:border-box;">
+      <div style="max-width:700px;width:100%;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,0.08);box-sizing:border-box;">
         <!-- Header Banner -->
-        <div style="padding:24px;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);text-align:center;">
-          <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:140px;height:auto;margin-bottom:12px;" />
-          <div style="display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(245,158,11,0.15);color:#fbbf24;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;">
-            Sales & Leads CRM
+        <div style="padding:20px 24px;background:#f8fafc;border-bottom:1px solid #e2e8f0;text-align:center;">
+          <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:130px;height:auto;margin-bottom:10px;" />
+          <div style="display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(245,158,11,0.15);color:#d97706;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;">
+            Sales &amp; Leads CRM
           </div>
-          <h1 style="margin:12px 0 0;font-size:22px;color:#ffffff;font-weight:700;letter-spacing:-0.02em;">New Lead Received</h1>
+          <h1 style="margin:10px 0 0;font-size:22px;color:#0f172a;font-weight:700;letter-spacing:-0.02em;">New Lead Received</h1>
         </div>
 
         <!-- Body Section -->
@@ -430,80 +431,117 @@ const sendGenericThankYouEmail = async ({ to, name, type = "Holiday" }) => {
     step3Desc = "We assist you promptly";
   }
 
-  const html = `
-    <div style="margin:0;padding:8px;background:#f8fafc;font-family:Arial,sans-serif;color:#0f172a;">
-      <div style="max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;overflow:hidden;box-shadow:0 20px 50px rgba(15,23,42,0.10);">
-        <div style="padding:18px 24px;background:#ffffff;text-align:center;border-bottom:1px solid #e2e8f0;">
-          <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:148px;max-width:100%;height:auto;display:block;margin:0 auto;" />
-        </div>
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Own Holiday Club</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f1f5f9;">
+  <tr>
+    <td align="center" style="padding:16px 8px;">
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
 
-        <div style="padding:28px 32px 24px;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);text-align:center;">
-          <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#fbbf24;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
-            Inquiry Received
-          </div>
-          <h1 style="margin:18px 0 8px;font-size:30px;line-height:1.15;color:#ffffff;">Thank You, ${safeName}!</h1>
-          <p style="margin:0;font-size:14px;line-height:1.7;color:#cbd5e1;">
-            ${subtext}
-          </p>
-        </div>
+        <!-- Logo Header -->
+        <tr>
+          <td align="center" style="background:#ffffff;padding:18px 24px;border-bottom:1px solid #e2e8f0;border-radius:16px 16px 0 0;">
+            <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" width="140" style="display:block;height:auto;border:0;max-width:140px;" />
+          </td>
+        </tr>
 
-        <div style="padding:32px;">
-          <p style="margin:0 0 18px;font-size:16px;line-height:1.8;color:#334155;">
-            Hello <strong style="color:#0f172a;">${safeName}</strong>,
-          </p>
-          <p style="margin:0 0 24px;font-size:15px;line-height:1.8;color:#475569;">
-            ${bodyText}
-          </p>
-
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
-            <tr>
-              <td width="48%" style="padding-right:4%;vertical-align:top;">
-                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-top:3px solid #f59e0b;border-radius:16px;padding:16px 12px;text-align:center;height:100%;">
-                  <div style="font-size:22px;margin-bottom:8px;">📋</div>
-                  <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0f172a;margin-bottom:4px;">Review</div>
-                  <div style="font-size:11px;color:#64748b;line-height:1.5;">Our team reviews your inquiry</div>
-                </div>
-              </td>
-              <td width="48%" style="vertical-align:top;">
-                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-top:3px solid #f59e0b;border-radius:16px;padding:16px 12px;text-align:center;height:100%;">
-                  <div style="font-size:22px;margin-bottom:8px;">📞</div>
-                  <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0f172a;margin-bottom:4px;">Connect</div>
-                  <div style="font-size:11px;color:#64748b;line-height:1.5;">Expert contacts you within 24 hrs</div>
-                </div>
-              </td>
-            </tr>
-          </table>
-
-          <div style="padding:18px 20px;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:24px;">
-            <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#d97706;margin-bottom:6px;">
-              Need urgent help?
+        <!-- Hero/Subtext Section -->
+        <tr>
+          <td align="center" style="background:#f8fafc;padding:24px 24px 20px;border-bottom:1px solid #e2e8f0;">
+            <div style="display:inline-block;padding:5px 12px;border-radius:999px;background:#fef3c7;color:#d97706;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;font-family:Arial,sans-serif;margin-bottom:12px;">
+              Inquiry Received
             </div>
-            <div style="font-size:14px;line-height:1.8;color:#475569;">
-              Call us at <a href="tel:+919871984074" style="color:#0f172a;font-weight:600;text-decoration:none;">+91 98719 84074</a>. Our concierge team is available to assist you.
-            </div>
-          </div>
+            <p style="margin:0;font-size:18px;line-height:1.5;color:#0f172a;font-weight:600;font-family:Arial,sans-serif;">${subtext}</p>
+          </td>
+        </tr>
 
-          <div style="text-align:center;margin-bottom:24px;">
-            <a href="https://www.ownholidayclub.com" style="display:inline-block;padding:14px 24px;border-radius:999px;background:#f59e0b;color:#0f172a;text-decoration:none;font-size:14px;font-weight:700;">
-              EXPLORE OUR DESTINATIONS
-            </a>
-          </div>
-
-          <div style="border-top:1px solid #e2e8f0;padding-top:24px;text-align:center;">
-            <p style="margin:0 0 8px;font-size:13px;color:#64748b;line-height:1.7;">
-              © 2026 Own Holiday Club. All rights reserved.<br />
-              <a href="mailto:info@ownholidayclub.com" style="color:#d97706;text-decoration:none;">info@ownholidayclub.com</a>
-              &nbsp;·&nbsp;
-              <a href="https://www.ownholidayclub.com" style="color:#d97706;text-decoration:none;">www.ownholidayclub.com</a>
+        <!-- Body -->
+        <tr>
+          <td style="background:#ffffff;padding:28px 24px;border-radius:0 0 16px 16px;">
+            <p style="margin:0 0 16px;font-size:15px;line-height:1.8;color:#334155;font-family:Arial,sans-serif;">
+              Hello <strong style="color:#0f172a;">${safeName}</strong>,
             </p>
-            <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.6;">
-              You're receiving this because you submitted an inquiry on our website.
+            <p style="margin:0 0 24px;font-size:14px;line-height:1.8;color:#475569;font-family:Arial,sans-serif;">
+              ${bodyText}
             </p>
-          </div>
 
-        </div>
-      </div>
-    </div>
+            <!-- 2-column steps -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+              <tr>
+                <td width="48%" valign="top" style="padding-right:4%;">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr><td align="center" style="background:#f8fafc;border:1px solid #e2e8f0;border-top:3px solid #f59e0b;border-radius:12px;padding:16px 12px;">
+                      <div style="font-size:22px;margin-bottom:8px;">📋</div>
+                      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0f172a;font-family:Arial,sans-serif;margin-bottom:4px;">Review</div>
+                      <div style="font-size:11px;color:#64748b;line-height:1.5;font-family:Arial,sans-serif;">Our team reviews your inquiry</div>
+                    </td></tr>
+                  </table>
+                </td>
+                <td width="48%" valign="top">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr><td align="center" style="background:#f8fafc;border:1px solid #e2e8f0;border-top:3px solid #f59e0b;border-radius:12px;padding:16px 12px;">
+                      <div style="font-size:22px;margin-bottom:8px;">📞</div>
+                      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0f172a;font-family:Arial,sans-serif;margin-bottom:4px;">Connect</div>
+                      <div style="font-size:11px;color:#64748b;line-height:1.5;font-family:Arial,sans-serif;">Expert contacts you within 24 hrs</div>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Help Box -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+              <tr>
+                <td style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;">
+                  <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#d97706;font-family:Arial,sans-serif;margin-bottom:6px;">Need urgent help?</div>
+                  <div style="font-size:13px;line-height:1.8;color:#475569;font-family:Arial,sans-serif;">Call us at <a href="tel:+919871984074" style="color:#0f172a;font-weight:600;text-decoration:none;">+91 98719 84074</a>. Our concierge team is available to assist you.</div>
+                </td>
+              </tr>
+            </table>
+
+            <!-- CTA Button -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+              <tr>
+                <td align="center">
+                  <a href="https://www.ownholidayclub.com" style="display:inline-block;padding:13px 28px;border-radius:999px;background:#f59e0b;color:#0f172a;text-decoration:none;font-size:13px;font-weight:700;font-family:Arial,sans-serif;letter-spacing:0.05em;">
+                    EXPLORE OUR DESTINATIONS
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Footer -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+              <tr>
+                <td align="center" style="border-top:1px solid #e2e8f0;padding-top:20px;">
+                  <p style="margin:0 0 6px;font-size:12px;color:#64748b;line-height:1.7;font-family:Arial,sans-serif;">
+                    © 2026 Own Holiday Club. All rights reserved.<br />
+                    <a href="mailto:info@ownholidayclub.com" style="color:#d97706;text-decoration:none;">info@ownholidayclub.com</a>
+                    &nbsp;·&nbsp;
+                    <a href="https://www.ownholidayclub.com" style="color:#d97706;text-decoration:none;">www.ownholidayclub.com</a>
+                  </p>
+                  <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.6;font-family:Arial,sans-serif;">
+                    You're receiving this because you submitted an inquiry on our website.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
   `;
  
   return sendMailWithLogging({
@@ -527,7 +565,8 @@ const sendHolidayBookingAdminEmail = async ({
   validTo
 }) => {
   const from = getFromAddress();
-  const to = "Info@ownholidayclub.com";
+  // const to = "Info@ownholidayclub.com"; // Production
+  const to = "vanshchaudhary2k2@gmail.com"; // Testing
   const subject = `New Holiday Booking Request - ${user.name || "Member"}`;
 
   const formatDate = (dateInput) => {
@@ -554,12 +593,12 @@ const sendHolidayBookingAdminEmail = async ({
           <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:148px;max-width:100%;height:auto;display:block;margin:0 auto;" />
         </div>
 
-        <div style="padding:28px 32px 24px;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);text-align:center;">
-          <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#fbbf24;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
+        <div style="padding:18px 24px;background:#f8fafc;border-bottom:1px solid #e2e8f0;text-align:center;">
+          <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#d97706;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
             New Booking Request
           </div>
-          <h1 style="margin:18px 0 8px;font-size:30px;line-height:1.15;color:#ffffff;">Holiday Request Received</h1>
-          <p style="margin:0;font-size:14px;line-height:1.7;color:#cbd5e1;">
+          <h1 style="margin:10px 0 0;font-size:22px;line-height:1.3;color:#0f172a;font-weight:700;">Holiday Request Received</h1>
+          <p style="margin:6px 0 0;font-size:14px;line-height:1.7;color:#475569;">
             A member has requested to book a holiday.
           </p>
         </div>
