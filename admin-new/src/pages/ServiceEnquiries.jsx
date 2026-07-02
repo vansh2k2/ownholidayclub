@@ -194,28 +194,31 @@ const ServiceEnquiries = () => {
       key: "location",
       label: "LOCATION",
       render: (row) => (
-        <div className="flex flex-col gap-1.5">
-          {row.fromLocation && (
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[8px] font-bold text-gray-400">FROM -</span>
-              <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded flex items-center gap-1 w-fit truncate max-w-[150px]">
-                <MapPin size={10} className="text-emerald-500 flex-shrink-0" /> <span className="truncate">{row.fromLocation}</span>
+        <div className="flex flex-col gap-2">
+          {row.fromLocation ? (
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold text-slate-500 uppercase">FROM -</span>
+              <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
+                {row.fromLocation}
               </span>
             </div>
-          )}
-          {row.toLocation && (
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[8px] font-bold text-gray-400">TO -</span>
-              <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded flex items-center gap-1 w-fit truncate max-w-[150px]">
-                <MapPin size={10} className="text-emerald-500 flex-shrink-0" /> <span className="truncate">{row.toLocation}</span>
+          ) : null}
+          {row.toLocation ? (
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold text-slate-500 uppercase">TO -</span>
+              <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
+                {row.toLocation}
               </span>
             </div>
-          )}
-          {row.location && !row.fromLocation && !row.toLocation && (
-            <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded flex items-center gap-1 w-fit truncate max-w-[150px]">
-              <MapPin size={10} className="text-emerald-500 flex-shrink-0" /> <span className="truncate">{row.location}</span>
-            </span>
-          )}
+          ) : null}
+          {row.location && !row.fromLocation && !row.toLocation ? (
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold text-slate-500 uppercase">LOCATION -</span>
+              <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
+                {row.location}
+              </span>
+            </div>
+          ) : null}
         </div>
       ),
     },
@@ -223,12 +226,12 @@ const ServiceEnquiries = () => {
       key: "budget",
       label: "BUDGET",
       render: (row) => (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[9px] font-black text-amber-700 uppercase tracking-wider bg-amber-50 px-2 py-1 rounded flex items-center gap-1 w-fit">
-            <IndianRupee size={10} className="text-amber-500" /> {row.budget || "Not Specified"}
+        <div className="flex flex-col">
+          <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
+            {row.budget || "N/A"}
           </span>
-          <span className="text-[9px] font-black text-gray-700 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded flex items-center gap-1.5 w-fit">
-            <Compass size={10} className="text-gray-500" /> {row.travelType || "Holiday"}
+          <span className="text-[10px] text-green-600 font-bold uppercase">
+            {row.travelType || "Holiday"}
           </span>
         </div>
       ),

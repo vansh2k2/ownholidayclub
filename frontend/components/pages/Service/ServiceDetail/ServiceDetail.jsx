@@ -30,7 +30,8 @@ export default function ServiceDetailPage({ serviceId }) {
     kids: "0",
     travelType: "",
     budget: "",
-    location: "",
+    fromLocation: "",
+    toLocation: "",
     subEvent: "",
     message: "",
   });
@@ -82,7 +83,8 @@ export default function ServiceDetailPage({ serviceId }) {
     const kids = Number(formData.kids || 0);
     const travelType = String(formData.travelType || "").trim();
     const budget = String(formData.budget || "").trim();
-    const location = String(formData.location || "").trim();
+    const fromLocation = String(formData.fromLocation || "").trim();
+    const toLocation = String(formData.toLocation || "").trim();
     const message = String(formData.message || "").trim();
 
     if (name.length < 2) {
@@ -144,9 +146,11 @@ export default function ServiceDetailPage({ serviceId }) {
           kids,
           travelType,
           budget,
-          location,
+          fromLocation,
+          toLocation,
           message,
           serviceName: formData.subEvent ? `${serviceData?.title || ""} - ${formData.subEvent}` : serviceData?.title || "",
+          subEvent: formData.subEvent || "",
           serviceId: serviceData?._id || null,
         }),
       });
@@ -169,7 +173,8 @@ export default function ServiceDetailPage({ serviceId }) {
           kids: "0",
           travelType: "",
           budget: "",
-          location: "",
+          fromLocation: "",
+          toLocation: "",
           subEvent: "",
           message: "",
         });
