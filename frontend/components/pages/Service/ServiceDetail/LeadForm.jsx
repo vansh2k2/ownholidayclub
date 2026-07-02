@@ -147,46 +147,40 @@ export default function LeadForm({
 
   const [localFeedback, setLocalFeedback] = useState("");
 
-  const [locationInput, setLocationInput] = useState(formData?.location || "");
-  const [locationOptions, setLocationOptions] = useState([]);
-  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
-  const skipFetch = useRef(false);
+  const [fromLocationInput, setFromLocationInput] = useState(formData?.fromLocation || "");
+  const [toLocationInput, setToLocationInput] = useState(formData?.toLocation || "");
+  const [fromLocationOptions, setFromLocationOptions] = useState([]);
+  const [toLocationOptions, setToLocationOptions] = useState([]);
+  const [isFromDropdownOpen, setIsFromDropdownOpen] = useState(false);
+  const [isToDropdownOpen, setIsToDropdownOpen] = useState(false);
+  const skipFromFetch = useRef(false);
+  const skipToFetch = useRef(false);
+
+  const fetchLocationOptions = async (input, setOptions, setDropdown) => {
+    if (!input || input.length < 2) { setOptions([]); setDropdown(false); return; }
+    try {
+      const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': 'AIzaSyDarNwOH5Gfi1KseDZ82fkh2b0wn66uudg' },
+        body: JSON.stringify({ input })
+      });
+      const data = await res.json();
+      if (data.suggestions) { setOptions(data.suggestions.map(s => s.placePrediction.text.text)); setDropdown(true); }
+      else setOptions([]);
+    } catch (err) { console.error(err); }
+  };
 
   useEffect(() => {
-    if (skipFetch.current) {
-      skipFetch.current = false;
-      return;
-    }
-    if (!locationInput || locationInput.length < 2) {
-      setLocationOptions([]);
-      setIsLocationDropdownOpen(false);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      try {
-        const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Goog-Api-Key': 'AIzaSyDarNwOH5Gfi1KseDZ82fkh2b0wn66uudg'
-          },
-          body: JSON.stringify({ input: locationInput })
-        });
-        const data = await res.json();
-        if (data.suggestions) {
-          setLocationOptions(data.suggestions.map(s => s.placePrediction.text.text));
-          setIsLocationDropdownOpen(true);
-        } else {
-          setLocationOptions([]);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }, 300);
-
+    if (skipFromFetch.current) { skipFromFetch.current = false; return; }
+    const timer = setTimeout(() => fetchLocationOptions(fromLocationInput, setFromLocationOptions, setIsFromDropdownOpen), 300);
     return () => clearTimeout(timer);
-  }, [locationInput, formData?.location]);
+  }, [fromLocationInput]);
+
+  useEffect(() => {
+    if (skipToFetch.current) { skipToFetch.current = false; return; }
+    const timer = setTimeout(() => fetchLocationOptions(toLocationInput, setToLocationOptions, setIsToDropdownOpen), 300);
+    return () => clearTimeout(timer);
+  }, [toLocationInput]);
 
   const subEventsList = serviceData?.subServices 
     ? [...serviceData.subServices].sort((a, b) => (a.order || 0) - (b.order || 0)) 
@@ -699,11 +693,11 @@ export default function LeadForm({
                         />
                       </div>
 
-                      {/* Row 3: Location + Service + Budget */}
+                      {/* Row 3: From Location + To Location + Service */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="flex flex-col gap-1 relative">
                           <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
-                            Location
+                            From Location
                           </label>
                           <div className="relative">
                             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
@@ -711,21 +705,21 @@ export default function LeadForm({
                             </span>
                             <input
                               type="text"
-                              value={locationInput}
+                              value={fromLocationInput}
                               onChange={(e) => {
-                                setLocationInput(e.target.value);
-                                handleInputChange({ target: { name: 'location', value: e.target.value } });
+                                setFromLocationInput(e.target.value);
+                                handleInputChange({ target: { name: 'fromLocation', value: e.target.value } });
                               }}
                               onFocus={() => {
-                                if (locationOptions.length > 0) setIsLocationDropdownOpen(true);
+                                if (fromLocationOptions.length > 0) setIsFromDropdownOpen(true);
                               }}
-                              onBlur={() => setTimeout(() => setIsLocationDropdownOpen(false), 200)}
+                              onBlur={() => setTimeout(() => setIsFromDropdownOpen(false), 200)}
                               disabled={formStep === "submitting"}
-                              placeholder="Search location..."
+                              placeholder="Where from?"
                               className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             />
                             <AnimatePresence>
-                              {isLocationDropdownOpen && locationOptions.length > 0 && (
+                              {isFromDropdownOpen && fromLocationOptions.length > 0 && (
                                 <motion.div
                                   initial={{ opacity: 0, y: -5 }}
                                   animate={{ opacity: 1, y: 0 }}
@@ -733,15 +727,67 @@ export default function LeadForm({
                                   className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-slate-200 shadow-xl max-h-48 overflow-y-auto"
                                   style={{ borderRadius: "0px" }}
                                 >
-                                  {locationOptions.map((opt, i) => (
+                                  {fromLocationOptions.map((opt, i) => (
                                     <div
                                       key={i}
                                       className="px-3 py-2 text-[12px] text-slate-700 hover:bg-amber-50 cursor-pointer border-b border-slate-100 last:border-0"
                                       onClick={() => {
-                                        skipFetch.current = true;
-                                        setLocationInput(opt);
-                                        handleInputChange({ target: { name: 'location', value: opt } });
-                                        setIsLocationDropdownOpen(false);
+                                        skipFromFetch.current = true;
+                                        setFromLocationInput(opt);
+                                        handleInputChange({ target: { name: 'fromLocation', value: opt } });
+                                        setIsFromDropdownOpen(false);
+                                      }}
+                                    >
+                                      {opt}
+                                    </div>
+                                  ))}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1 relative">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
+                            To Location
+                          </label>
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <MapPin size={16} />
+                            </span>
+                            <input
+                              type="text"
+                              value={toLocationInput}
+                              onChange={(e) => {
+                                setToLocationInput(e.target.value);
+                                handleInputChange({ target: { name: 'toLocation', value: e.target.value } });
+                              }}
+                              onFocus={() => {
+                                if (toLocationOptions.length > 0) setIsToDropdownOpen(true);
+                              }}
+                              onBlur={() => setTimeout(() => setIsToDropdownOpen(false), 200)}
+                              disabled={formStep === "submitting"}
+                              placeholder="Where to?"
+                              className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                            />
+                            <AnimatePresence>
+                              {isToDropdownOpen && toLocationOptions.length > 0 && (
+                                <motion.div
+                                  initial={{ opacity: 0, y: -5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -5 }}
+                                  className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-slate-200 shadow-xl max-h-48 overflow-y-auto"
+                                  style={{ borderRadius: "0px" }}
+                                >
+                                  {toLocationOptions.map((opt, i) => (
+                                    <div
+                                      key={i}
+                                      className="px-3 py-2 text-[12px] text-slate-700 hover:bg-amber-50 cursor-pointer border-b border-slate-100 last:border-0"
+                                      onClick={() => {
+                                        skipToFetch.current = true;
+                                        setToLocationInput(opt);
+                                        handleInputChange({ target: { name: 'toLocation', value: opt } });
+                                        setIsToDropdownOpen(false);
                                       }}
                                     >
                                       {opt}
@@ -780,7 +826,10 @@ export default function LeadForm({
                             </span>
                           </div>
                         </div>
+                      </div>
 
+                      {/* Row 4: Budget + Category */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Budget */}
                         <div className="flex flex-col gap-1">
                           <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
@@ -809,37 +858,37 @@ export default function LeadForm({
                             </span>
                           </div>
                         </div>
-                      </div>
-                      
-                      {subEventsList.length > 0 && (
-                        <div className="flex flex-col gap-1">
-                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
-                            Service Category
-                          </label>
-                          <div className="relative">
-                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                              <Layers size={16} />
-                            </span>
-                            <select
-                              name="subEvent"
-                              value={formData?.subEvent || ""}
-                              onChange={handleInputChange}
-                              disabled={formStep === "submitting"}
-                              className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
-                            >
-                              <option value="">Select a category...</option>
-                              {subEventsList.map((evt, idx) => (
-                                <option key={evt._id || idx} value={evt.title}>
-                                  {evt.title}
-                                </option>
-                              ))}
-                            </select>
-                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                              <ChevronDown size={14} />
-                            </span>
+
+                        {subEventsList.length > 0 && (
+                          <div className="flex flex-col gap-1 md:col-span-2">
+                            <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
+                              Service Category
+                            </label>
+                            <div className="relative">
+                              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                <Layers size={16} />
+                              </span>
+                              <select
+                                name="subEvent"
+                                value={formData?.subEvent || ""}
+                                onChange={handleInputChange}
+                                disabled={formStep === "submitting"}
+                                className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                              >
+                                <option value="">Select a category...</option>
+                                {subEventsList.map((evt, idx) => (
+                                  <option key={evt._id || idx} value={evt.title}>
+                                    {evt.title}
+                                  </option>
+                                ))}
+                              </select>
+                              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                <ChevronDown size={14} />
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
 
 
                       {/* Message */}

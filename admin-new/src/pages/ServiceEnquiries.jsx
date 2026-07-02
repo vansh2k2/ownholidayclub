@@ -169,7 +169,7 @@ const ServiceEnquiries = () => {
             {row.name}
           </span>
           <span className="text-[10px] text-blue-600 font-bold uppercase flex items-center gap-1">
-            <Briefcase size={10} /> {row.serviceName}
+            <Briefcase size={10} /> {row.serviceName} {row.subEvent ? `- ${row.subEvent}` : ''}
           </span>
         </div>
       ),
@@ -191,20 +191,44 @@ const ServiceEnquiries = () => {
       ),
     },
     {
-      key: "preferences",
-      label: "PREFERENCES",
+      key: "location",
+      label: "LOCATION",
       render: (row) => (
         <div className="flex flex-col gap-1.5">
-          {row.location && (
+          {row.fromLocation && (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[8px] font-bold text-gray-400">FROM -</span>
+              <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded flex items-center gap-1 w-fit truncate max-w-[150px]">
+                <MapPin size={10} className="text-emerald-500 flex-shrink-0" /> <span className="truncate">{row.fromLocation}</span>
+              </span>
+            </div>
+          )}
+          {row.toLocation && (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[8px] font-bold text-gray-400">TO -</span>
+              <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded flex items-center gap-1 w-fit truncate max-w-[150px]">
+                <MapPin size={10} className="text-emerald-500 flex-shrink-0" /> <span className="truncate">{row.toLocation}</span>
+              </span>
+            </div>
+          )}
+          {row.location && !row.fromLocation && !row.toLocation && (
             <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded flex items-center gap-1 w-fit truncate max-w-[150px]">
               <MapPin size={10} className="text-emerald-500 flex-shrink-0" /> <span className="truncate">{row.location}</span>
             </span>
           )}
-          <span className="text-[9px] font-black text-gray-700 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded flex items-center gap-1.5 w-fit">
-            <Compass size={10} className="text-gray-500" /> {row.travelType || "Holiday"}
-          </span>
+        </div>
+      ),
+    },
+    {
+      key: "budget",
+      label: "BUDGET",
+      render: (row) => (
+        <div className="flex flex-col gap-1.5">
           <span className="text-[9px] font-black text-amber-700 uppercase tracking-wider bg-amber-50 px-2 py-1 rounded flex items-center gap-1 w-fit">
             <IndianRupee size={10} className="text-amber-500" /> {row.budget || "Not Specified"}
+          </span>
+          <span className="text-[9px] font-black text-gray-700 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded flex items-center gap-1.5 w-fit">
+            <Compass size={10} className="text-gray-500" /> {row.travelType || "Holiday"}
           </span>
         </div>
       ),
@@ -471,11 +495,17 @@ const ServiceEnquiries = () => {
 
                         <div className="bg-blue-50 p-4 border border-blue-100">
                             <label className="text-[10px] font-semibold text-blue-400 uppercase tracking-widest block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Service Requested</label>
-                            <h4 className="text-md font-black text-blue-900 mb-3">{selectedEnquiry.serviceName}</h4>
+                            <h4 className="text-md font-black text-blue-900 mb-3">{selectedEnquiry.serviceName} {selectedEnquiry.subEvent ? `- ${selectedEnquiry.subEvent}` : ''}</h4>
                             <div className="flex flex-col gap-2 pt-3 border-t border-blue-200/50">
                                 <label className="text-[10px] font-semibold text-blue-400 uppercase tracking-widest block" style={{ fontFamily: "'Inter', sans-serif" }}>Trip Preferences</label>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    {selectedEnquiry.location && (
+                                    {selectedEnquiry.fromLocation && (
+                                        <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><MapPin size={12} /> FROM: {selectedEnquiry.fromLocation}</span>
+                                    )}
+                                    {selectedEnquiry.toLocation && (
+                                        <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><MapPin size={12} /> TO: {selectedEnquiry.toLocation}</span>
+                                    )}
+                                    {selectedEnquiry.location && !selectedEnquiry.fromLocation && !selectedEnquiry.toLocation && (
                                         <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><MapPin size={12} /> {selectedEnquiry.location}</span>
                                     )}
                                     <span className="text-[10px] font-black uppercase text-blue-800 bg-blue-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><Compass size={12} /> {selectedEnquiry.travelType || "Holiday"}</span>

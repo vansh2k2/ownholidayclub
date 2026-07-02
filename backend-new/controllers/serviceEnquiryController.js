@@ -16,8 +16,11 @@ exports.createEnquiry = asyncHandler(async (req, res) => {
         "Email": enquiry.email,
         "Phone": enquiry.phone,
         "Service": enquiry.serviceName,
-        "Service ID": enquiry.serviceId,
-        "Location": enquiry.location || "Not specified",
+        "Sub-Category": enquiry.subEvent || "Not specified",
+        "Travel Type": enquiry.travelType || "Not specified",
+        "From Location": enquiry.fromLocation || "Not specified",
+        "To Location": enquiry.toLocation || "Not specified",
+        "Budget": enquiry.budget || "Not specified",
       },
       message: enquiry.message,
     });
