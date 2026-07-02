@@ -169,7 +169,7 @@ const ServiceEnquiries = () => {
             {row.name}
           </span>
           <span className="text-[10px] text-blue-600 font-bold uppercase flex items-center gap-1">
-            <Briefcase size={10} /> {row.serviceName} {row.subEvent ? `- ${row.subEvent}` : ''}
+            <Briefcase size={10} /> {row.serviceName}
           </span>
         </div>
       ),
@@ -194,27 +194,27 @@ const ServiceEnquiries = () => {
       key: "location",
       label: "LOCATION",
       render: (row) => (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           {row.fromLocation ? (
-            <div className="flex flex-col">
+            <div className="flex items-center gap-1">
               <span className="text-[10px] font-bold text-slate-500 uppercase">FROM -</span>
-              <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
+              <span className="text-xs font-bold text-blue-600 uppercase tracking-tight">
                 {row.fromLocation}
               </span>
             </div>
           ) : null}
           {row.toLocation ? (
-            <div className="flex flex-col">
+            <div className="flex items-center gap-1">
               <span className="text-[10px] font-bold text-slate-500 uppercase">TO -</span>
-              <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
+              <span className="text-xs font-bold text-[#C8102E] uppercase tracking-tight">
                 {row.toLocation}
               </span>
             </div>
           ) : null}
           {row.location && !row.fromLocation && !row.toLocation ? (
-            <div className="flex flex-col">
+            <div className="flex items-center gap-1">
               <span className="text-[10px] font-bold text-slate-500 uppercase">LOCATION -</span>
-              <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
+              <span className="text-xs font-bold text-blue-600 uppercase tracking-tight">
                 {row.location}
               </span>
             </div>
