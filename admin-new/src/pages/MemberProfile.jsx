@@ -304,6 +304,14 @@ const MemberProfile = () => {
                             member.residenceAddress?.pin ? `PIN: ${member.residenceAddress.pin}` : null
                         ].filter(v => v && v !== '—').join(', ') || '—'} />
                         <TR1 label="Correspondence Address" value={[
+                            safe(member.correspondenceAddress?.houseNo),
+                            safe(member.correspondenceAddress?.addressLine),
+                            safe(member.correspondenceAddress?.city),
+                            safe(member.correspondenceAddress?.state),
+                            safe(member.correspondenceAddress?.country),
+                            member.correspondenceAddress?.pin ? `PIN: ${member.correspondenceAddress.pin}` : null
+                        ].filter(v => v && v !== '—').join(', ') || '—'} />
+                        <TR1 label="Office Address" value={[
                             safe(member.officeAddress?.houseNo),
                             safe(member.officeAddress?.addressLine),
                             safe(member.officeAddress?.city),

@@ -259,7 +259,7 @@ const sendWelcomePasswordEmail = async ({
             <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#d97706;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
               Membership Activated
             </div>
-            <h1 style="margin:18px 0 8px;font-size:24px;line-height:1.15;color:#0f172a;">Welcome to Own Holiday Club</h1>
+            <h1 style="margin:18px 0 8px;font-size:24px;line-height:1.2;color:#0f172a;">Welcome to<br/>Own Holiday Club</h1>
             <p style="margin:0;font-size:14px;line-height:1.7;color:#475569;">
               Your membership purchase was successful and your account is now ready.
             </p>
@@ -334,8 +334,8 @@ const sendLeadNotificationEmail = async ({
     if (value !== undefined && value !== null && String(value).trim() !== "") {
       detailsHtml += `
         <tr>
-          <td width="28%" style="padding: 9px 6px 9px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: middle; white-space: nowrap;">${key}</td>
-          <td width="72%" style="padding: 9px 0 9px 6px; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #0f172a; vertical-align: middle; word-break: break-all; overflow-wrap: anywhere;">${value}</td>
+          <td width="35%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; font-weight: 700; color: #64748b; width: 35%; text-transform: uppercase; vertical-align: top;">${key}</td>
+          <td width="65%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere;">${value}</td>
         </tr>
       `;
     }

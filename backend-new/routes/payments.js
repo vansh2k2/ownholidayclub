@@ -186,6 +186,7 @@ const normaliseMemberDetails = (payload = {}) => {
       maritalStatus: String(personalDetails.maritalStatus || "").trim(),
       anniversary: String(personalDetails.anniversary || "").trim(),
       residenceAddress: normalizeAddress(personalDetails.residenceAddress),
+      correspondenceAddress: normalizeAddress(personalDetails.correspondenceAddress),
       officeAddress: normalizeAddress(personalDetails.officeAddress),
     },
     familyDetails: {
@@ -514,7 +515,7 @@ router.post(
     const orderId = String(req.body.razorpay_order_id || "").trim();
     const paymentId = String(req.body.razorpay_payment_id || "").trim();
     const signature = String(req.body.razorpay_signature || "").trim();
-    const { firstName, fullName, email, mobile, dob, gender, maritalStatus, occupation, anniversary, residenceAddress, officeAddress } =
+    const { firstName, fullName, email, mobile, dob, gender, maritalStatus, occupation, anniversary, residenceAddress, correspondenceAddress, officeAddress } =
       memberDetails.personalDetails;
 
     if (!tierId || !orderId || !paymentId || !signature) {
@@ -694,6 +695,7 @@ router.post(
     user.anniversary = anniversary;
     user.occupation = occupation;
     user.residenceAddress = residenceAddress;
+    user.correspondenceAddress = correspondenceAddress;
     user.officeAddress = officeAddress;
     user.spouse = memberDetails.familyDetails.spouse;
     user.familyMembers = memberDetails.familyDetails.children;
@@ -781,6 +783,13 @@ router.post(
           "Phone": mobile,
           "State": residenceAddress.state,
           "City": residenceAddress.city,
+          "Marital Status": maritalStatus,
+          ...(maritalStatus?.toLowerCase() === "married"
+            ? {
+                "Spouse Name": memberDetails.familyDetails?.spouse?.name || "—",
+                "No. of Children": String(memberDetails.familyDetails?.children?.length || 0),
+              }
+            : {}),
           "Transaction ID": paymentId,
           "Order ID": orderId,
         },

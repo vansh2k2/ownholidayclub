@@ -355,6 +355,10 @@ const userSchema = new mongoose.Schema(
       type: addressSchema,
       default: () => ({}),
     },
+    correspondenceAddress: {
+      type: addressSchema,
+      default: () => ({}),
+    },
     officeAddress: {
       type: addressSchema,
       default: () => ({}),
