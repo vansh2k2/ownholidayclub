@@ -324,7 +324,7 @@ const MemberProfile = () => {
                     {/* ── FAMILY DETAILS ─────────────────────────────────── */}
                     <Section title="Family & Spouse Details">
                         <TR3 l1="Spouse Name" v1={safe(member.spouse?.name)} l2="Spouse DOB" v2={fmtDate(member.spouse?.dob)} l3="Spouse Contact" v3={safe(member.spouse?.mobile)} />
-                        <TR2 l1="Spouse Email" v1={safe(member.spouse?.email)} l2="Total Children" v2={String(member.familyDetails?.children?.length || member.children?.length || 0)} />
+                        <TR2 l1="Spouse Email" v1={safe(member.spouse?.email)} l2="Total Children" v2={String(member.familyMembers?.length || member.familyDetails?.children?.length || member.children?.length || 0)} />
                         <tr style={{ borderBottom: "1px solid #d1d5db" }}>
                             <td style={LC}>Children</td>
                             <td colSpan={5} style={{ padding: 0 }}>
@@ -338,9 +338,9 @@ const MemberProfile = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {(member.familyDetails?.children || member.children || []).length > 0 ? (
-                                            (member.familyDetails?.children || member.children || []).map((ch, i) => (
-                                                <tr key={i} style={{ borderBottom: i === (member.familyDetails?.children || member.children || []).length - 1 ? "none" : "1px solid #eee" }}>
+                                        {(member.familyMembers || member.familyDetails?.children || member.children || []).length > 0 ? (
+                                            (member.familyMembers || member.familyDetails?.children || member.children || []).map((ch, i) => (
+                                                <tr key={i} style={{ borderBottom: i === (member.familyMembers || member.familyDetails?.children || member.children || []).length - 1 ? "none" : "1px solid #eee" }}>
                                                     <td style={VCD}>{i + 1}</td>
                                                     <td style={VCD}>{safe(ch.name)}</td>
                                                     <td style={VCD}>{fmtDate(ch.dob)}</td>
@@ -364,17 +364,23 @@ const MemberProfile = () => {
                             <td style={LC}>ID Proof (Aadhaar/PAN)</td>
                             <td colSpan={2} style={VCD}>
                                 {member.documents?.idProof?.url ? (
-                                    <a href={member.documents.idProof.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
-                                        <FileText size={14} /> VIEW DOCUMENT
-                                    </a>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "8px 0" }}>
+                                        <a href={member.documents.idProof.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
+                                            <FileText size={14} /> VIEW DOCUMENT ({safe(member.documents.idProof.proofType || 'ID Proof')})
+                                        </a>
+                                        <img src={member.documents.idProof.url} alt="ID Proof" style={{ maxWidth: "100%", maxHeight: "250px", objectFit: "contain", border: "1px solid #e2e8f0", borderRadius: 8, padding: 4 }} />
+                                    </div>
                                 ) : "NOT SUBMITTED"}
                             </td>
                             <td style={LC}>Address Proof</td>
                             <td colSpan={2} style={VC}>
                                 {member.documents?.addressProof?.url ? (
-                                    <a href={member.documents.addressProof.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
-                                        <FileText size={14} /> VIEW DOCUMENT
-                                    </a>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "8px 0" }}>
+                                        <a href={member.documents.addressProof.url} target="_blank" rel="noreferrer" style={{ color: "#C8102E", fontWeight: 700, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
+                                            <FileText size={14} /> VIEW DOCUMENT ({safe(member.documents.addressProof.proofType || 'Address Proof')})
+                                        </a>
+                                        <img src={member.documents.addressProof.url} alt="Address Proof" style={{ maxWidth: "100%", maxHeight: "250px", objectFit: "contain", border: "1px solid #e2e8f0", borderRadius: 8, padding: 4 }} />
+                                    </div>
                                 ) : "NOT SUBMITTED"}
                             </td>
                         </tr>

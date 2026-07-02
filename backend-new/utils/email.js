@@ -270,7 +270,7 @@ const sendWelcomePasswordEmail = async ({
               Hello <strong style="color:#0f172a;">${safeName}</strong>,
             </p>
             <p style="margin:0 0 24px;font-size:15px;line-height:1.8;color:#475569;">
-              Thank you for joining Own Holiday Club. We have created your member account and attached your membership invoice with this email.
+              Thank you for joining<br/>Own Holiday Club. We have created your member account and attached your membership invoice with this email.
             </p>
 
             <div style="border:1px solid #fde68a;border-radius:20px;background:linear-gradient(180deg,#fffdf6 0%,#fffbeb 100%);padding:22px 20px;margin:0 0 24px;">

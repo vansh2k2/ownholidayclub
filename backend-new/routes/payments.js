@@ -193,6 +193,8 @@ const normaliseMemberDetails = (payload = {}) => {
       spouse: {
         name: String(familyDetails?.spouse?.name || "").trim(),
         dob: String(familyDetails?.spouse?.dob || "").trim(),
+        email: String(familyDetails?.spouse?.email || "").trim(),
+        mobile: String(familyDetails?.spouse?.mobile || "").trim(),
       },
       children: normalizeFamilyMembers(familyDetails?.children),
     },
@@ -770,7 +772,36 @@ router.post(
         " Payment was successful, but the password email with invoice could not be sent right now.";
     }
 
-    // Removed lead notification email for membership purchase as requested by user.
+    /* Commented out as requested - admin does not want lead notification emails on successful membership purchase
+    try {
+      await sendLeadNotificationEmail({
+        leadType: "Membership Purchase",
+        leadDetails: {
+          "Membership ID": membershipId,
+          "Plan Name": tier.name,
+          "Price Paid": tier.price,
+          "Admin Fee": tier.adminFee,
+          "Name": fullName,
+          "Email": email,
+          "Phone": mobile,
+          "State": residenceAddress.state,
+          "City": residenceAddress.city,
+          "Marital Status": maritalStatus,
+          ...(maritalStatus?.toLowerCase() === "married"
+            ? {
+                "Spouse Name": memberDetails.familyDetails?.spouse?.name || "—",
+                "No. of Children": String(memberDetails.familyDetails?.children?.length || 0),
+              }
+            : {}),
+          "Transaction ID": paymentId,
+          "Order ID": orderId,
+        },
+        message: `A new member has purchased the ${tier.name} membership. Account created and welcome credentials dispatched.`,
+      });
+    } catch (mailErr) {
+      console.error("Failed to send membership purchase lead notification email:", mailErr);
+    }
+    */
 
     return res.status(200).json({
       message: `Membership payment verified successfully.${emailDeliveryMessage}`,
