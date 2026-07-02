@@ -15,6 +15,7 @@ import {
   IndianRupee,
   Compass,
   MapPin,
+  ChevronDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
@@ -91,34 +92,32 @@ function Particles() {
 
 /* ── Input Field ── */
 const InputField = ({ icon: Icon, label, textarea, rows, ...props }) => (
-  <div className="flex flex-col gap-1.5">
+  <div className="flex flex-col gap-1">
     {label && (
       <label
-        className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-        
+        className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800"
       >
         {label}
       </label>
     )}
-    <div className="relative group">
+    <div className="relative">
       {!textarea && Icon && (
-        <Icon
-          size={14}
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-        />
+        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <Icon size={16} />
+        </span>
       )}
       {textarea ? (
         <textarea
           rows={rows || 2}
           {...props}
-          className="w-full p-2.5 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 resize-none disabled:opacity-50"
-          style={{ borderRadius: "6px" }}
+          className="w-full rounded-none border border-slate-400 bg-white p-2.5 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:opacity-50 resize-none"
         />
       ) : (
         <input
           {...props}
-          className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-          style={{ borderRadius: "6px" }}
+          className={`h-8 w-full rounded-none border border-slate-400 bg-white ${
+            Icon ? "pl-10 pr-3" : "px-3"
+          } py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400`}
         />
       )}
     </div>
@@ -510,8 +509,8 @@ export default function LeadForm({
                         </div>
                       )}
 
-                      {/* Name + Phone */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      {/* Row 1: Name + Phone + Email */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <InputField
                           icon={User}
                           label="Full Name"
@@ -525,19 +524,15 @@ export default function LeadForm({
                         />
                         
                         {/* Mobile Number & OTP */}
-                        <div className="flex flex-col gap-1.5">
-                          <label
-                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            
-                          >
+                        <div className="flex flex-col gap-1">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
                             Phone Number
                           </label>
-                          <div className="flex gap-2 items-start">
-                            <div className="relative group flex-1">
-                              <Phone
-                                size={14}
-                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-                              />
+                          <div className="flex gap-2 items-center">
+                            <div className="relative flex-1">
+                              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                <Phone size={16} />
+                              </span>
                               <input
                                 type="tel"
                                 name="phone"
@@ -546,8 +541,7 @@ export default function LeadForm({
                                 value={formData?.phone || ""}
                                 onChange={handleInputChange}
                                 placeholder="10-digit mobile"
-                                className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-                                style={{ borderRadius: "6px" }}
+                                className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                               />
                             </div>
                             {!isMobileVerified ? (
@@ -555,12 +549,12 @@ export default function LeadForm({
                                 type="button"
                                 onClick={handleSendMobileOtp}
                                 disabled={isSendingMobileOtp || !formData?.phone || formData.phone.length !== 10}
-                                className="h-[38px] px-3 bg-slate-900 hover:bg-amber-600 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded"
+                                className="h-8 px-4 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded-none shrink-0"
                               >
                                 {isSendingMobileOtp ? "Wait..." : isMobileOtpSent ? "Resend" : "OTP"}
                               </button>
                             ) : (
-                              <span className="h-[38px] px-3 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded border border-emerald-200">
+                              <span className="h-8 px-3 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded-none border border-emerald-200 shrink-0">
                                 ✓ Verified
                               </span>
                             )}
@@ -577,13 +571,13 @@ export default function LeadForm({
                                 placeholder="6-digit OTP"
                                 value={mobileOtp}
                                 onChange={(e) => setMobileOtp(e.target.value.replace(/\D/g, ""))}
-                                className="h-8 px-3 border border-slate-300 text-center text-xs font-bold w-full outline-none focus:border-amber-500 rounded"
+                                className="h-8 px-3 border border-slate-400 bg-white text-center text-xs font-bold w-full outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 rounded-none placeholder:text-slate-400 text-slate-900"
                               />
                               <button
                                 type="button"
                                 onClick={handleVerifyMobileOtp}
                                 disabled={isVerifyingMobileOtp || mobileOtp.length !== 6}
-                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded shrink-0"
+                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded-none shrink-0"
                               >
                                 {isVerifyingMobileOtp ? "Verifying..." : "Verify"}
                               </button>
@@ -593,19 +587,15 @@ export default function LeadForm({
                       </div>
 
                       {/* Email & OTP */}
-                      <div className="flex flex-col gap-1.5">
-                        <label
-                          className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                          
-                        >
+                      <div className="flex flex-col gap-1">
+                        <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
                           Email Address
                         </label>
-                        <div className="flex gap-2 items-start">
-                          <div className="relative group flex-1">
-                            <Mail
-                              size={14}
-                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-                            />
+                        <div className="flex gap-2 items-center">
+                          <div className="relative flex-1">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <Mail size={16} />
+                            </span>
                             <input
                               type="email"
                               name="email"
@@ -614,30 +604,29 @@ export default function LeadForm({
                               value={formData?.email || ""}
                               onChange={handleInputChange}
                               placeholder="you@example.com"
-                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-                              style={{ borderRadius: "6px" }}
+                              className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             />
                           </div>
                           {!isEmailVerified && !isEmailSkipped ? (
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 shrink-0">
                               <button
                                 type="button"
                                 onClick={handleSendEmailOtp}
                                 disabled={isSendingEmailOtp || !formData?.email || !EMAIL_PATTERN.test(formData.email)}
-                                className="h-[38px] px-3 bg-slate-900 hover:bg-amber-600 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded"
+                                className="h-8 px-4 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded-none shrink-0"
                               >
                                 {isSendingEmailOtp ? "Wait..." : isEmailOtpSent ? "Resend" : "OTP"}
                               </button>
                               <button
                                 type="button"
                                 onClick={handleSkipEmailOtp}
-                                className="h-[38px] px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors"
+                                className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors"
                               >
                                 Skip
                               </button>
                             </div>
                           ) : (
-                            <span className={`h-[38px] px-3 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded border ${isEmailVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
+                            <span className={`h-8 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded-none border shrink-0 ${isEmailVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
                               {isEmailVerified ? "✓ Verified" : "Skipped"}
                             </span>
                           )}
@@ -654,14 +643,14 @@ export default function LeadForm({
                               placeholder="6-digit OTP"
                               value={emailOtp}
                               onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, ""))}
-                              className="h-8 px-3 border border-slate-300 text-center text-xs font-bold w-full outline-none focus:border-amber-500 rounded"
+                              className="h-8 px-3 border border-slate-400 text-center text-xs font-bold w-full outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 rounded-none bg-white placeholder:text-slate-400 text-slate-900"
                             />
                             <div className="flex items-center gap-1 shrink-0">
                               <button
                                 type="button"
                                 onClick={handleVerifyEmailOtp}
                                 disabled={isVerifyingEmailOtp || emailOtp.length !== 6}
-                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded"
+                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded-none"
                               >
                                 {isVerifyingEmailOtp ? "Verifying..." : "Verify"}
                               </button>
@@ -677,8 +666,8 @@ export default function LeadForm({
                         )}
                       </div>
 
-                      {/* Dates */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      {/* Row 2: Dates + Guests */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <InputField
                           icon={Calendar}
                           label="Check-in Date"
@@ -697,10 +686,6 @@ export default function LeadForm({
                           onChange={handleInputChange}
                           disabled={formStep === "submitting"}
                         />
-                      </div>
-
-                      {/* Guests & Location */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <InputField
                           icon={User}
                           label="No of Guests"
@@ -712,12 +697,18 @@ export default function LeadForm({
                           disabled={formStep === "submitting"}
                           placeholder="2"
                         />
-                        <div className="flex flex-col gap-1.5 relative">
-                          <label className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">
+                      </div>
+
+                      {/* Row 3: Location + Service + Budget */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="flex flex-col gap-1 relative">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
                             Location
                           </label>
-                          <div className="relative group">
-                            <MapPin size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10" />
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <MapPin size={16} />
+                            </span>
                             <input
                               type="text"
                               value={locationInput}
@@ -731,8 +722,7 @@ export default function LeadForm({
                               onBlur={() => setTimeout(() => setIsLocationDropdownOpen(false), 200)}
                               disabled={formStep === "submitting"}
                               placeholder="Search location..."
-                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-                              style={{ borderRadius: "6px" }}
+                              className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             />
                             <AnimatePresence>
                               {isLocationDropdownOpen && locationOptions.length > 0 && (
@@ -741,7 +731,7 @@ export default function LeadForm({
                                   animate={{ opacity: 1, y: 0 }}
                                   exit={{ opacity: 0, y: -5 }}
                                   className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-slate-200 shadow-xl max-h-48 overflow-y-auto"
-                                  style={{ borderRadius: "6px" }}
+                                  style={{ borderRadius: "0px" }}
                                 >
                                   {locationOptions.map((opt, i) => (
                                     <div
@@ -762,29 +752,22 @@ export default function LeadForm({
                             </AnimatePresence>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {/* Travel Type */}
-                        <div className="flex flex-col gap-1.5">
-                          <label
-                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            
-                          >
+                        {/* Select Service */}
+                        <div className="flex flex-col gap-1">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
                             Select Service
                           </label>
-                          <div className="relative group">
-                            <Compass
-                              size={14}
-                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-                            />
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <Compass size={16} />
+                            </span>
                             <select
                               name="travelType"
                               value={formData?.travelType || ""}
                               onChange={handleInputChange}
                               disabled={formStep === "submitting"}
-                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
-                              style={{ borderRadius: "6px" }}
+                              className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             >
                               <option value="" disabled>Select a service...</option>
                               <option value="Holiday">Holiday</option>
@@ -792,29 +775,27 @@ export default function LeadForm({
                               <option value="Wedding">Wedding</option>
                               <option value="Outing">Outing</option>
                             </select>
+                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <ChevronDown size={14} />
+                            </span>
                           </div>
                         </div>
 
                         {/* Budget */}
-                        <div className="flex flex-col gap-1.5">
-                          <label
-                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            
-                          >
+                        <div className="flex flex-col gap-1">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
                             Budget
                           </label>
-                          <div className="relative group">
-                            <IndianRupee
-                              size={14}
-                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-                            />
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <IndianRupee size={16} />
+                            </span>
                             <select
                               name="budget"
                               value={formData?.budget || ""}
                               onChange={handleInputChange}
                               disabled={formStep === "submitting"}
-                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
-                              style={{ borderRadius: "6px" }}
+                              className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             >
                               <option value="">Select a budget...</option>
                               {formData?.travelType && BUDGET_OPTIONS[formData?.travelType]?.map((opt, idx) => (
@@ -823,30 +804,28 @@ export default function LeadForm({
                                 </option>
                               ))}
                             </select>
+                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <ChevronDown size={14} />
+                            </span>
                           </div>
                         </div>
                       </div>
                       
                       {subEventsList.length > 0 && (
-                        <div className="flex flex-col gap-1.5">
-                          <label
-                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            
-                          >
+                        <div className="flex flex-col gap-1">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
                             Service Category
                           </label>
-                          <div className="relative group">
-                            <Layers
-                              size={14}
-                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-                            />
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <Layers size={16} />
+                            </span>
                             <select
                               name="subEvent"
                               value={formData?.subEvent || ""}
                               onChange={handleInputChange}
                               disabled={formStep === "submitting"}
-                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
-                              style={{ borderRadius: "6px" }}
+                              className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             >
                               <option value="">Select a category...</option>
                               {subEventsList.map((evt, idx) => (
@@ -855,6 +834,9 @@ export default function LeadForm({
                                 </option>
                               ))}
                             </select>
+                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <ChevronDown size={14} />
+                            </span>
                           </div>
                         </div>
                       )}
