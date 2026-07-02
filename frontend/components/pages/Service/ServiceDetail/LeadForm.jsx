@@ -862,7 +862,7 @@ export default function LeadForm({
                         {subEventsList.length > 0 && (
                           <div className="flex flex-col gap-1 md:col-span-2">
                             <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
-                              Service Category
+                              {serviceData?.title?.toLowerCase().includes("wedding") ? "Type of Marriage" : "Service Category"}
                             </label>
                             <div className="relative">
                               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
@@ -875,7 +875,7 @@ export default function LeadForm({
                                 disabled={formStep === "submitting"}
                                 className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                               >
-                                <option value="">Select a category...</option>
+                                <option value="">{serviceData?.title?.toLowerCase().includes("wedding") ? "Select a type..." : "Select a category..."}</option>
                                 {subEventsList.map((evt, idx) => (
                                   <option key={evt._id || idx} value={evt.title}>
                                     {evt.title}
