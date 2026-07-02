@@ -578,11 +578,10 @@ export default function LeadForm({
                             </motion.div>
                           )}
                         </div>
-                      </div>
 
-                      {/* Email & OTP */}
-                      <div className="flex flex-col gap-1">
-                        <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
+                        {/* Email & OTP */}
+                        <div className="flex flex-col gap-1">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
                           Email Address
                         </label>
                         <div className="flex gap-2 items-center">
@@ -658,6 +657,7 @@ export default function LeadForm({
                             </div>
                           </motion.div>
                         )}
+                      </div>
                       </div>
 
                       {/* Row 2: Dates + Guests */}
