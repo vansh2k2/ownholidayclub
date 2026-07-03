@@ -38,6 +38,7 @@ import ActivityLogs from "../pages/ActivityLogs";
 import HolidayBookings from "../pages/HolidayBookings";
 import AppGallery from "../pages/AppGallery";
 import AppVideoGallery from "../pages/AppVideoGallery";
+import AddBudget from "../pages/AddBudget";
 
 /* Protected */
 import ProtectedRoute from "./ProtectedRoute";
@@ -86,6 +87,7 @@ export default function AppRoutes() {
           <Route path="activity-logs" element={<ActivityLogs />} />
           <Route path="app-gallery" element={<AppGallery />} />
           <Route path="app-video-gallery" element={<AppVideoGallery />} />
+          <Route path="add-budget" element={<AddBudget />} />
 
         </Route>
       </Route>

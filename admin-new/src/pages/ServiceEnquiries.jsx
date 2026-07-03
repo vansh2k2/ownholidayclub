@@ -163,16 +163,30 @@ const ServiceEnquiries = () => {
     {
       key: "name",
       label: "FULL NAME",
-      render: (row) => (
-        <div className="flex flex-col">
+      render: (row) => {
+        const parts = row.serviceName ? row.serviceName.split(' - ') : [];
+        const category = parts[0] || row.serviceName;
+        const subcategory = parts.slice(1).join(' - ') || row.subEvent;
+        return (
+        <div className="flex flex-col gap-0.5">
           <span className="text-sm font-bold text-gray-800 uppercase tracking-tight">
             {row.name}
           </span>
-          <span className="text-[10px] text-blue-600 font-bold uppercase flex items-center gap-1">
-            <Briefcase size={10} /> {row.serviceName}
+          <span className="text-[10px] text-blue-600 font-bold uppercase flex items-center gap-1 mt-0.5">
+            <Briefcase size={10} /> {category}
           </span>
+          {subcategory && (
+            <span className="text-[10px] text-purple-600 font-bold uppercase flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span> {subcategory}
+            </span>
+          )}
+          {row.budget && (
+            <span className="text-[10px] text-green-600 font-bold uppercase flex items-center gap-1">
+              <IndianRupee size={10} /> {row.budget}
+            </span>
+          )}
         </div>
-      ),
+      )},
     },
     {
       key: "contact",
@@ -193,7 +207,9 @@ const ServiceEnquiries = () => {
     {
       key: "location",
       label: "LOCATION",
-      render: (row) => (
+      render: (row) => {
+        const date = new Date(row.createdAt);
+        return (
         <div className="flex flex-col gap-1">
           {row.fromLocation ? (
             <div className="flex items-center gap-1">
@@ -219,62 +235,21 @@ const ServiceEnquiries = () => {
               </span>
             </div>
           ) : null}
-        </div>
-      ),
-    },
-    {
-      key: "budget",
-      label: "BUDGET",
-      render: (row) => (
-        <div className="flex flex-col">
-          <span className="text-xs font-bold text-gray-800 uppercase tracking-tight">
-            {row.budget || "N/A"}
-          </span>
-          <span className="text-[10px] text-green-600 font-bold uppercase">
-            {row.travelType || "Holiday"}
-          </span>
-        </div>
-      ),
-    },
-    {
-      key: "message",
-      label: "MESSAGE",
-      render: (row) => (
-        <div className="flex flex-col">
-          <p className="text-xs text-gray-500 italic max-w-[200px] truncate">
-            {row.message || "No message provided"}
-          </p>
-          <button
-            onClick={() => handleViewEnquiry(row)}
-            className="text-[10px] font-bold text-[#C8102E] uppercase tracking-tight mt-1 hover:underline text-left"
-          >
-            View Details
-          </button>
-        </div>
-      )
-    },
-    {
-      key: "date",
-      label: "REQUESTED ON",
-      render: (row) => {
-        const date = new Date(row.createdAt);
-        return (
-          <div className="flex items-center gap-3">
-             <div className="p-2 bg-slate-50 rounded-lg">
-                <Clock size={14} className="text-slate-400" />
-             </div>
-             <div className="flex flex-col">
-                <span className="text-xs font-bold text-gray-700">
-                  {date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
-                </span>
-                <span className="text-[10px] font-bold text-blue-600 uppercase">
-                  {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
-                </span>
-             </div>
+          <div className="flex items-center gap-1.5 mt-1 pt-1 border-t border-slate-100">
+            <Clock size={11} className="text-slate-400" />
+            <span className="text-[10px] font-bold text-gray-600">
+              {date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+            </span>
+            <span className="text-[10px] font-bold text-blue-600 uppercase">
+              {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+            </span>
           </div>
+        </div>
         );
       },
     },
+
+
     {
       key: "status",
       label: "STATUS",

@@ -163,16 +163,27 @@ const DestinationEnquiries = () => {
     {
       key: "name",
       label: "FULL NAME",
-      render: (row) => (
-        <div className="flex flex-col">
+      render: (row) => {
+        return (
+        <div className="flex flex-col gap-0.5">
           <span className="text-sm font-bold text-gray-800 uppercase tracking-tight">
             {row.name}
           </span>
-          <span className="text-[10px] text-blue-600 font-bold uppercase flex items-center gap-1">
+          <span className="text-[10px] text-blue-600 font-bold uppercase flex items-center gap-1 mt-0.5">
             <Plane size={10} /> {row.destinationName}
           </span>
+          {row.travelType && (
+            <span className="text-[10px] text-purple-600 font-bold uppercase flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span> {row.travelType}
+            </span>
+          )}
+          {row.budget && (
+            <span className="text-[10px] text-green-600 font-bold uppercase flex items-center gap-1">
+              <IndianRupee size={10} /> {row.budget}
+            </span>
+          )}
         </div>
-      ),
+      )},
     },
     {
       key: "contact",
@@ -191,59 +202,45 @@ const DestinationEnquiries = () => {
       ),
     },
     {
-      key: "preferences",
-      label: "PREFERENCES",
-      render: (row) => (
-        <div className="flex flex-col gap-1.5">
-          {row.location && (
-            <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded flex items-center gap-1 w-fit truncate max-w-[150px]">
-              <MapPin size={10} className="text-emerald-500 flex-shrink-0" /> <span className="truncate">{row.location}</span>
-            </span>
-          )}
-          <span className="text-[9px] font-black text-gray-700 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded flex items-center gap-1.5 w-fit">
-            <Compass size={10} className="text-gray-500" /> {row.travelType || "Holiday"}
-          </span>
-          <span className="text-[9px] font-black text-amber-700 uppercase tracking-wider bg-amber-50 px-2 py-1 rounded flex items-center gap-1 w-fit">
-            <IndianRupee size={10} className="text-amber-500" /> {row.budget || "Not Specified"}
-          </span>
-        </div>
-      ),
-    },
-    {
-      key: "message",
-      label: "MESSAGE",
-      render: (row) => (
-        <div className="flex flex-col">
-          <p className="text-xs text-gray-500 italic max-w-[200px] truncate">
-            {row.message || "No message provided"}
-          </p>
-          <button
-            onClick={() => handleViewEnquiry(row)}
-            className="text-[10px] font-bold text-[#C8102E] uppercase tracking-tight mt-1 hover:underline text-left"
-          >
-            View Details
-          </button>
-        </div>
-      )
-    },
-    {
-      key: "date",
-      label: "REQUESTED ON",
+      key: "location",
+      label: "LOCATION",
       render: (row) => {
         const date = new Date(row.createdAt);
         return (
-          <div className="flex items-center gap-3">
-             <div className="p-2 bg-slate-50 rounded-lg">
-                <Clock size={14} className="text-slate-400" />
-             </div>
-             <div className="flex flex-col">
-                <span className="text-xs font-bold text-gray-700">
-                  {date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+          <div className="flex flex-col gap-1">
+            {row.fromLocation ? (
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">FROM -</span>
+                <span className="text-xs font-bold text-blue-600 uppercase tracking-tight">
+                  {row.fromLocation}
                 </span>
-                <span className="text-[10px] font-bold text-blue-600 uppercase">
-                  {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+              </div>
+            ) : null}
+            {row.toLocation ? (
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">TO -</span>
+                <span className="text-xs font-bold text-[#C8102E] uppercase tracking-tight">
+                  {row.toLocation}
                 </span>
-             </div>
+              </div>
+            ) : null}
+            {row.location && !row.fromLocation && !row.toLocation ? (
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">LOCATION -</span>
+                <span className="text-xs font-bold text-blue-600 uppercase tracking-tight">
+                  {row.location}
+                </span>
+              </div>
+            ) : null}
+            <div className="flex items-center gap-1.5 mt-1 pt-1 border-t border-slate-100">
+              <Clock size={11} className="text-slate-400" />
+              <span className="text-[10px] font-bold text-gray-600">
+                {date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+              </span>
+              <span className="text-[10px] font-bold text-blue-600 uppercase">
+                {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+              </span>
+            </div>
           </div>
         );
       },
@@ -475,7 +472,13 @@ const DestinationEnquiries = () => {
                             <div className="flex flex-col gap-2 pt-3 border-t border-blue-200/50">
                                 <label className="text-[10px] font-semibold text-blue-400 uppercase tracking-widest block" style={{ fontFamily: "'Inter', sans-serif" }}>Trip Preferences</label>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    {selectedEnquiry.location && (
+                                    {selectedEnquiry.fromLocation && (
+                                        <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><MapPin size={12} /> FROM: {selectedEnquiry.fromLocation}</span>
+                                    )}
+                                    {selectedEnquiry.toLocation && (
+                                        <span className="text-[10px] font-black uppercase text-red-800 bg-red-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><MapPin size={12} /> TO: {selectedEnquiry.toLocation}</span>
+                                    )}
+                                    {!selectedEnquiry.fromLocation && !selectedEnquiry.toLocation && selectedEnquiry.location && (
                                         <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><MapPin size={12} /> {selectedEnquiry.location}</span>
                                     )}
                                     <span className="text-[10px] font-black uppercase text-blue-800 bg-blue-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><Compass size={12} /> {selectedEnquiry.travelType || "Holiday"}</span>

@@ -14,6 +14,7 @@ import {
   CheckCircle,
   IndianRupee,
   MapPin,
+  ChevronDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimate from "@/components/common/ScrollAnimate";
@@ -21,32 +22,7 @@ import ScrollAnimate from "@/components/common/ScrollAnimate";
 const API_BASE_URL = process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const BUDGET_OPTIONS = {
-  Holiday: [
-    { label: "Below 5,000 (per day)", value: "Below 5000" },
-    { label: "5,000 - 7,000 (per day)", value: "5000 - 7000" },
-    { label: "7,000 - 10,000 (per day)", value: "7000 - 10000" },
-    { label: "Above 10,000 (per day)", value: "Above 10000" },
-  ],
-  Events: [
-    { label: "Below 1,000 (per person)", value: "Below 1000" },
-    { label: "1,000 - 2,000 (per person)", value: "1000 - 2000" },
-    { label: "2,000 - 3,000 (per person)", value: "2000 - 3000" },
-    { label: "Above 3,000 (per person)", value: "Above 3000" },
-  ],
-  Wedding: [
-    { label: "Below 1,500 (per person)", value: "Below 1500" },
-    { label: "1,500 - 2,500 (per person)", value: "1500 - 2500" },
-    { label: "2,500 - 3,500 (per person)", value: "2500 - 3500" },
-    { label: "Above 3,500 (per person)", value: "Above 3500" },
-  ],
-  Outing: [
-    { label: "Below 500 (per person)", value: "Below 500" },
-    { label: "1,000 - 2,000 (per person)", value: "1000 - 2000" },
-    { label: "3,000 - 5,000 (per person)", value: "3000 - 5000" },
-    { label: "Above 5,000 (per person)", value: "Above 5000" },
-  ],
-};
+
 
 /* ── Floating particles ── */
 function Particles() {
@@ -89,34 +65,30 @@ function Particles() {
 
 /* ── Input Field ── */
 const InputField = ({ icon: Icon, label, textarea, rows, ...props }) => (
-  <div className="flex flex-col gap-1.5">
+  <div className="flex flex-col gap-1">
     {label && (
-      <label
-        className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-        
-      >
+      <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
         {label}
       </label>
     )}
-    <div className="relative group">
+    <div className="relative">
       {!textarea && Icon && (
-        <Icon
-          size={14}
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-        />
+        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <Icon size={16} />
+        </span>
       )}
       {textarea ? (
         <textarea
           rows={rows || 2}
           {...props}
-          className="w-full p-2.5 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 resize-none disabled:opacity-50"
-          style={{ borderRadius: "6px" }}
+          className="w-full rounded-none border border-slate-400 bg-white p-2.5 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:opacity-50 resize-none"
         />
       ) : (
         <input
           {...props}
-          className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-          style={{ borderRadius: "6px" }}
+          className={`h-8 w-full rounded-none border border-slate-400 bg-white ${
+            Icon ? "pl-10 pr-3" : "px-3"
+          } py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400`}
         />
       )}
     </div>
@@ -146,46 +118,73 @@ export default function LeadForm({
 
   const [localFeedback, setLocalFeedback] = useState("");
 
+  const [dynamicServices, setDynamicServices] = useState([]);
+  const [dynamicBudgets, setDynamicBudgets] = useState([]);
+
+  useEffect(() => {
+    const fetchServicesAndBudgets = async () => {
+      try {
+        const [servRes, budgRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/explore-services`),
+          fetch(`${API_BASE_URL}/api/budgets`)
+        ]);
+        const servData = await servRes.json();
+        const budgData = await budgRes.json();
+        
+        if (servData.success && servData.data) {
+          const d = servData.data;
+          setDynamicServices(Array.isArray(d) ? (d[0]?.services || []) : (d.services || []));
+        }
+        if (budgData.success) {
+          setDynamicBudgets(budgData.data || []);
+        }
+      } catch (err) {
+        console.error("Error fetching dynamic data:", err);
+      }
+    };
+    fetchServicesAndBudgets();
+  }, []);
+
   const [locationInput, setLocationInput] = useState(formData?.location || "");
   const [locationOptions, setLocationOptions] = useState([]);
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
   const skipFetch = useRef(false);
 
+  const [fromLocationInput, setFromLocationInput] = useState(formData?.fromLocation || "");
+  const [fromLocationOptions, setFromLocationOptions] = useState([]);
+  const [isFromDropdownOpen, setIsFromDropdownOpen] = useState(false);
+  const skipFromFetch = useRef(false);
+
+  const [toLocationInput, setToLocationInput] = useState(formData?.toLocation || "");
+  const [toLocationOptions, setToLocationOptions] = useState([]);
+  const [isToDropdownOpen, setIsToDropdownOpen] = useState(false);
+  const skipToFetch = useRef(false);
+
+  const fetchLocationOptions = async (input, setOptions, setDropdown) => {
+    if (!input || input.length < 2) { setOptions([]); setDropdown(false); return; }
+    try {
+      const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': 'AIzaSyDarNwOH5Gfi1KseDZ82fkh2b0wn66uudg' },
+        body: JSON.stringify({ input })
+      });
+      const data = await res.json();
+      if (data.suggestions) { setOptions(data.suggestions.map(s => s.placePrediction.text.text)); setDropdown(true); }
+      else setOptions([]);
+    } catch (err) { console.error(err); }
+  };
+
   useEffect(() => {
-    if (skipFetch.current) {
-      skipFetch.current = false;
-      return;
-    }
-    if (!locationInput || locationInput.length < 2) {
-      setLocationOptions([]);
-      setIsLocationDropdownOpen(false);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      try {
-        const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Goog-Api-Key': 'AIzaSyDarNwOH5Gfi1KseDZ82fkh2b0wn66uudg'
-          },
-          body: JSON.stringify({ input: locationInput })
-        });
-        const data = await res.json();
-        if (data.suggestions) {
-          setLocationOptions(data.suggestions.map(s => s.placePrediction.text.text));
-          setIsLocationDropdownOpen(true);
-        } else {
-          setLocationOptions([]);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }, 300);
-
+    if (skipFromFetch.current) { skipFromFetch.current = false; return; }
+    const timer = setTimeout(() => fetchLocationOptions(fromLocationInput, setFromLocationOptions, setIsFromDropdownOpen), 300);
     return () => clearTimeout(timer);
-  }, [locationInput, formData?.location]);
+  }, [fromLocationInput]);
+
+  useEffect(() => {
+    if (skipToFetch.current) { skipToFetch.current = false; return; }
+    const timer = setTimeout(() => fetchLocationOptions(toLocationInput, setToLocationOptions, setIsToDropdownOpen), 300);
+    return () => clearTimeout(timer);
+  }, [toLocationInput]);
 
   useEffect(() => {
     setIsMobileVerified(false);
@@ -376,26 +375,6 @@ export default function LeadForm({
                 )}
               </div>
             </div>
-
-            <div className="relative z-10 mt-12 pt-6 border-t border-amber-200/50">
-              <div className="flex items-center gap-1 mb-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={11}
-                    className="text-amber-500 fill-amber-500"
-                  />
-                ))}
-              </div>
-              <p
-                className="text-[12px] text-slate-500 leading-relaxed"
-                
-              >
-                Trusted by{" "}
-                <span className="font-bold text-slate-800">280,000+</span>{" "}
-                luxury travellers.
-              </p>
-            </div>
           </div>
 
           {/* ── Right: Form ── */}
@@ -507,8 +486,8 @@ export default function LeadForm({
                         </div>
                       )}
 
-                      {/* Name + Phone */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      {/* Row 1: Name + Phone + Email */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <InputField
                           icon={User}
                           label="Full Name"
@@ -522,19 +501,15 @@ export default function LeadForm({
                         />
                         
                         {/* Mobile Number & OTP */}
-                        <div className="flex flex-col gap-1.5">
-                          <label
-                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            
-                          >
+                        <div className="flex flex-col gap-1">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
                             Phone Number
                           </label>
-                          <div className="flex gap-2 items-start">
-                            <div className="relative group flex-1">
-                              <Phone
-                                size={14}
-                                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-                              />
+                          <div className="flex gap-2 items-center">
+                            <div className="relative flex-1">
+                              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                <Phone size={16} />
+                              </span>
                               <input
                                 type="tel"
                                 name="phone"
@@ -543,8 +518,7 @@ export default function LeadForm({
                                 value={formData?.phone || ""}
                                 onChange={handleInputChange}
                                 placeholder="10-digit mobile"
-                                className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-                                style={{ borderRadius: "6px" }}
+                                className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                               />
                             </div>
                             {!isMobileVerified ? (
@@ -552,12 +526,12 @@ export default function LeadForm({
                                 type="button"
                                 onClick={handleSendMobileOtp}
                                 disabled={isSendingMobileOtp || !formData?.phone || formData.phone.length !== 10}
-                                className="h-[38px] px-3 bg-slate-900 hover:bg-amber-600 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded"
+                                className="h-8 px-4 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded-none shrink-0"
                               >
                                 {isSendingMobileOtp ? "Wait..." : isMobileOtpSent ? "Resend" : "OTP"}
                               </button>
                             ) : (
-                              <span className="h-[38px] px-3 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded border border-emerald-200">
+                              <span className="h-8 px-3 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded-none border border-emerald-200 shrink-0">
                                 ✓ Verified
                               </span>
                             )}
@@ -574,35 +548,41 @@ export default function LeadForm({
                                 placeholder="6-digit OTP"
                                 value={mobileOtp}
                                 onChange={(e) => setMobileOtp(e.target.value.replace(/\D/g, ""))}
-                                className="h-8 px-3 border border-slate-300 text-center text-xs font-bold w-full outline-none focus:border-amber-500 rounded"
+                                className="h-8 px-3 border border-slate-400 bg-white text-center text-xs font-bold w-full outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 rounded-none placeholder:text-slate-400 text-slate-900"
                               />
                               <button
                                 type="button"
                                 onClick={handleVerifyMobileOtp}
                                 disabled={isVerifyingMobileOtp || mobileOtp.length !== 6}
-                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded shrink-0"
+                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded-none shrink-0"
                               >
                                 {isVerifyingMobileOtp ? "Verifying..." : "Verify"}
                               </button>
                             </motion.div>
                           )}
                         </div>
-                      </div>
 
                       {/* Email & OTP */}
-                      <div className="flex flex-col gap-1.5">
-                        <label
-                          className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                          
-                        >
-                          Email Address
-                        </label>
-                        <div className="flex gap-2 items-start">
-                          <div className="relative group flex-1">
-                            <Mail
-                              size={14}
-                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-                            />
+                      <div className="flex flex-col gap-1">
+                        <div className="relative mb-1">
+                          <label className="block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
+                            Email Address
+                          </label>
+                          {!isEmailVerified && !isEmailSkipped && (
+                            <button
+                              type="button"
+                              onClick={handleSkipEmailOtp}
+                              className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                              Skip
+                            </button>
+                          )}
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <div className="relative flex-1">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <Mail size={16} />
+                            </span>
                             <input
                               type="email"
                               name="email"
@@ -611,34 +591,25 @@ export default function LeadForm({
                               value={formData?.email || ""}
                               onChange={handleInputChange}
                               placeholder="you@example.com"
-                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-                              style={{ borderRadius: "6px" }}
+                              className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             />
                           </div>
                           {!isEmailVerified && !isEmailSkipped ? (
-                            <div className="flex items-center gap-1">
-                              <button
-                                type="button"
-                                onClick={handleSendEmailOtp}
-                                disabled={isSendingEmailOtp || !formData?.email || !EMAIL_PATTERN.test(formData.email)}
-                                className="h-[38px] px-3 bg-slate-900 hover:bg-amber-600 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded"
-                              >
-                                {isSendingEmailOtp ? "Wait..." : isEmailOtpSent ? "Resend" : "OTP"}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={handleSkipEmailOtp}
-                                className="h-[38px] px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors"
-                              >
-                                Skip
-                              </button>
-                            </div>
+                            <button
+                              type="button"
+                              onClick={handleSendEmailOtp}
+                              disabled={isSendingEmailOtp || !formData?.email || !EMAIL_PATTERN.test(formData.email)}
+                              className="h-8 px-4 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 rounded-none shrink-0"
+                            >
+                              {isSendingEmailOtp ? "Wait..." : isEmailOtpSent ? "Resend" : "OTP"}
+                            </button>
                           ) : (
-                            <span className={`h-[38px] px-3 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded border ${isEmailVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
+                            <span className={`h-8 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded-none border shrink-0 ${isEmailVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
                               {isEmailVerified ? "✓ Verified" : "Skipped"}
                             </span>
                           )}
                         </div>
+                        
                         {isEmailOtpSent && !isEmailVerified && (
                           <motion.div 
                             initial={{ opacity: 0, y: -5 }}
@@ -651,14 +622,14 @@ export default function LeadForm({
                               placeholder="6-digit OTP"
                               value={emailOtp}
                               onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, ""))}
-                              className="h-8 px-3 border border-slate-300 text-center text-xs font-bold w-full outline-none focus:border-amber-500 rounded"
+                              className="h-8 px-3 border border-slate-400 text-center text-xs font-bold w-full outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 rounded-none bg-white placeholder:text-slate-400 text-slate-900"
                             />
                             <div className="flex items-center gap-1 shrink-0">
                               <button
                                 type="button"
                                 onClick={handleVerifyEmailOtp}
                                 disabled={isVerifyingEmailOtp || emailOtp.length !== 6}
-                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded"
+                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded-none"
                               >
                                 {isVerifyingEmailOtp ? "Verifying..." : "Verify"}
                               </button>
@@ -673,12 +644,13 @@ export default function LeadForm({
                           </motion.div>
                         )}
                       </div>
+                    </div>
 
-                      {/* Check-in + Check-out */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      {/* Row 2: Dates + Guests */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <InputField
                           icon={Calendar}
-                          label="Arrival"
+                          label="Check-in Date"
                           type="datetime-local"
                           name="checkIn"
                           value={formData?.checkIn || ""}
@@ -687,83 +659,81 @@ export default function LeadForm({
                         />
                         <InputField
                           icon={Calendar}
-                          label="Departure"
+                          label="Check-out Date (Optional)"
                           type="datetime-local"
                           name="checkOut"
                           value={formData?.checkOut || ""}
                           onChange={handleInputChange}
                           disabled={formStep === "submitting"}
                         />
+                        <div className="grid grid-cols-2 gap-2">
+                          <InputField
+                            icon={User}
+                            label="Adults"
+                            type="number"
+                            name="adults"
+                            min="1"
+                            value={formData?.adults || ""}
+                            onChange={handleInputChange}
+                            disabled={formStep === "submitting"}
+                            placeholder="2"
+                          />
+                          <InputField
+                            icon={User}
+                            label={<>Kids <span className="text-slate-800 normal-case tracking-normal">(Below 10)</span></>}
+                            type="number"
+                            name="kids"
+                            min="0"
+                            value={formData?.kids || ""}
+                            onChange={handleInputChange}
+                            disabled={formStep === "submitting"}
+                            placeholder="0"
+                          />
+                        </div>
                       </div>
 
-                      {/* Adults + Kids */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <InputField
-                          icon={User}
-                          label="Adults"
-                          type="number"
-                          name="adults"
-                          min="1"
-                          value={formData?.adults || ""}
-                          onChange={handleInputChange}
-                          disabled={formStep === "submitting"}
-                          placeholder="2"
-                        />
-                        <InputField
-                          icon={User}
-                          label={<>Kids <span className="text-red-500 normal-case tracking-normal">(Below 10 Years)</span></>}
-                          type="number"
-                          name="kids"
-                          min="0"
-                          value={formData?.kids || ""}
-                          onChange={handleInputChange}
-                          disabled={formStep === "submitting"}
-                          placeholder="0"
-                        />
-                      </div>
-
-                      {/* Location */}
-                      <div className="grid grid-cols-1 gap-5">
-                        <div className="flex flex-col gap-1.5 relative">
-                          <label className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">
-                            Location
+                      {/* Row 3: From + To Location + Service */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* From Location */}
+                        <div className="flex flex-col gap-1 relative">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
+                            From Location
                           </label>
-                          <div className="relative group">
-                            <MapPin size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10" />
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <MapPin size={16} />
+                            </span>
                             <input
                               type="text"
-                              value={locationInput}
+                              value={fromLocationInput}
                               onChange={(e) => {
-                                setLocationInput(e.target.value);
-                                handleInputChange({ target: { name: 'location', value: e.target.value } });
+                                setFromLocationInput(e.target.value);
+                                handleInputChange({ target: { name: 'fromLocation', value: e.target.value } });
                               }}
-                              onFocus={() => {
-                                if (locationOptions.length > 0) setIsLocationDropdownOpen(true);
-                              }}
-                              onBlur={() => setTimeout(() => setIsLocationDropdownOpen(false), 200)}
+                              onFocus={() => { if (fromLocationOptions.length > 0) setIsFromDropdownOpen(true); }}
+                              onBlur={() => setTimeout(() => setIsFromDropdownOpen(false), 200)}
                               disabled={formStep === "submitting"}
-                              placeholder="Search location..."
-                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 placeholder:text-slate-300 disabled:opacity-50"
-                              style={{ borderRadius: "6px" }}
+                              placeholder="Where from?"
+                              className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             />
                             <AnimatePresence>
-                              {isLocationDropdownOpen && locationOptions.length > 0 && (
+                              {isFromDropdownOpen && fromLocationOptions.length > 0 && (
                                 <motion.div
                                   initial={{ opacity: 0, y: -5 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   exit={{ opacity: 0, y: -5 }}
                                   className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-slate-200 shadow-xl max-h-48 overflow-y-auto"
-                                  style={{ borderRadius: "6px" }}
+                                  style={{ borderRadius: "0px" }}
                                 >
-                                  {locationOptions.map((opt, i) => (
+                                  {fromLocationOptions.map((opt, i) => (
                                     <div
                                       key={i}
                                       className="px-3 py-2 text-[12px] text-slate-700 hover:bg-amber-50 cursor-pointer border-b border-slate-100 last:border-0"
                                       onClick={() => {
-                                        skipFetch.current = true;
-                                        setLocationInput(opt);
-                                        handleInputChange({ target: { name: 'location', value: opt } });
-                                        setIsLocationDropdownOpen(false);
+                                        skipFromFetch.current = true;
+                                        setFromLocationInput(opt);
+                                        handleInputChange({ target: { name: 'fromLocation', value: opt } });
+                                        setIsFromDropdownOpen(false);
                                       }}
                                     >
                                       {opt}
@@ -774,83 +744,138 @@ export default function LeadForm({
                             </AnimatePresence>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {/* Travel Type */}
-                        <div className="flex flex-col gap-1.5">
-                          <label
-                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            
-                          >
-                            Select Service
+                        {/* To Location */}
+                        <div className="flex flex-col gap-1 relative">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
+                            To Location
                           </label>
-                          <div className="relative group">
-                            <Compass
-                              size={14}
-                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-                            />
-                            <select
-                              name="travelType"
-                              value={formData?.travelType || ""}
-                              onChange={handleInputChange}
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <MapPin size={16} />
+                            </span>
+                            <input
+                              type="text"
+                              value={toLocationInput}
+                              onChange={(e) => {
+                                setToLocationInput(e.target.value);
+                                handleInputChange({ target: { name: 'toLocation', value: e.target.value } });
+                              }}
+                              onFocus={() => { if (toLocationOptions.length > 0) setIsToDropdownOpen(true); }}
+                              onBlur={() => setTimeout(() => setIsToDropdownOpen(false), 200)}
                               disabled={formStep === "submitting"}
-                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
-                              style={{ borderRadius: "6px" }}
-                            >
-                              <option value="" disabled>Select a service...</option>
-                              <option value="Holiday">Holiday</option>
-                              <option value="Events">Events</option>
-                              <option value="Wedding">Wedding</option>
-                              <option value="Outing">Outing</option>
-                            </select>
+                              placeholder="Where to?"
+                              className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                            />
+                            <AnimatePresence>
+                              {isToDropdownOpen && toLocationOptions.length > 0 && (
+                                <motion.div
+                                  initial={{ opacity: 0, y: -5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -5 }}
+                                  className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-slate-200 shadow-xl max-h-48 overflow-y-auto"
+                                  style={{ borderRadius: "0px" }}
+                                >
+                                  {toLocationOptions.map((opt, i) => (
+                                    <div
+                                      key={i}
+                                      className="px-3 py-2 text-[12px] text-slate-700 hover:bg-amber-50 cursor-pointer border-b border-slate-100 last:border-0"
+                                      onClick={() => {
+                                        skipToFetch.current = true;
+                                        setToLocationInput(opt);
+                                        handleInputChange({ target: { name: 'toLocation', value: opt } });
+                                        setIsToDropdownOpen(false);
+                                      }}
+                                    >
+                                      {opt}
+                                    </div>
+                                  ))}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
                         </div>
+                        {/* Travel Type */}
+                        <div className="flex flex-col gap-1">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
+                            Select Service
+                          </label>
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <Compass size={16} />
+                            </span>
+                            <select
+                              name="travelType"
+                              value={destinationData?.name || ""}
+                              onChange={handleInputChange}
+                              disabled={true}
+                              className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-slate-100 pl-10 pr-9 py-0 leading-tight text-[12px] font-bold text-slate-900 outline-none transition cursor-not-allowed"
+                            >
+                              <option value={destinationData?.name || ""}>{destinationData?.name || "Select Destination"}</option>
+                            </select>
+                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <ChevronDown size={14} />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
+                      {/* Row 4: Budget + Message */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Budget */}
-                        <div className="flex flex-col gap-1.5">
-                          <label
-                            className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500"
-                            
-                          >
+                        <div className="flex flex-col gap-1">
+                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
                             Budget
                           </label>
-                          <div className="relative group">
-                            <IndianRupee
-                              size={14}
-                              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-600 transition-colors z-10"
-                            />
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <IndianRupee size={16} />
+                            </span>
                             <select
                               name="budget"
                               value={formData?.budget || ""}
                               onChange={handleInputChange}
                               disabled={formStep === "submitting"}
-                              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 transition-all text-[12px] text-slate-900 disabled:opacity-50 appearance-none"
-                              style={{ borderRadius: "6px" }}
+                              className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             >
                               <option value="">Select a budget...</option>
-                              {formData?.travelType && BUDGET_OPTIONS[formData?.travelType]?.map((opt, idx) => (
-                                <option key={idx} value={opt.value}>
-                                  {opt.label}
-                                </option>
-                              ))}
+                              {(() => {
+                                // Try finding budget for this destination first
+                                let matchedBudget = dynamicBudgets.find(b => b.title === destinationData?.name);
+                                
+                                // Fallback to selected service budget
+                                if (!matchedBudget) {
+                                    matchedBudget = dynamicBudgets.find(b => b.title === formData?.travelType);
+                                }
+
+                                if (matchedBudget && matchedBudget.budgets.length > 0) {
+                                  return matchedBudget.budgets.map((opt, idx) => (
+                                    <option key={idx} value={opt}>{opt}</option>
+                                  ));
+                                }
+                                return null;
+                              })()}
                             </select>
+                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                              <ChevronDown size={14} />
+                            </span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Message */}
-                      <InputField
-                        icon={null}
-                        label="Special Requests (Optional)"
-                        textarea
-                        rows={2}
-                        name="message"
-                        value={formData?.message || ""}
-                        onChange={handleInputChange}
-                        disabled={formStep === "submitting"}
-                        placeholder="Any specific needs or occasions..."
-                      />
+                        <div className="flex flex-col gap-1 md:col-span-2">
+                          <InputField
+                            icon={null}
+                            label="Special Requests (Optional)"
+                            textarea
+                            rows={1}
+                            name="message"
+                            value={formData?.message || ""}
+                            onChange={handleInputChange}
+                            disabled={formStep === "submitting"}
+                            placeholder="Any specific needs or occasions..."
+                          />
+                        </div>
+                      </div>
 
                       {/* Submit row */}
                       <div className="flex flex-col md:flex-row items-center gap-4 pt-1">

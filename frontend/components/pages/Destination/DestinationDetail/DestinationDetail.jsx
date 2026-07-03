@@ -31,6 +31,8 @@ export default function DestinationDetailPage({ destinationId }) {
     travelType: "",
     budget: "",
     location: "",
+    fromLocation: "",
+    toLocation: "",
     message: "",
   });
   const [activeModal, setActiveModal] = useState(null);
@@ -136,8 +138,7 @@ export default function DestinationDetailPage({ destinationId }) {
     }
 
     if (!travelType) {
-      setFormError("Please select a travel type.");
-      return;
+      // travelType is optional for destination enquiries
     }
 
     setFormStep("submitting");
@@ -160,6 +161,8 @@ export default function DestinationDetailPage({ destinationId }) {
           travelType,
           budget,
           location,
+          fromLocation: String(formData.fromLocation || "").trim(),
+          toLocation: String(formData.toLocation || "").trim(),
           message,
           destinationId: destinationData?._id,
           destinationName: destinationData?.name || "",
@@ -185,6 +188,8 @@ export default function DestinationDetailPage({ destinationId }) {
           travelType: "",
           budget: "",
           location: "",
+          fromLocation: "",
+          toLocation: "",
           message: "",
         });
         setFormError("");

@@ -181,6 +181,18 @@ export const menuItems = [
     path: "/contact-enquiries",
   },
 
+  /* ================= BUDGET SECTION ================= */
+  {
+    type: "heading",
+    label: "Budget Section",
+  },
+  {
+    type: "item",
+    label: "Add Budget",
+    icon: Activity, // You can change this icon if needed
+    path: "/add-budget",
+  },
+
   /* ================= HOLIDAY PACKAGES ================= */
   // {
   //   type: "heading",

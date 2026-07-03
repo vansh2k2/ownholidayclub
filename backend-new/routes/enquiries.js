@@ -12,7 +12,7 @@ const router = express.Router();
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { name, email, phone, destinationId, destinationName, checkIn, checkOut, adults, kids, message, travelType, budget, location } = req.body;
+    const { name, email, phone, destinationId, destinationName, checkIn, checkOut, adults, kids, message, travelType, budget, location, fromLocation, toLocation } = req.body;
 
     if (!name || !email || !phone || !destinationId || !destinationName) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
@@ -32,6 +32,8 @@ router.post(
       travelType,
       budget,
       location,
+      fromLocation: fromLocation || "",
+      toLocation: toLocation || "",
     });
 
     try {
@@ -42,14 +44,14 @@ router.post(
           "Email": email,
           "Phone": phone,
           "Destination": destinationName,
-          "Destination ID": destinationId,
-          "Adults": adults,
-          "Kids": kids,
-          "Travel Type": travelType,
-          "Budget": budget,
-          "Location": location || "Not specified",
-          "Check In": checkIn ? new Date(checkIn).toLocaleDateString() : "",
-          "Check Out": checkOut ? new Date(checkOut).toLocaleDateString() : "",
+          "Check-In": checkIn ? new Date(checkIn).toLocaleDateString() : "Not specified",
+          "Check-Out": checkOut ? new Date(checkOut).toLocaleDateString() : "Not specified",
+          "Adults": adults || 0,
+          "Kids": kids || 0,
+          "From Location": fromLocation || "Not specified",
+          "To Location": toLocation || "Not specified",
+          "Service Type": travelType || "Not specified",
+          "Budget": budget || "Not specified",
         },
         message: message,
       });

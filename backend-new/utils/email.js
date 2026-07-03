@@ -324,8 +324,7 @@ const sendLeadNotificationEmail = async ({
   message,
 }) => {
   const from = getFromAddress();
-  // const to = "Info@ownholidayclub.com";
-  const to = "vanshchaudhary2k2@gmail.com";
+  const to = "info@ownholidayclub.com";
   const subject = `New Lead: [${leadType}] - ${leadDetails.Name || leadDetails.fullName || 'User'}`;
 
   // Format details into HTML table rows
@@ -334,8 +333,8 @@ const sendLeadNotificationEmail = async ({
     if (value !== undefined && value !== null && String(value).trim() !== "") {
       detailsHtml += `
         <tr>
-          <td width="35%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; font-weight: 700; color: #64748b; width: 35%; text-transform: uppercase; vertical-align: top;">${key}</td>
-          <td width="65%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere;">${value}</td>
+          <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">${key}</td>
+          <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">${value}</td>
         </tr>
       `;
     }
@@ -348,10 +347,10 @@ const sendLeadNotificationEmail = async ({
 </head>
 <body style="margin:0;padding:0;">
     <div style="margin:0;padding:10px;background:#f1f5f9;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0f172a;width:100%;box-sizing:border-box;">
-      <div style="max-width:700px;width:100%;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,0.08);box-sizing:border-box;">
+      <div style="max-width:800px;width:100%;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,0.08);box-sizing:border-box;">
         <!-- Header Banner -->
-        <div style="padding:20px 24px;background:#f8fafc;border-bottom:1px solid #e2e8f0;text-align:center;">
-          <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:130px;height:auto;margin-bottom:10px;" />
+        <div style="padding:20px 28px;background:#f8fafc;border-bottom:1px solid #e2e8f0;text-align:center;">
+          <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:175px;height:auto;margin-bottom:10px;" />
           <div style="display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(245,158,11,0.15);color:#d97706;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;">
             Sales &amp; Leads CRM
           </div>
@@ -359,7 +358,7 @@ const sendLeadNotificationEmail = async ({
         </div>
 
         <!-- Body Section -->
-        <div style="padding:20px;">
+        <div style="padding:24px 28px;">
           <div style="margin-bottom:24px;padding:16px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:8px;">
             <p style="margin:0;font-size:14px;color:#15803d;font-weight:600;line-height:1.5;">
               ⚡ A new <strong>${leadType}</strong> has been successfully submitted from the website.
@@ -565,8 +564,7 @@ const sendHolidayBookingAdminEmail = async ({
   validTo
 }) => {
   const from = getFromAddress();
-  // const to = "Info@ownholidayclub.com"; // Production
-  const to = "vanshchaudhary2k2@gmail.com"; // Testing
+  const to = "info@ownholidayclub.com";
   const subject = `New Holiday Booking Request - ${user.name || "Member"}`;
 
   const formatDate = (dateInput) => {

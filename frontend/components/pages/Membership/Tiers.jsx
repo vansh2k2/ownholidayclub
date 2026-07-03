@@ -390,6 +390,32 @@ export default function Tiers({
                     <div style={{ minHeight: "72px", marginBottom: "4px" }}>
                       {hasOffer ? (
                         <div>
+                          {fallback?.badge && (
+                            <div
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                background: "rgba(255,255,255,0.6)",
+                                borderRadius: "4px",
+                                padding: "3px 9px",
+                                marginBottom: "8px",
+                                border: "1px solid rgba(22,163,74,0.2)",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontFamily: "'Inter', sans-serif",
+                                  fontSize: "9px",
+                                  fontWeight: 700,
+                                  color: "#16a34a",
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.1em",
+                                }}
+                              >
+                                {fallback.badge}
+                              </span>
+                            </div>
+                          )}
                           <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "6px", flexWrap: "wrap" }}>
                             <span
                               style={{
@@ -428,33 +454,6 @@ export default function Tiers({
                               {formatPrice(displayPrice)}
                             </span>
                           </div>
-
-                          {fallback?.badge && (
-                            <div
-                              style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                background: "rgba(255,255,255,0.6)",
-                                borderRadius: "4px",
-                                padding: "3px 9px",
-                                marginBottom: "4px",
-                                border: "1px solid rgba(22,163,74,0.2)",
-                              }}
-                            >
-                              <span
-                                style={{
-                                  fontFamily: "'Inter', sans-serif",
-                                  fontSize: "9px",
-                                  fontWeight: 700,
-                                  color: "#16a34a",
-                                  textTransform: "uppercase",
-                                  letterSpacing: "0.1em",
-                                }}
-                              >
-                                {fallback.badge}
-                              </span>
-                            </div>
-                          )}
                         </div>
                       ) : (
                         <div
@@ -482,7 +481,7 @@ export default function Tiers({
                             fontWeight: 700,
                           }}
                         >
-                          Admin Fee: {formatPrice(displayAdminFee)}
+                          + Admin Fee: {formatPrice(displayAdminFee)}
                         </span>
                       </div>
                     </div>

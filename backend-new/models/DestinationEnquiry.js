@@ -66,6 +66,14 @@ const destinationEnquirySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    fromLocation: {
+      type: String,
+      default: "",
+    },
+    toLocation: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

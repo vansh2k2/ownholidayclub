@@ -24,32 +24,7 @@ import { Layers } from "lucide-react";
 const API_BASE_URL = process.env.NEXT_PUBLIC_OWNHOLIDAYCLUB_BACKEND_URL || "http://localhost:8081";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const BUDGET_OPTIONS = {
-  Holiday: [
-    { label: "Below 5,000 (per day)", value: "Below 5000" },
-    { label: "5,000 - 7,000 (per day)", value: "5000 - 7000" },
-    { label: "7,000 - 10,000 (per day)", value: "7000 - 10000" },
-    { label: "Above 10,000 (per day)", value: "Above 10000" },
-  ],
-  Events: [
-    { label: "Below 1,000 (per person)", value: "Below 1000" },
-    { label: "1,000 - 2,000 (per person)", value: "1000 - 2000" },
-    { label: "2,000 - 3,000 (per person)", value: "2000 - 3000" },
-    { label: "Above 3,000 (per person)", value: "Above 3000" },
-  ],
-  Wedding: [
-    { label: "Below 1,500 (per person)", value: "Below 1500" },
-    { label: "1,500 - 2,500 (per person)", value: "1500 - 2500" },
-    { label: "2,500 - 3,500 (per person)", value: "2500 - 3500" },
-    { label: "Above 3,500 (per person)", value: "Above 3500" },
-  ],
-  Outing: [
-    { label: "Below 500 (per person)", value: "Below 500" },
-    { label: "1,000 - 2,000 (per person)", value: "1000 - 2000" },
-    { label: "3,000 - 5,000 (per person)", value: "3000 - 5000" },
-    { label: "Above 5,000 (per person)", value: "Above 5000" },
-  ],
-};
+
 
 /* ── Floating particles ── */
 function Particles() {
@@ -146,6 +121,33 @@ export default function LeadForm({
   const [isEmailSkipped, setIsEmailSkipped] = useState(false);
 
   const [localFeedback, setLocalFeedback] = useState("");
+
+  const [dynamicServices, setDynamicServices] = useState([]);
+  const [dynamicBudgets, setDynamicBudgets] = useState([]);
+
+  useEffect(() => {
+    const fetchServicesAndBudgets = async () => {
+      try {
+        const [servRes, budgRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/explore-services`),
+          fetch(`${API_BASE_URL}/api/budgets`)
+        ]);
+        const servData = await servRes.json();
+        const budgData = await budgRes.json();
+        
+        if (servData.success && servData.data) {
+          const d = servData.data;
+          setDynamicServices(Array.isArray(d) ? (d[0]?.services || []) : (d.services || []));
+        }
+        if (budgData.success) {
+          setDynamicBudgets(budgData.data || []);
+        }
+      } catch (err) {
+        console.error("Error fetching dynamic data:", err);
+      }
+    };
+    fetchServicesAndBudgets();
+  }, []);
 
   const [fromLocationInput, setFromLocationInput] = useState(formData?.fromLocation || "");
   const [toLocationInput, setToLocationInput] = useState(formData?.toLocation || "");
@@ -581,27 +583,37 @@ export default function LeadForm({
 
                         {/* Email & OTP */}
                         <div className="flex flex-col gap-1">
-                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
-                          Email Address
-                        </label>
-                        <div className="flex gap-2 items-center">
-                          <div className="relative flex-1">
-                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                              <Mail size={16} />
-                            </span>
-                            <input
-                              type="email"
-                              name="email"
-                              required
-                              disabled={isEmailVerified || formStep === "submitting"}
-                              value={formData?.email || ""}
-                              onChange={handleInputChange}
-                              placeholder="you@example.com"
-                              className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
-                            />
+                          <div className="relative mb-1">
+                            <label className="block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
+                              Email Address
+                            </label>
+                            {!isEmailVerified && !isEmailSkipped && (
+                              <button
+                                type="button"
+                                onClick={handleSkipEmailOtp}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors"
+                              >
+                                Skip
+                              </button>
+                            )}
                           </div>
-                          {!isEmailVerified && !isEmailSkipped ? (
-                            <div className="flex items-center gap-1 shrink-0">
+                          <div className="flex gap-2 items-center">
+                            <div className="relative flex-1">
+                              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                <Mail size={16} />
+                              </span>
+                              <input
+                                type="email"
+                                name="email"
+                                required
+                                disabled={isEmailVerified || formStep === "submitting"}
+                                value={formData?.email || ""}
+                                onChange={handleInputChange}
+                                placeholder="you@example.com"
+                                className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                              />
+                            </div>
+                            {!isEmailVerified && !isEmailSkipped ? (
                               <button
                                 type="button"
                                 onClick={handleSendEmailOtp}
@@ -610,54 +622,47 @@ export default function LeadForm({
                               >
                                 {isSendingEmailOtp ? "Wait..." : isEmailOtpSent ? "Resend" : "OTP"}
                               </button>
-                              <button
-                                type="button"
-                                onClick={handleSkipEmailOtp}
-                                className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors"
-                              >
-                                Skip
-                              </button>
-                            </div>
-                          ) : (
-                            <span className={`h-8 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded-none border shrink-0 ${isEmailVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
-                              {isEmailVerified ? "✓ Verified" : "Skipped"}
-                            </span>
+                            ) : (
+                              <span className={`h-8 px-3 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center rounded-none border shrink-0 ${isEmailVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
+                                {isEmailVerified ? "✓ Verified" : "Skipped"}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {isEmailOtpSent && !isEmailVerified && (
+                            <motion.div 
+                              initial={{ opacity: 0, y: -5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="flex gap-2 items-center mt-1"
+                            >
+                              <input
+                                type="text"
+                                maxLength={6}
+                                placeholder="6-digit OTP"
+                                value={emailOtp}
+                                onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, ""))}
+                                className="h-8 px-3 border border-slate-400 text-center text-xs font-bold w-full outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 rounded-none bg-white placeholder:text-slate-400 text-slate-900"
+                              />
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={handleVerifyEmailOtp}
+                                  disabled={isVerifyingEmailOtp || emailOtp.length !== 6}
+                                  className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded-none"
+                                >
+                                  {isVerifyingEmailOtp ? "Verifying..." : "Verify"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={handleSkipEmailOtp}
+                                  className="h-8 px-2 text-[10px] font-black uppercase text-slate-400 hover:text-slate-600"
+                                >
+                                  Skip
+                                </button>
+                              </div>
+                            </motion.div>
                           )}
                         </div>
-                        {isEmailOtpSent && !isEmailVerified && (
-                          <motion.div 
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex gap-2 items-center mt-1"
-                          >
-                            <input
-                              type="text"
-                              maxLength={6}
-                              placeholder="6-digit OTP"
-                              value={emailOtp}
-                              onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, ""))}
-                              className="h-8 px-3 border border-slate-400 text-center text-xs font-bold w-full outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 rounded-none bg-white placeholder:text-slate-400 text-slate-900"
-                            />
-                            <div className="flex items-center gap-1 shrink-0">
-                              <button
-                                type="button"
-                                onClick={handleVerifyEmailOtp}
-                                disabled={isVerifyingEmailOtp || emailOtp.length !== 6}
-                                className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-45 rounded-none"
-                              >
-                                {isVerifyingEmailOtp ? "Verifying..." : "Verify"}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={handleSkipEmailOtp}
-                                className="h-8 px-2 text-[10px] font-black uppercase text-slate-400 hover:text-slate-600"
-                              >
-                                Skip
-                              </button>
-                            </div>
-                          </motion.div>
-                        )}
-                      </div>
                       </div>
 
                       {/* Row 2: Dates + Guests */}
@@ -680,17 +685,44 @@ export default function LeadForm({
                           onChange={handleInputChange}
                           disabled={formStep === "submitting"}
                         />
-                        <InputField
-                          icon={User}
-                          label="No of Guests"
-                          type="number"
-                          name="adults"
-                          min="1"
-                          value={formData?.adults || ""}
-                          onChange={handleInputChange}
-                          disabled={formStep === "submitting"}
-                          placeholder="2"
-                        />
+                        {serviceData?.title?.toUpperCase().includes("OUTING") ? (
+                          <div className="grid grid-cols-2 gap-2">
+                            <InputField
+                              icon={User}
+                              label="Adults"
+                              type="number"
+                              name="adults"
+                              min="1"
+                              value={formData?.adults || ""}
+                              onChange={handleInputChange}
+                              disabled={formStep === "submitting"}
+                              placeholder="2"
+                            />
+                            <InputField
+                              icon={User}
+                              label="Kids (<10 yrs)"
+                              type="number"
+                              name="kids"
+                              min="0"
+                              value={formData?.kids || ""}
+                              onChange={handleInputChange}
+                              disabled={formStep === "submitting"}
+                              placeholder="0"
+                            />
+                          </div>
+                        ) : (
+                          <InputField
+                            icon={User}
+                            label="No of Guests"
+                            type="number"
+                            name="adults"
+                            min="1"
+                            value={formData?.adults || ""}
+                            onChange={handleInputChange}
+                            disabled={formStep === "submitting"}
+                            placeholder="2"
+                          />
+                        )}
                       </div>
 
                       {/* Row 3: From Location + To Location + Service */}
@@ -816,10 +848,16 @@ export default function LeadForm({
                               className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             >
                               <option value="" disabled>Select a service...</option>
-                              <option value="Holiday">Holiday</option>
-                              <option value="Events">Events</option>
-                              <option value="Wedding">Wedding</option>
-                              <option value="Outing">Outing</option>
+                              {dynamicServices.length > 0 ? dynamicServices.map((srv, idx) => (
+                                <option key={idx} value={srv.title}>{srv.title}</option>
+                              )) : (
+                                <>
+                                  <option value="Holiday">Holiday</option>
+                                  <option value="Events">Events</option>
+                                  <option value="Wedding">Wedding</option>
+                                  <option value="Outing">Outing</option>
+                                </>
+                              )}
                             </select>
                             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                               <ChevronDown size={14} />
@@ -847,11 +885,15 @@ export default function LeadForm({
                               className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
                             >
                               <option value="">Select a budget...</option>
-                              {formData?.travelType && BUDGET_OPTIONS[formData?.travelType]?.map((opt, idx) => (
-                                <option key={idx} value={opt.value}>
-                                  {opt.label}
-                                </option>
-                              ))}
+                              {(() => {
+                                const matchedBudget = dynamicBudgets.find(b => b.title === formData?.travelType);
+                                if (matchedBudget && matchedBudget.budgets.length > 0) {
+                                  return matchedBudget.budgets.map((opt, idx) => (
+                                    <option key={idx} value={opt}>{opt}</option>
+                                  ));
+                                }
+                                return null;
+                              })()}
                             </select>
                             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                               <ChevronDown size={14} />
