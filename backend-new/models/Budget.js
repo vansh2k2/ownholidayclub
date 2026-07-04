@@ -4,7 +4,7 @@ const BudgetSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      enum: ["service", "destination"],
+      enum: ["service", "destination", "callback"],
       required: true,
     },
     referenceId: {

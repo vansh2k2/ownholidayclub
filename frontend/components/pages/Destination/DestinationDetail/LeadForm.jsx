@@ -692,7 +692,7 @@ export default function LeadForm({
                         </div>
                       </div>
 
-                      {/* Row 3: From + To Location + Service */}
+                      {/* Row 3: From Location + Service + Budget */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* From Location */}
                         <div className="flex flex-col gap-1 relative">
@@ -745,60 +745,11 @@ export default function LeadForm({
                           </div>
                         </div>
 
-                        {/* To Location */}
-                        <div className="flex flex-col gap-1 relative">
-                          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
-                            To Location
-                          </label>
-                          <div className="relative">
-                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                              <MapPin size={16} />
-                            </span>
-                            <input
-                              type="text"
-                              value={toLocationInput}
-                              onChange={(e) => {
-                                setToLocationInput(e.target.value);
-                                handleInputChange({ target: { name: 'toLocation', value: e.target.value } });
-                              }}
-                              onFocus={() => { if (toLocationOptions.length > 0) setIsToDropdownOpen(true); }}
-                              onBlur={() => setTimeout(() => setIsToDropdownOpen(false), 200)}
-                              disabled={formStep === "submitting"}
-                              placeholder="Where to?"
-                              className="h-8 w-full rounded-none border border-slate-400 bg-white pl-10 pr-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
-                            />
-                            <AnimatePresence>
-                              {isToDropdownOpen && toLocationOptions.length > 0 && (
-                                <motion.div
-                                  initial={{ opacity: 0, y: -5 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: -5 }}
-                                  className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-slate-200 shadow-xl max-h-48 overflow-y-auto"
-                                  style={{ borderRadius: "0px" }}
-                                >
-                                  {toLocationOptions.map((opt, i) => (
-                                    <div
-                                      key={i}
-                                      className="px-3 py-2 text-[12px] text-slate-700 hover:bg-amber-50 cursor-pointer border-b border-slate-100 last:border-0"
-                                      onClick={() => {
-                                        skipToFetch.current = true;
-                                        setToLocationInput(opt);
-                                        handleInputChange({ target: { name: 'toLocation', value: opt } });
-                                        setIsToDropdownOpen(false);
-                                      }}
-                                    >
-                                      {opt}
-                                    </div>
-                                  ))}
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        </div>
+
                         {/* Travel Type */}
                         <div className="flex flex-col gap-1">
                           <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
-                            Select Service
+                            Select Destination
                           </label>
                           <div className="relative">
                             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
@@ -818,10 +769,7 @@ export default function LeadForm({
                             </span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Row 4: Budget + Message */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Budget */}
                         <div className="flex flex-col gap-1">
                           <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
@@ -840,15 +788,20 @@ export default function LeadForm({
                             >
                               <option value="">Select a budget...</option>
                               {(() => {
-                                // Try finding budget for this destination first
-                                let matchedBudget = dynamicBudgets.find(b => b.title === destinationData?.name);
+                                const destName = (destinationData?.name || "").toLowerCase().trim();
                                 
-                                // Fallback to selected service budget
+                                // Try finding budget for this destination first (exact or partial match)
+                                let matchedBudget = dynamicBudgets.find(b => {
+                                  const t = (b.title || "").toLowerCase().trim();
+                                  return t === destName || destName.includes(t) || t.includes(destName);
+                                });
+                                
+                                // Fallback to ANY destination budget if still not found
                                 if (!matchedBudget) {
-                                    matchedBudget = dynamicBudgets.find(b => b.title === formData?.travelType);
+                                  matchedBudget = dynamicBudgets.find(b => b.type === 'destination');
                                 }
 
-                                if (matchedBudget && matchedBudget.budgets.length > 0) {
+                                if (matchedBudget && matchedBudget.budgets && matchedBudget.budgets.length > 0) {
                                   return matchedBudget.budgets.map((opt, idx) => (
                                     <option key={idx} value={opt}>{opt}</option>
                                   ));
@@ -861,8 +814,11 @@ export default function LeadForm({
                             </span>
                           </div>
                         </div>
+                      </div>
 
-                        <div className="flex flex-col gap-1 md:col-span-2">
+                      {/* Row 4: Message */}
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="flex flex-col gap-1">
                           <InputField
                             icon={null}
                             label="Special Requests (Optional)"

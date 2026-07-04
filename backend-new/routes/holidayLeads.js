@@ -326,7 +326,7 @@ router.post(
           "Email": email,
           "Phone": phone,
           "From": location,
-          "To": searchLocation,
+          ...(searchLocation ? { "To": searchLocation } : {}),
           "Budget": budget,
           "Travel Type": travelType,
           "Adults": adults,

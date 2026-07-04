@@ -80,11 +80,12 @@ const AddBudget = () => {
     };
 
     const handleTypeChange = (e) => {
+        const val = e.target.value;
         setForm({
             ...form,
-            type: e.target.value,
-            referenceId: '',
-            title: '',
+            type: val,
+            referenceId: val === 'callback' ? 'callback-request' : '',
+            title: val === 'callback' ? 'Callback Request' : '',
             budgets: ['']
         });
     };
@@ -247,9 +248,11 @@ const AddBudget = () => {
                                 >
                                     <option value="service">Services</option>
                                     <option value="destination">Destinations</option>
+                                    <option value="callback">Callback Requests</option>
                                 </select>
                             </div>
 
+                            {form.type !== 'callback' && (
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase">Select Item</label>
                                 <select 
@@ -266,6 +269,7 @@ const AddBudget = () => {
                                     ))}
                                 </select>
                             </div>
+                            )}
 
                             <div className="pt-2">
                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Budgets</label>
@@ -367,7 +371,7 @@ const AddBudget = () => {
                                                     <span className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wide
                                                         ${item.type === 'service'
                                                             ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                                                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                                            : item.type === 'destination' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-purple-50 text-purple-700 border border-purple-200'
                                                         }`}>
                                                         {item.type}
                                                     </span>

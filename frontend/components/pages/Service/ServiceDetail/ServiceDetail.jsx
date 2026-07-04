@@ -33,6 +33,7 @@ export default function ServiceDetailPage({ serviceId }) {
     fromLocation: "",
     toLocation: "",
     subEvent: "",
+    marriageDate: "",
     message: "",
   });
   const [activeModal, setActiveModal] = useState(null);
@@ -149,6 +150,7 @@ export default function ServiceDetailPage({ serviceId }) {
           fromLocation,
           toLocation,
           message,
+          marriageDate: formData.marriageDate || "",
           serviceName: formData.subEvent ? `${serviceData?.title || ""} - ${formData.subEvent}` : serviceData?.title || "",
           subEvent: formData.subEvent || "",
           serviceId: serviceData?._id || null,
@@ -176,10 +178,11 @@ export default function ServiceDetailPage({ serviceId }) {
           fromLocation: "",
           toLocation: "",
           subEvent: "",
+          marriageDate: "",
           message: "",
         });
         setFormError("");
-      }, 6000);
+      }, 3000);
     } catch (error) {
       setFormStep("initial");
       setFormError(error.message || "Unable to submit your inquiry.");

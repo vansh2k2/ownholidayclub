@@ -78,6 +78,10 @@ const serviceEnquirySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    marriageDate: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

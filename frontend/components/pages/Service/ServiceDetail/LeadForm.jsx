@@ -149,6 +149,21 @@ export default function LeadForm({
     fetchServicesAndBudgets();
   }, []);
 
+  useEffect(() => {
+    if (formStep === "success") {
+      setFromLocationInput("");
+      setToLocationInput("");
+      setIsMobileVerified(false);
+      setIsMobileOtpSent(false);
+      setMobileOtp("");
+      setIsEmailVerified(false);
+      setIsEmailOtpSent(false);
+      setEmailOtp("");
+      setIsEmailSkipped(false);
+      setLocalFeedback("");
+    }
+  }, [formStep]);
+
   const [fromLocationInput, setFromLocationInput] = useState(formData?.fromLocation || "");
   const [toLocationInput, setToLocationInput] = useState(formData?.toLocation || "");
   const [fromLocationOptions, setFromLocationOptions] = useState([]);
@@ -665,67 +680,7 @@ export default function LeadForm({
                         </div>
                       </div>
 
-                      {/* Row 2: Dates + Guests */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <InputField
-                          icon={Calendar}
-                          label="Check-in Date"
-                          type="datetime-local"
-                          name="checkIn"
-                          value={formData?.checkIn || ""}
-                          onChange={handleInputChange}
-                          disabled={formStep === "submitting"}
-                        />
-                        <InputField
-                          icon={Calendar}
-                          label="Check-out Date (Optional)"
-                          type="datetime-local"
-                          name="checkOut"
-                          value={formData?.checkOut || ""}
-                          onChange={handleInputChange}
-                          disabled={formStep === "submitting"}
-                        />
-                        {serviceData?.title?.toUpperCase().includes("OUTING") ? (
-                          <div className="grid grid-cols-2 gap-2">
-                            <InputField
-                              icon={User}
-                              label="Adults"
-                              type="number"
-                              name="adults"
-                              min="1"
-                              value={formData?.adults || ""}
-                              onChange={handleInputChange}
-                              disabled={formStep === "submitting"}
-                              placeholder="2"
-                            />
-                            <InputField
-                              icon={User}
-                              label="Kids (<10 yrs)"
-                              type="number"
-                              name="kids"
-                              min="0"
-                              value={formData?.kids || ""}
-                              onChange={handleInputChange}
-                              disabled={formStep === "submitting"}
-                              placeholder="0"
-                            />
-                          </div>
-                        ) : (
-                          <InputField
-                            icon={User}
-                            label="No of Guests"
-                            type="number"
-                            name="adults"
-                            min="1"
-                            value={formData?.adults || ""}
-                            onChange={handleInputChange}
-                            disabled={formStep === "submitting"}
-                            placeholder="2"
-                          />
-                        )}
-                      </div>
-
-                      {/* Row 3: From Location + To Location + Service */}
+                      {/* Row 2: From Location + To Location + Service */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="flex flex-col gap-1 relative">
                           <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
@@ -866,7 +821,7 @@ export default function LeadForm({
                         </div>
                       </div>
 
-                      {/* Row 4: Budget + Category */}
+                      {/* Row 3: Budget + Category */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Budget */}
                         <div className="flex flex-col gap-1">
@@ -902,36 +857,110 @@ export default function LeadForm({
                         </div>
 
                         {subEventsList.length > 0 && (
-                          <div className="flex flex-col gap-1 md:col-span-2">
-                            <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
-                              {serviceData?.title?.toLowerCase().includes("wedding") ? "Type of Marriage" : "Service Category"}
-                            </label>
-                            <div className="relative">
-                              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                                <Layers size={16} />
-                              </span>
-                              <select
-                                name="subEvent"
-                                value={formData?.subEvent || ""}
+                          <div className={`grid ${serviceData?.title?.toLowerCase().includes("wedding") ? "grid-cols-2 gap-4" : "grid-cols-1"} md:col-span-2`}>
+                            <div className="flex flex-col gap-1">
+                              <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">
+                                {serviceData?.title?.toLowerCase().includes("wedding") ? "Type of Marriage" : "Service Category"}
+                              </label>
+                              <div className="relative">
+                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <Layers size={16} />
+                                </span>
+                                <select
+                                  name="subEvent"
+                                  value={formData?.subEvent || ""}
+                                  onChange={handleInputChange}
+                                  disabled={formStep === "submitting"}
+                                  className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                                >
+                                  <option value="">{serviceData?.title?.toLowerCase().includes("wedding") ? "Select a type..." : "Select a category..."}</option>
+                                  {subEventsList.map((evt, idx) => (
+                                    <option key={evt._id || idx} value={evt.title}>
+                                      {evt.title}
+                                    </option>
+                                  ))}
+                                </select>
+                                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                  <ChevronDown size={14} />
+                                </span>
+                              </div>
+                            </div>
+                            
+                            {serviceData?.title?.toLowerCase().includes("wedding") && (
+                              <InputField
+                                icon={Calendar}
+                                label="Date of Marriage"
+                                type="date"
+                                name="marriageDate"
+                                value={formData?.marriageDate || ""}
                                 onChange={handleInputChange}
                                 disabled={formStep === "submitting"}
-                                className="h-8 w-full appearance-none rounded-none border border-slate-400 bg-white pl-10 pr-9 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
-                              >
-                                <option value="">{serviceData?.title?.toLowerCase().includes("wedding") ? "Select a type..." : "Select a category..."}</option>
-                                {subEventsList.map((evt, idx) => (
-                                  <option key={evt._id || idx} value={evt.title}>
-                                    {evt.title}
-                                  </option>
-                                ))}
-                              </select>
-                              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                                <ChevronDown size={14} />
-                              </span>
-                            </div>
+                              />
+                            )}
                           </div>
                         )}
                       </div>
 
+
+                      {/* Row 4: Dates + Guests */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <InputField
+                          icon={Calendar}
+                          label="Check-in Date"
+                          type="datetime-local"
+                          name="checkIn"
+                          value={formData?.checkIn || ""}
+                          onChange={handleInputChange}
+                          disabled={formStep === "submitting"}
+                        />
+                        <InputField
+                          icon={Calendar}
+                          label="Check-out Date (Optional)"
+                          type="datetime-local"
+                          name="checkOut"
+                          value={formData?.checkOut || ""}
+                          onChange={handleInputChange}
+                          disabled={formStep === "submitting"}
+                        />
+                        {serviceData?.title?.toUpperCase().includes("OUTING") ? (
+                          <div className="grid grid-cols-2 gap-2">
+                            <InputField
+                              icon={User}
+                              label="Adults"
+                              type="number"
+                              name="adults"
+                              min="1"
+                              value={formData?.adults || ""}
+                              onChange={handleInputChange}
+                              disabled={formStep === "submitting"}
+                              placeholder="2"
+                            />
+                            <InputField
+                              icon={User}
+                              label="Kids (<10 yrs)"
+                              type="number"
+                              name="kids"
+                              min="0"
+                              value={formData?.kids || ""}
+                              onChange={handleInputChange}
+                              disabled={formStep === "submitting"}
+                              placeholder="0"
+                            />
+                          </div>
+                        ) : (
+                          <InputField
+                            icon={User}
+                            label="No of Guests"
+                            type="number"
+                            name="adults"
+                            min="1"
+                            value={formData?.adults || ""}
+                            onChange={handleInputChange}
+                            disabled={formStep === "submitting"}
+                            placeholder="2"
+                          />
+                        )}
+                      </div>
 
                       {/* Message */}
                       <InputField

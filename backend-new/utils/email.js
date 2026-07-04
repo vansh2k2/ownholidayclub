@@ -325,6 +325,7 @@ const sendLeadNotificationEmail = async ({
 }) => {
   const from = getFromAddress();
   const to = "info@ownholidayclub.com";
+  // const to = "vanshchaudhary2k2@gmail.com";
   const subject = `New Lead: [${leadType}] - ${leadDetails.Name || leadDetails.fullName || 'User'}`;
 
   // Format details into HTML table rows
@@ -565,6 +566,7 @@ const sendHolidayBookingAdminEmail = async ({
 }) => {
   const from = getFromAddress();
   const to = "info@ownholidayclub.com";
+  // const to = "vanshchaudhary2k2@gmail.com";
   const subject = `New Holiday Booking Request - ${user.name || "Member"}`;
 
   const formatDate = (dateInput) => {

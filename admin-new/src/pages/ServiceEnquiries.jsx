@@ -235,6 +235,14 @@ const ServiceEnquiries = () => {
               </span>
             </div>
           ) : null}
+          {row.marriageDate ? (
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-bold text-slate-500 uppercase">MARRIAGE -</span>
+              <span className="text-xs font-bold text-pink-600 uppercase tracking-tight">
+                {new Date(row.marriageDate).toLocaleDateString()}
+              </span>
+            </div>
+          ) : null}
           <div className="flex items-center gap-1.5 mt-1 pt-1 border-t border-slate-100">
             <Clock size={11} className="text-slate-400" />
             <span className="text-[10px] font-bold text-gray-600">
@@ -488,6 +496,9 @@ const ServiceEnquiries = () => {
                                     )}
                                     <span className="text-[10px] font-black uppercase text-blue-800 bg-blue-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><Compass size={12} /> {selectedEnquiry.travelType || "Holiday"}</span>
                                     <span className="text-[10px] font-black uppercase text-amber-700 bg-amber-100/50 px-2 py-1 flex items-center gap-1 rounded"><IndianRupee size={12} /> {selectedEnquiry.budget || "Not Specified"}</span>
+                                    {selectedEnquiry.marriageDate && (
+                                        <span className="text-[10px] font-black uppercase text-pink-700 bg-pink-100/50 px-2 py-1 flex items-center gap-1.5 rounded"><Calendar size={12} /> MARRIAGE: {new Date(selectedEnquiry.marriageDate).toLocaleDateString()}</span>
+                                    )}
                                 </div>
                             </div>
                         </div>

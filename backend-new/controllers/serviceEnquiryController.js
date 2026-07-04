@@ -16,12 +16,15 @@ exports.createEnquiry = asyncHandler(async (req, res) => {
         "Email": enquiry.email,
         "Phone": enquiry.phone,
         "Service": enquiry.serviceName,
-        "Sub-Category": enquiry.subEvent || "Not specified",
+        ...(enquiry.serviceName && enquiry.serviceName.toUpperCase().includes("WEDDING") 
+             ? { "Type of Wedding": enquiry.subEvent || "Not specified" } 
+             : { "Sub-Category": enquiry.subEvent || "Not specified" }),
         "Check-In": enquiry.checkIn ? new Date(enquiry.checkIn).toLocaleDateString() : "Not specified",
         "Check-Out": enquiry.checkOut ? new Date(enquiry.checkOut).toLocaleDateString() : "Not specified",
         ...(enquiry.serviceName && enquiry.serviceName.toUpperCase().includes("OUTING") 
              ? { "Adults": enquiry.adults || 0, "Kids": enquiry.kids || 0 } 
              : { "No of Guests": enquiry.adults || 0 }),
+        ...(enquiry.marriageDate ? { "Date of Marriage": new Date(enquiry.marriageDate).toLocaleDateString() } : {}),
         "From Location": enquiry.fromLocation || "Not specified",
         "To Location": enquiry.toLocation || "Not specified",
         "Budget": enquiry.budget || "Not specified",

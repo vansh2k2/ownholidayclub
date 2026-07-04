@@ -62,9 +62,10 @@ export default function GlobalHolidayLeadWidget() {
   const [leadFeedback, setLeadFeedback] = useState({ type: "", message: "" });
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
 
-  // Destinations from API
+  // Destinations and Budgets from API
   const [destinations, setDestinations] = useState([]);
   const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
+  const [callbackBudgets, setCallbackBudgets] = useState([]);
 
   // OTP Verification States
   const [mobileOtp, setMobileOtp] = useState("");
@@ -90,24 +91,38 @@ export default function GlobalHolidayLeadWidget() {
   const [isToLocationDropdownOpen, setIsToLocationDropdownOpen] = useState(false);
   const skipToFetch = useRef(false);
 
-  // Fetch destinations from API
+  // Fetch destinations and budgets from API
   useEffect(() => {
-    const fetchDests = async () => {
+    const fetchData = async () => {
       try {
         setIsLoadingDestinations(true);
-        const res = await fetch(`${API_BASE_URL}/api/destinations`);
-        const result = await res.json();
-        if (result.success && Array.isArray(result.data)) {
-          setDestinations(result.data);
+        const [resDest, resBudget] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/destinations`),
+          fetch(`${API_BASE_URL}/api/budgets`)
+        ]);
+        const destResult = await resDest.json();
+        const budgetResult = await resBudget.json();
+        
+        if (destResult.success && Array.isArray(destResult.data)) {
+          setDestinations(destResult.data);
+        }
+        if (budgetResult.success && Array.isArray(budgetResult.data)) {
+          const cbBudget = budgetResult.data.find(b => b.type === 'callback');
+          if (cbBudget && cbBudget.budgets) {
+            setCallbackBudgets(cbBudget.budgets.map(b => ({ label: b, value: b })));
+          } else {
+            setCallbackBudgets(BUDGET_OPTIONS.Holiday);
+          }
         }
       } catch (err) {
-        console.error("Error fetching destinations:", err);
+        console.error("Error fetching data:", err);
+        setCallbackBudgets(BUDGET_OPTIONS.Holiday);
       } finally {
         setIsLoadingDestinations(false);
       }
     };
     if (isLeadModalOpen) {
-      fetchDests();
+      fetchData();
     }
   }, [isLeadModalOpen]);
 
@@ -459,12 +474,22 @@ export default function GlobalHolidayLeadWidget() {
         message: "Thanks you, Our team will contact you in 24 hrs.",
       });
       setLeadForm(createInitialLeadForm());
+      setFromLocationInput("");
+      setToLocationInput("");
+      setMobileOtp("");
+      setIsMobileOtpSent(false);
+      setIsMobileVerified(false);
+      setEmailOtp("");
+      setIsEmailOtpSent(false);
+      setIsEmailVerified(false);
+      setIsEmailSkipped(false);
       
       // Auto-close modal after success
       setTimeout(() => {
         setIsLeadModalOpen(false);
+        setStep(1);
         setLeadFeedback({ type: "", message: "" });
-      }, 5000);
+      }, 3000);
     } catch (error) {
       setLeadFeedback({
         type: "error",
@@ -989,7 +1014,7 @@ export default function GlobalHolidayLeadWidget() {
                                 className="w-full h-10 px-3 border border-slate-200 text-xs font-bold bg-transparent text-slate-800 focus:border-[#C8102E] outline-none tracking-wide"
                               >
                                 <option value="" disabled>Select your budget</option>
-                                {leadForm.travelType && BUDGET_OPTIONS[leadForm.travelType]?.map((opt) => (
+                                {callbackBudgets.map((opt) => (
                                   <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                   </option>
