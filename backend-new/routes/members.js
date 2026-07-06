@@ -39,9 +39,9 @@ router.get(
         allBookings.push({
           ...booking,
           userId: user._id,
-          userName: user.name,
-          userEmail: user.email,
-          userMobile: user.mobile,
+          userName: booking.name || user.name,
+          userEmail: booking.email || user.email,
+          userMobile: booking.mobile || user.mobile,
           membershipId: user.membershipId,
         });
       });

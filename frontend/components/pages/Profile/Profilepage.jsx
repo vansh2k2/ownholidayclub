@@ -19,6 +19,9 @@ import {
 
 const createInitialHolidayForm = () => ({
   slotNumber: null,
+  name: "",
+  email: "",
+  mobile: "",
   place: "",
   checkIn: "",
   checkOut: "",
@@ -172,6 +175,9 @@ export default function Profilepage() {
     setSelectedHolidaySlot(slot);
     setHolidayForm({
       slotNumber: slot.slotNumber,
+      name: profile?.name || "",
+      email: profile?.email || "",
+      mobile: profile?.mobile || "",
       place: "", checkIn: "", checkOut: "",
       adults: "2", kids: "0",
       slotValidFrom: formatDateTimeLocalValue(slot.validFrom),
@@ -181,20 +187,7 @@ export default function Profilepage() {
   };
 
   const handleHolidayFieldChange = (field, value) => {
-    setHolidayForm((prev) => {
-      if (field !== "checkIn") return { ...prev, [field]: value };
-      const next = { ...prev, checkIn: value };
-      if (!value || !prev.checkOut) return next;
-      const checkIn  = new Date(value);
-      const checkOut = new Date(prev.checkOut);
-      if (Number.isNaN(checkIn.getTime()) || Number.isNaN(checkOut.getTime())) return next;
-      const maxCheckOut = new Date(checkIn.getTime() + nextStayAllowance.days * 86400000);
-      const slotValidTo = prev.slotValidTo ? new Date(prev.slotValidTo) : null;
-      const effectiveMax = slotValidTo && !Number.isNaN(slotValidTo.getTime()) && slotValidTo < maxCheckOut
-        ? slotValidTo : maxCheckOut;
-      if (checkOut <= checkIn || checkOut > effectiveMax) next.checkOut = "";
-      return next;
-    });
+    setHolidayForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleBookHoliday = async () => {
@@ -203,6 +196,9 @@ export default function Profilepage() {
     const adults     = Number(holidayForm.adults || 0);
     const kids       = Number(holidayForm.kids || 0);
     if (!slotNumber) { setFeedback({ type: "error", message: "Please choose the active holiday row." }); return; }
+    if (!holidayForm.name.trim() || !holidayForm.email.trim() || !holidayForm.mobile.trim()) {
+      setFeedback({ type: "error", message: "Name, email, and mobile are required." }); return;
+    }
     if (!holidayForm.place.trim() || !holidayForm.checkIn || !holidayForm.checkOut) {
       setFeedback({ type: "error", message: "Place, check-in, and check-out are required." }); return;
     }
@@ -211,9 +207,8 @@ export default function Profilepage() {
     }
     const checkInDate = new Date(holidayForm.checkIn);
     const checkOutDate = new Date(holidayForm.checkOut);
-    const bookingDurationMs = checkOutDate.getTime() - checkInDate.getTime();
-    if (bookingDurationMs > nextStayAllowance.days * 86400000) {
-      setFeedback({ type: "error", message: `This booking exceeds your package limit of ${nextStayAllowance.label}.` }); return;
+    if (checkOutDate <= checkInDate) {
+      setFeedback({ type: "error", message: "Check-out date must be after check-in date." }); return;
     }
     setIsBookingHoliday(true);
     setFeedback({ type: "", message: "" });
@@ -224,7 +219,11 @@ export default function Profilepage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            slotNumber, place: holidayForm.place.trim(),
+            slotNumber, 
+            name: holidayForm.name.trim(),
+            email: holidayForm.email.trim(),
+            mobile: holidayForm.mobile.trim(),
+            place: holidayForm.place.trim(),
             checkIn: holidayForm.checkIn, checkOut: holidayForm.checkOut, adults, kids,
           }),
         },

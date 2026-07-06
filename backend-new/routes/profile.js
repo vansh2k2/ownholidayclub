@@ -360,6 +360,9 @@ router.post(
     const checkOutInput = String(req.body?.checkOut || "").trim();
     const adults = Number(req.body?.adults || 0);
     const kids = Number(req.body?.kids || 0);
+    const name = String(req.body?.name || "").trim();
+    const email = String(req.body?.email || "").trim().toLowerCase();
+    const mobile = String(req.body?.mobile || "").trim();
 
     if (!userId) {
       return res.status(400).json({ message: "Valid user id is required." });
@@ -369,6 +372,10 @@ router.post(
       return res.status(400).json({
         message: "A valid holiday slot number is required.",
       });
+    }
+
+    if (!name || !mobile || !email) {
+      return res.status(400).json({ message: "Name, email, and mobile number are required." });
     }
 
     if (!place) {
@@ -471,6 +478,8 @@ router.post(
       });
     }
 
+    // Date constraints removed as per requirement
+    /*
     if (checkIn < requestedSlot.validFrom || checkIn >= requestedSlot.validTo) {
       console.log("Error 400: Check-in must be within the selected holiday access period.", { checkIn, validFrom: requestedSlot.validFrom, validTo: requestedSlot.validTo });
       return res.status(400).json({
@@ -484,6 +493,7 @@ router.post(
         message: "Check-out must be within the selected holiday access period.",
       });
     }
+    */
 
     const stayAllowance = getStayAllowance(
       enrichedMembership,
@@ -492,15 +502,20 @@ router.post(
     const bookingDurationMs = checkOut.getTime() - checkIn.getTime();
     const maxDurationMs = stayAllowance.days * 24 * 60 * 60 * 1000;
 
+    /*
     if (bookingDurationMs > maxDurationMs) {
       console.log("Error 400: Exceeds package limit", { bookingDurationMs, maxDurationMs, label: stayAllowance.label });
       return res.status(400).json({
         message: `This booking exceeds your package limit of ${stayAllowance.label}.`,
       });
     }
+    */
 
     user.holidayBookings.unshift({
       slotNumber,
+      name,
+      email,
+      mobile,
       place,
       checkIn,
       checkOut,

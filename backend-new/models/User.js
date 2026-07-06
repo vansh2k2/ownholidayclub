@@ -245,6 +245,22 @@ const holidayBookingSchema = new mongoose.Schema(
       default: null,
       min: 1,
     },
+    name: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    email: {
+      type: String,
+      default: "",
+      trim: true,
+      lowercase: true,
+    },
+    mobile: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     place: {
       type: String,
       default: "",

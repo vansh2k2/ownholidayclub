@@ -101,15 +101,18 @@ export default function Navbar({ onLoginClick }) {
 
             {/* Desktop links */}
             <div className="hidden lg:flex items-center space-x-2 xl:space-x-5">
-              {NAV_LINKS.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className="tracking-[0.05em] xl:tracking-[0.1em] font-bold xl:font-semibold text-[10px] xl:text-[12px] uppercase transition-all duration-300 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-amber-400 after:transition-all after:duration-300 hover:after:w-full text-black hover:text-red-700 whitespace-nowrap"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {NAV_LINKS.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className={`tracking-[0.05em] xl:tracking-[0.1em] font-bold xl:font-semibold text-[10px] xl:text-[12px] uppercase transition-all duration-300 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:bg-amber-400 after:transition-all after:duration-300 hover:after:w-full hover:text-red-700 whitespace-nowrap ${isActive ? "after:w-full text-red-700" : "after:w-0 text-black"}`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
 
               {currentUser ? (
                 <Link

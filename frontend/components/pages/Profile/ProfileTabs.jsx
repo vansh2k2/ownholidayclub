@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Calendar, Mail, Phone, User } from "lucide-react";
 
 import {
@@ -375,9 +376,11 @@ export function HolidayTab({
       </Card>
 
       {/* Modal */}
-      {isHolidayModalOpen && selectedHolidaySlot ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0A1628]/80 px-4 py-8 backdrop-blur-md transition-opacity">
-          <div className="w-full max-w-xl rounded-2xl bg-white shadow-[0_32px_80px_rgba(10,22,40,0.35)] overflow-hidden animate-scale-in">
+      {isHolidayModalOpen && selectedHolidaySlot
+        ? typeof document !== "undefined" &&
+          createPortal(
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#0A1628]/80 px-4 py-8 backdrop-blur-md transition-opacity">
+              <div className="w-full max-w-3xl rounded-2xl bg-white shadow-[0_32px_80px_rgba(10,22,40,0.35)] overflow-hidden animate-scale-in">
             {/* Elegant Header */}
             <div className="bg-[#0A1628] px-6 py-5 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#C9A84C] via-[#F0D080] to-[#C9A84C]" />
@@ -407,27 +410,68 @@ export function HolidayTab({
               </div>
             </div>
 
-            <div className="px-6 py-6">
+            <div className="px-5 py-5 max-h-[75vh] overflow-y-auto">
               <p
-                className="mb-5 text-sm text-[#6B7280]"
+                className="mb-4 text-xs font-semibold text-[#6B7280]"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 Valid: {formatHolidayDate(selectedHolidaySlot.validFrom)} — {formatHolidayDate(selectedHolidaySlot.validTo)}
               </p>
 
-              <div className="grid gap-5 md:grid-cols-2">
-                <div className="md:col-span-2 relative">
-                  <ProfileInput
-                    label="Destination / Place"
-                    value={holidayForm.place}
-                    onChange={(v) => {
-                      onHolidayFieldChange("place", v);
-                      if (!isLocationDropdownOpen) setIsLocationDropdownOpen(true);
-                    }}
-                    placeholder="Enter your preferred destination"
-                  />
+              <div className="grid gap-4 md:grid-cols-3">
+                <div>
+                  <label className="block w-full">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">Full Name</div>
+                    <input
+                      type="text"
+                      value={holidayForm.name}
+                      onChange={(e) => onHolidayFieldChange("name", e.target.value)}
+                      placeholder="Enter your full name"
+                      className="h-8 w-full rounded-none border border-slate-400 bg-white px-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10"
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label className="block w-full">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">Email Address</div>
+                    <input
+                      type="email"
+                      value={holidayForm.email}
+                      onChange={(e) => onHolidayFieldChange("email", e.target.value)}
+                      placeholder="you@example.com"
+                      className="h-8 w-full rounded-none border border-slate-400 bg-white px-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10"
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label className="block w-full">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">Phone Number</div>
+                    <input
+                      type="tel"
+                      value={holidayForm.mobile}
+                      onChange={(e) => onHolidayFieldChange("mobile", e.target.value)}
+                      placeholder="10-digit mobile"
+                      className="h-8 w-full rounded-none border border-slate-400 bg-white px-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10"
+                    />
+                  </label>
+                </div>
+
+                <div className="relative">
+                  <label className="block w-full">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">Destination / Place</div>
+                    <input
+                      type="text"
+                      value={holidayForm.place}
+                      onChange={(e) => {
+                        onHolidayFieldChange("place", e.target.value);
+                        if (!isLocationDropdownOpen) setIsLocationDropdownOpen(true);
+                      }}
+                      placeholder="Enter your preferred destination"
+                      className="h-8 w-full rounded-none border border-slate-400 bg-white px-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10"
+                    />
+                  </label>
                   {isLocationDropdownOpen && locationOptions.length > 0 && (
-                    <ul className="absolute z-50 w-full bg-white border border-slate-200 mt-1 shadow-lg max-h-48 overflow-y-auto">
+                    <ul className="absolute z-50 w-full bg-white border border-slate-200 mt-1 shadow-xl max-h-48 overflow-y-auto rounded-none">
                       {locationOptions.map((opt, i) => (
                         <li
                           key={i}
@@ -436,7 +480,7 @@ export function HolidayTab({
                             onHolidayFieldChange("place", opt);
                             setIsLocationDropdownOpen(false);
                           }}
-                          className="px-4 py-2 hover:bg-amber-50 cursor-pointer text-[12px] text-slate-700 font-medium border-b border-slate-50 last:border-0"
+                          className="px-3 py-2 hover:bg-amber-50 cursor-pointer text-[12px] text-slate-700 font-medium border-b border-slate-100 last:border-0"
                         >
                           {opt}
                         </li>
@@ -444,36 +488,53 @@ export function HolidayTab({
                     </ul>
                   )}
                 </div>
-                <ProfileInput
-                  label="Check-In Date"
-                  type="datetime-local"
-                  value={holidayForm.checkIn}
-                  onChange={(v) => onHolidayFieldChange("checkIn", v)}
-                  min={holidayForm.slotValidFrom || ""}
-                  max={holidayForm.slotValidTo || ""}
-                />
-                <ProfileInput
-                  label="Check-Out Date"
-                  type="datetime-local"
-                  value={holidayForm.checkOut}
-                  onChange={(v) => onHolidayFieldChange("checkOut", v)}
-                  min={holidayForm.checkIn || holidayForm.slotValidFrom || ""}
-                  max={maxCheckOutValue || holidayForm.slotValidTo || ""}
-                />
-                <ProfileInput
-                  label="Adults"
-                  type="number"
-                  value={holidayForm.adults}
-                  onChange={(v) => onHolidayFieldChange("adults", v)}
-                  min="1"
-                />
-                <ProfileInput
-                  label="Kids (Below 10 Years)"
-                  type="number"
-                  value={holidayForm.kids}
-                  onChange={(v) => onHolidayFieldChange("kids", v)}
-                  min="0"
-                />
+
+                <div>
+                  <label className="block w-full">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">Check-In Date</div>
+                    <input
+                      type="datetime-local"
+                      value={holidayForm.checkIn}
+                      onChange={(e) => onHolidayFieldChange("checkIn", e.target.value)}
+                      className="h-8 w-full rounded-none border border-slate-400 bg-white px-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10"
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label className="block w-full">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">Check-Out Date</div>
+                    <input
+                      type="datetime-local"
+                      value={holidayForm.checkOut}
+                      onChange={(e) => onHolidayFieldChange("checkOut", e.target.value)}
+                      className="h-8 w-full rounded-none border border-slate-400 bg-white px-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10"
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label className="block w-full">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">Adults</div>
+                    <input
+                      type="number"
+                      value={holidayForm.adults}
+                      onChange={(e) => onHolidayFieldChange("adults", e.target.value)}
+                      min="1"
+                      className="h-8 w-full rounded-none border border-slate-400 bg-white px-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10"
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label className="block w-full">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-800">Kids (Below 10 Years)</div>
+                    <input
+                      type="number"
+                      value={holidayForm.kids}
+                      onChange={(e) => onHolidayFieldChange("kids", e.target.value)}
+                      min="0"
+                      className="h-8 w-full rounded-none border border-slate-400 bg-white px-3 py-0 leading-tight text-[12px] font-medium text-slate-900 outline-none transition focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/10"
+                    />
+                  </label>
+                </div>
               </div>
 
               <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -497,7 +558,8 @@ export function HolidayTab({
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       ) : null}
     </div>
   );

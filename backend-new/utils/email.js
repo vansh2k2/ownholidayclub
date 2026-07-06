@@ -406,7 +406,7 @@ const sendGenericThankYouEmail = async ({ to, name, type = "Holiday" }) => {
   const from = getFromAddress();
   const subject = "Thank you for contacting Own Holiday Club";
   const safeName = String(name || "Traveler").trim() || "Traveler";
- 
+
   let subtext = "We've received your inquiry and our experts are already reviewing it.";
   let bodyText = "Thank you for choosing <strong style=\"color:#0c1a2e;\">us</strong>. We've successfully received your inquiry and our team will reach out to you <strong style=\"color:#0c1a2e;\">within 24 hours</strong> to assist you.";
   let step3Icon = "✅";
@@ -543,7 +543,7 @@ const sendGenericThankYouEmail = async ({ to, name, type = "Holiday" }) => {
 </body>
 </html>
   `;
- 
+
   return sendMailWithLogging({
     from,
     to,
@@ -567,7 +567,11 @@ const sendHolidayBookingAdminEmail = async ({
   const from = getFromAddress();
   const to = "info@ownholidayclub.com";
   // const to = "vanshchaudhary2k2@gmail.com";
-  const subject = `New Holiday Booking Request - ${user.name || "Member"}`;
+  const bookingName = booking.name || user.name || "Member";
+  const bookingEmail = booking.email || user.email;
+  const bookingMobile = booking.mobile || user.mobile;
+
+  const subject = `New Holiday Booking Request - ${bookingName}`;
 
   const formatDate = (dateInput) => {
     if (!dateInput) return "N/A";
@@ -580,83 +584,107 @@ const sendHolidayBookingAdminEmail = async ({
     if (!dateInput) return "N/A";
     const d = new Date(dateInput);
     if (isNaN(d.getTime())) return "N/A";
-    return d.toLocaleString("en-US", { 
+    return d.toLocaleString("en-US", {
       year: "numeric", month: "short", day: "numeric",
       hour: "2-digit", minute: "2-digit"
     });
   };
 
-  const html = `
-    <div style="margin:0;padding:8px;background:#f8fafc;font-family:Arial,sans-serif;color:#0f172a;">
-      <div style="max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;overflow:hidden;box-shadow:0 20px 50px rgba(15,23,42,0.10);">
-        <div style="padding:18px 24px;background:#ffffff;text-align:center;border-bottom:1px solid #e2e8f0;">
-          <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:148px;max-width:100%;height:auto;display:block;margin:0 auto;" />
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;">
+    <div style="margin:0;padding:10px;background:#f1f5f9;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0f172a;width:100%;box-sizing:border-box;">
+      <div style="max-width:800px;width:100%;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,0.08);box-sizing:border-box;">
+        <!-- Header Banner -->
+        <div style="padding:20px 28px;background:#f8fafc;border-bottom:1px solid #e2e8f0;text-align:center;">
+          <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:175px;height:auto;margin-bottom:10px;" />
+          <div style="display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(245,158,11,0.15);color:#d97706;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;">
+            Holiday Request
+          </div>
+          <h1 style="margin:10px 0 0;font-size:22px;color:#0f172a;font-weight:700;letter-spacing:-0.02em;">New Booking Request</h1>
         </div>
 
-        <div style="padding:18px 24px;background:#f8fafc;border-bottom:1px solid #e2e8f0;text-align:center;">
-          <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#d97706;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
-            New Booking Request
-          </div>
-          <h1 style="margin:10px 0 0;font-size:22px;line-height:1.3;color:#0f172a;font-weight:700;">Holiday Request Received</h1>
-          <p style="margin:6px 0 0;font-size:14px;line-height:1.7;color:#475569;">
-            A member has requested to book a holiday.
-          </p>
-        </div>
-
-        <div style="padding:32px;">
-          <p style="margin:0 0 22px;font-size:15px;line-height:1.8;color:#475569;text-align:center;">
-            <strong>${user.name || "Member"}</strong> (${user.email}, ${user.mobile}) has submitted a holiday booking request. Details are below:
-          </p>
-
-          <div style="margin:0 auto 24px;padding:20px;border-radius:20px;border:1px solid #fde68a;background:linear-gradient(180deg,#fffdf6 0%,#fffbeb 100%);">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Holiday No.</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; font-weight: 700; color: #0f172a;">#${booking.slotNumber}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Length Of Stay</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${stayAllowance?.label || "N/A"}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Valid From</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${formatDate(validFrom)}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Valid To</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${formatDate(validTo)}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Destination</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a; font-weight: 700;">${booking.place}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Check-In</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${formatDateTime(booking.checkIn)}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Check-Out</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${formatDateTime(booking.checkOut)}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Guests</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f8e7a7; color: #0f172a;">${booking.adults} Adults / ${booking.kids} Kids</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px 0; color: #92400e; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em;">Status</td>
-                <td style="padding: 8px 0; color: #0f172a; font-weight: 700;">Requested</td>
-              </tr>
-            </table>
+        <!-- Body Section -->
+        <div style="padding:24px 28px;">
+          <div style="margin-bottom:24px;padding:16px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:8px;">
+            <p style="margin:0;font-size:14px;color:#15803d;font-weight:600;line-height:1.5;">
+              ⚡ A new <strong>Holiday Booking</strong> has been successfully submitted from the member portal.
+            </p>
           </div>
 
-          <div style="padding:18px 20px;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:22px;">
-            <div style="font-size:14px;line-height:1.8;color:#475569; text-align: center;">
-              Please log in to the admin panel to review and approve/reject this booking request.
-            </div>
+          <h2 style="font-size:16px;color:#0f172a;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.05em;">Booking Details</h2>
+          
+          <table width="100%" style="width:100%;border-collapse:collapse;margin-bottom:24px;table-layout:fixed;">
+            <tbody>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Full Name</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal; font-weight: 700;">${bookingName}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Email Address</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">${bookingEmail}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Phone Number</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">${bookingMobile}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Holiday No.</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">#${booking.slotNumber}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Length Of Stay</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">${stayAllowance?.label || "N/A"}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Valid From</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">${formatDate(validFrom)}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Valid To</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">${formatDate(validTo)}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Destination</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal; font-weight: 700;">${booking.place}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Check-In</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">${formatDateTime(booking.checkIn)}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Check-Out</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">${formatDateTime(booking.checkOut)}</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Guests</td>
+                <td width="72%" style="padding: 10px 0 10px 0; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal;">${booking.adults} Adults / ${booking.kids} Kids</td>
+              </tr>
+              <tr>
+                <td width="28%" style="padding: 10px 10px 10px 0; font-size: 9px; font-weight: 700; color: #64748b; width: 28%; text-transform: uppercase; vertical-align: top;">Status</td>
+                <td width="72%" style="padding: 10px 0 10px 0; font-size: 11px; color: #0f172a; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; white-space: normal; font-weight: 700;">Requested</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top:16px;padding:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#334155;text-align:center;">
+            Please log in to the admin panel to review and approve/reject this booking request.
+          </div>
+
+          <!-- Footer -->
+          <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e2e8f0;text-align:center;">
+            <p style="margin:0;font-size:12px;color:#64748b;line-height:1.5;">
+              This email was automatically generated by the Own Holiday Club Lead Capture System.
+            </p>
           </div>
         </div>
       </div>
     </div>
+</body>
+</html>
   `;
 
   return sendMailWithLogging({

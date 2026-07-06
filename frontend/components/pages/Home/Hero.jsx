@@ -279,7 +279,7 @@ export default function Hero() {
                 initial={{ scale: 1 }}
                 animate={{ scale: 1.15 }}
                 transition={{ duration: 7, ease: "linear" }}
-                className="h-full w-full object-cover brightness-[0.95] saturate-[1.1]"
+                className="h-full w-full object-cover brightness-[0.98] saturate-[1.1]"
               />
             </motion.div>
           </AnimatePresence>
@@ -289,8 +289,8 @@ export default function Hero() {
             className="absolute inset-0"
             style={{
               background: `
-                radial-gradient(ellipse 58% 36% at 50% 42%, rgba(20, 22, 30, 0.25) 0%, rgba(20, 22, 30, 0.15) 26%, rgba(20, 22, 30, 0.05) 48%, rgba(20, 22, 30, 0) 72%),
-                linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.3) 100%)
+                radial-gradient(ellipse 58% 36% at 50% 42%, rgba(20, 22, 30, 0.15) 0%, rgba(20, 22, 30, 0.05) 26%, rgba(20, 22, 30, 0) 48%, rgba(20, 22, 30, 0) 72%),
+                linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.2) 100%)
               `,
             }}
           />
