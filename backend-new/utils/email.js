@@ -170,12 +170,12 @@ const sendOtpEmail = async (to, otp, ttlMinutes = 15) => {
           <img src="${BRAND_LOGO_URL}" alt="Own Holiday Club" style="width:148px;max-width:100%;height:auto;display:block;margin:0 auto;" />
         </div>
 
-        <div style="padding:28px 32px 24px;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);text-align:center;">
-          <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#fbbf24;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
+        <div style="padding:28px 32px 24px;background:#f8fafc;text-align:center;border-bottom:1px solid #e2e8f0;">
+          <div style="display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(245,158,11,0.14);color:#d97706;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">
             Verification Code
           </div>
-          <h1 style="margin:18px 0 8px;font-size:30px;line-height:1.15;color:#ffffff;">Your OTP Is Ready</h1>
-          <p style="margin:0;font-size:14px;line-height:1.7;color:#cbd5e1;">
+          <h1 style="margin:18px 0 8px;font-size:24px;line-height:1.2;color:#0f172a;">Your OTP Is Ready</h1>
+          <p style="margin:0;font-size:14px;line-height:1.7;color:#475569;">
             Use the code below to continue your Own Holiday Club verification.
           </p>
         </div>
