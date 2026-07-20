@@ -1,0 +1,530 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,300;1,400&family=Inter:wght@400;500;600;700;900&family=Outfit:wght@400;500;600;700&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #ffffff;
+  overflow-x: hidden;
+}
+
+.font-sans {
+  font-family: "Inter", sans-serif;
+}
+.font-serif {
+  font-family: "Playfair Display", serif;
+}
+
+.font-vibes {
+  font-family: "Great Vibes", cursive;
+}
+
+.font-outfit {
+  font-family: "Outfit", sans-serif;
+}
+
+.site-width {
+  width: 90%;
+  max-width: none;
+}
+
+@media (min-width: 768px) {
+  .site-width {
+    width: 95%;
+  }
+}
+
+@media (min-width: 1500px) {
+  .site-width {
+    width: 90%;
+  }
+}
+
+/* Shared luxury utilities */
+.luxury-about-container {
+  --float-y: -25px;
+}
+.luxury-services-container {
+  --float-y: -20px;
+}
+.luxury-destinations-container,
+.luxury-membership-container,
+.luxury-property-container,
+.luxury-blog-container {
+  --float-y: -15px;
+}
+.luxury-cta-container {
+  --float-y: -35px;
+  --float-rotate: -1.5deg;
+  --float-duration: 10s;
+}
+.luxury-membership-container {
+  --stroke-width: 1px;
+  --bounce-y: 10px;
+  --bounce-duration: 2s;
+}
+.luxury-property-container {
+  --stroke-width: 1px;
+}
+.luxury-blog-detail .article-body p {
+  margin-bottom: 2rem;
+}
+.luxury-blog-detail .article-body p:first-of-type::first-letter {
+  font-family: "Playfair Display", serif;
+  font-size: 5rem;
+  font-weight: 900;
+  color: #f59e0b;
+  float: left;
+  line-height: 0.8;
+  margin-right: 1rem;
+  margin-top: 0.5rem;
+}
+
+.stroke-text {
+  -webkit-text-stroke: var(--stroke-width, 2px) var(--stroke-color, #0f172a);
+  color: transparent;
+}
+
+@keyframes float-gentle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(var(--float-y, -15px))
+      rotate(var(--float-rotate, -1deg));
+  }
+}
+.animate-float {
+  animation: float-gentle var(--float-duration, 8s) ease-in-out infinite;
+}
+
+@keyframes spin-ultra-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin-ultra-slow {
+  animation: spin-ultra-slow 35s linear infinite;
+}
+
+@keyframes draw-curve {
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -1500;
+  }
+}
+.animate-dash-curve {
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 1500;
+  animation: draw-curve 15s linear infinite;
+}
+
+@keyframes shimmer-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.animate-shimmer-border {
+  background-size: 200% auto;
+  animation: shimmer-border 3s linear infinite;
+}
+
+@keyframes bounce-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--bounce-y, -15px));
+  }
+}
+.animate-bounce-slow {
+  animation: bounce-slow var(--bounce-duration, 4s) infinite ease-in-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes revealRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.animate-reveal-right {
+  animation: revealRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.glass-input-wrapper {
+  position: relative;
+  transition: all 0.4s ease;
+}
+.glass-input-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0%;
+  height: 2px;
+  background: #f59e0b;
+  transition: width 0.4s ease;
+}
+.glass-input-wrapper:focus-within::after {
+  width: 100%;
+}
+
+.otp-input {
+  letter-spacing: 1em;
+  padding-left: 1em;
+  text-align: center;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes luxury-spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.luxury-cta-container .animate-spin-slow {
+  animation: luxury-spin-slow 25s linear infinite;
+}
+
+@keyframes luxury-dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes luxury-dash-reverse {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.luxury-cta-container .animate-dash {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: luxury-dash 12s linear infinite;
+}
+.luxury-cta-container .animate-dash-reverse {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: -1200;
+  animation: luxury-dash-reverse 12s linear infinite;
+}
+
+/* ANIMATIONS FOR DESTINATIONS GALLERY */
+@keyframes trans-portal {
+  0% {
+    clip-path: circle(0% at 50% 50%);
+  }
+  100% {
+    clip-path: circle(150% at 50% 50%);
+  }
+}
+.animate-trans-portal {
+  animation: trans-portal 1.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+@keyframes trans-shutter {
+  0% {
+    clip-path: inset(0 50% 0 50%);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.animate-trans-shutter {
+  animation: trans-shutter 1.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+@keyframes trans-horizon {
+  0% {
+    clip-path: inset(100% 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.animate-trans-horizon {
+  animation: trans-horizon 1.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+@keyframes trans-reveal {
+  0% {
+    clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+.animate-trans-reveal {
+  animation: trans-reveal 1.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+@keyframes trans-bloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+    filter: blur(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+.animate-trans-bloom {
+  animation: trans-bloom 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes stagger-top {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-stagger-top {
+  animation: stagger-top 1s ease-out 0.8s forwards;
+  opacity: 0;
+}
+
+@keyframes stagger-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-stagger-bottom {
+  animation: stagger-bottom 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+  opacity: 0;
+}
+
+@keyframes stagger-button {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-45deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+.animate-stagger-button {
+  animation: stagger-button 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s forwards;
+  opacity: 0;
+}
+
+@keyframes image-scale-in {
+  from {
+    transform: scale(1.4);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+.animate-image-scale-in {
+  animation: image-scale-in 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slow-zoom {
+  from {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+.animate-slow-zoom {
+  animation: slow-zoom 12s linear infinite alternate;
+}
+
+.auth-overlay {
+  will-change: transform, opacity, filter, clip-path;
+  transform-origin: center;
+  overflow: hidden;
+  clip-path: circle(0% at 50% 50%);
+  opacity: 0;
+  transform: scale(0.98);
+  filter: blur(12px);
+  transition:
+    clip-path 3000ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 2000ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 3000ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 2000ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.auth-overlay.auth-overlay-open {
+  clip-path: circle(150% at 50% 50%);
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
+.auth-backdrop {
+  background:
+    radial-gradient(
+      circle at 30% 20%,
+      rgba(255, 213, 110, 0.35),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 70% 80%,
+      rgba(255, 255, 255, 0.25),
+      transparent 60%
+    ),
+    rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(10px) saturate(115%);
+  will-change: opacity, transform;
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 2600ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 2600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.auth-overlay.auth-overlay-open .auth-backdrop {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Rich Text Editor Content Styles */
+.rich-text-content {
+  @apply space-y-4 text-left;
+  text-align: left;
+}
+
+.rich-text-content p {
+  @apply mb-4 text-left;
+}
+
+/* Support for Quill Editor Alignments */
+.rich-text-content .ql-align-center {
+  text-align: center;
+}
+.rich-text-content .ql-align-right {
+  text-align: right;
+}
+.rich-text-content .ql-align-justify {
+  text-align: justify;
+}
+
+.rich-text-content h1 {
+  @apply text-3xl md:text-4xl font-bold mt-8 mb-4 text-slate-900 font-serif;
+}
+
+.rich-text-content h2 {
+  @apply text-2xl md:text-3xl font-bold mt-8 mb-4 text-slate-900 font-serif;
+}
+
+.rich-text-content h3 {
+  @apply text-xl md:text-2xl font-bold mt-6 mb-3 text-slate-900;
+}
+
+.rich-text-content h4 {
+  @apply text-lg md:text-xl font-bold mt-6 mb-3 text-slate-900;
+}
+
+.rich-text-content h5, .rich-text-content h6 {
+  @apply text-base md:text-lg font-bold mt-4 mb-2 text-slate-900;
+}
+
+.rich-text-content ul {
+  @apply list-disc list-inside mb-4 pl-4 space-y-2;
+}
+
+.rich-text-content ol {
+  @apply list-decimal list-inside mb-4 pl-4 space-y-2;
+}
+
+.rich-text-content li {
+  @apply mb-1;
+}
+
+.rich-text-content a {
+  @apply text-amber-600 hover:text-amber-700 underline transition-colors;
+}
+
+.rich-text-content strong, .rich-text-content b {
+  @apply font-bold text-slate-800;
+}
+
+.rich-text-content em, .rich-text-content i {
+  @apply italic;
+}
+
+.rich-text-content u {
+  @apply underline;
+}
+
+.rich-text-content blockquote {
+  @apply border-l-4 border-amber-500 pl-4 py-1 my-4 bg-slate-50 italic text-slate-700 rounded-r-lg;
+}
+
+.rich-text-content pre {
+  @apply bg-slate-800 text-slate-50 p-4 rounded-lg overflow-x-auto mb-4 text-sm;
+}
+
+.rich-text-content code {
+  @apply bg-slate-100 text-amber-600 px-1 py-0.5 rounded text-sm font-mono;
+}

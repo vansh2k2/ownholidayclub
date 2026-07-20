@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Next.js
+.next/
+**/ .next/
+out/
+
+# Env files
+.env*
+**/.env*
+
+# Build outputs
+build/
+dist/
+**/build/
+**/dist/
+
+# Logs
+*.log
+**/logs/
+
+# Misc
+.DS_Store
+.gemini/
+.codexignore
+.gitattributes
