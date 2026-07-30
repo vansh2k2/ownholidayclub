@@ -14,7 +14,8 @@ import {
   Filter,
   Eye,
   Trash2,
-  MessageSquare
+  MessageSquare,
+  Download
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from "../lib/api";
@@ -22,6 +23,7 @@ import Pagination from "../components/Pagination";
 import Table from '../components/table/Table';
 import PageHeader from '../components/PageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as XLSX from 'xlsx';
 
 import CountUp from '../components/CountUp';
 
@@ -34,6 +36,9 @@ const LeadPartners = () => {
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const adminInfo = JSON.parse(localStorage.getItem('adminInfo') || sessionStorage.getItem('adminInfo') || '{}');
+  const isSuperAdmin = adminInfo.role === 'SUPER-ADMIN' || adminInfo.role === 'super-admin';
 
   useEffect(() => {
     fetchPartners();
@@ -138,6 +143,25 @@ const LeadPartners = () => {
     return matchesSearch && matchesStatus;
   });
 
+  const exportToExcel = () => {
+    const dataToExport = filteredPartners.map((p, index) => ({
+      "S.NO": index + 1,
+      "Partner Name": `${p.firstName} ${p.lastName}`,
+      "Property Name": p.propertyName,
+      "Email": p.email,
+      "Phone": p.phone,
+      "Target Destination": p.targetDestination,
+      "Package": p.leadPackage,
+      "Status": p.status,
+      "Requested On": new Date(p.createdAt).toLocaleDateString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Lead Partners");
+    XLSX.writeFile(workbook, "Lead_Partners.xlsx");
+  };
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPartners = filteredPartners.slice(
     startIndex,
@@ -226,6 +250,7 @@ const LeadPartners = () => {
       render: (row) => (
         <select
           value={row.status}
+          disabled={!isSuperAdmin}
           onChange={(e) => handleStatusChange(row._id, e.target.value)}
           className={`h-7 px-1.5 w-[88px] rounded-md text-[9px] font-black uppercase tracking-wider border-2 cursor-pointer transition-all ${
             row.status === "pending"
@@ -256,13 +281,15 @@ const LeadPartners = () => {
           >
             <Eye size={16} />
           </button>
-          <button
-            onClick={() => handleDeletePartner(row)}
-            className="p-1.5 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors tooltip-trigger"
-            title="Delete Request"
-          >
-            <Trash2 size={16} />
-          </button>
+          {isSuperAdmin && (
+            <button
+              onClick={() => handleDeletePartner(row)}
+              className="p-1.5 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors tooltip-trigger"
+              title="Delete Request"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
         </div>
       )
     }
@@ -347,6 +374,12 @@ const LeadPartners = () => {
                         <option value="rejected">Rejected</option>
                     </select>
                 </div>
+                <button
+                  onClick={exportToExcel}
+                  className="flex items-center gap-2 bg-[#107C41] hover:bg-[#0B5A2F] text-white px-4 py-2 rounded-md text-[11px] font-bold uppercase tracking-wider transition-colors shadow-sm"
+                >
+                  <Download size={14} /> Export
+                </button>
              </div>
           </div>
 
@@ -489,12 +522,12 @@ const LeadPartners = () => {
 
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
                 <div className="flex gap-2">
-                   {selectedPartner.status !== 'approved' && (
+                   {isSuperAdmin && selectedPartner.status !== 'approved' && (
                        <button onClick={() => handleStatusChange(selectedPartner._id, 'approved')} className="px-6 py-2 bg-green-600 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-green-700 transition-colors shadow-md rounded-md">
                          Approve
                        </button>
                    )}
-                   {selectedPartner.status !== 'rejected' && (
+                   {isSuperAdmin && selectedPartner.status !== 'rejected' && (
                        <button onClick={() => handleStatusChange(selectedPartner._id, 'rejected')} className="px-6 py-2 bg-red-600 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-red-700 transition-colors shadow-md rounded-md">
                          Reject
                        </button>

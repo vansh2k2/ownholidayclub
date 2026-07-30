@@ -2,6 +2,7 @@ const express = require("express");
 
 const PropertyListing = require("../models/PropertyListing");
 const asyncHandler = require("../utils/asyncHandler");
+const requireCmsAdmin = require("../middleware/requireCmsAdmin");
 
 const router = express.Router();
 
@@ -84,7 +85,12 @@ router.get(
 // Route to update status for Admin Approval
 router.put(
   "/:id/status",
+  requireCmsAdmin,
   asyncHandler(async (req, res) => {
+    if (req.cmsAdmin.role !== "super-admin") {
+      return res.status(403).json({ message: "Only super-admins can update status" });
+    }
+
     const { status } = req.body;
     
     if (!status || !["pending", "approved", "rejected"].includes(status)) {
@@ -110,7 +116,12 @@ router.put(
 
 router.delete(
   "/:id",
+  requireCmsAdmin,
   asyncHandler(async (req, res) => {
+    if (req.cmsAdmin.role !== "super-admin") {
+      return res.status(403).json({ message: "Only super-admins can delete data" });
+    }
+
     const listing = await PropertyListing.findByIdAndDelete(req.params.id);
 
     if (!listing) {

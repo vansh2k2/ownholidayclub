@@ -12,7 +12,8 @@ import {
   Smartphone,
   X,
   Users,
-  PhoneCall
+  PhoneCall,
+  Download
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from "../lib/api";
@@ -20,6 +21,7 @@ import Pagination from "../components/Pagination";
 import Table from '../components/table/Table';
 import PageHeader from '../components/PageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as XLSX from 'xlsx';
 import CountUp from '../components/CountUp';
 
 const CallbackRequests = () => {
@@ -32,6 +34,9 @@ const CallbackRequests = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
+
+  const adminInfo = JSON.parse(localStorage.getItem('adminInfo') || sessionStorage.getItem('adminInfo') || '{}');
+  const isSuperAdmin = adminInfo.role === 'SUPER-ADMIN' || adminInfo.role === 'super-admin';
 
   useEffect(() => {
     fetchLeads();
@@ -129,6 +134,31 @@ const CallbackRequests = () => {
     pending: leads.filter(l => l.status === 'pending').length,
     contacted: leads.filter(l => l.status === 'contacted').length,
     resolved: leads.filter(l => l.status === 'resolved').length
+  };
+
+  const exportToExcel = () => {
+    const dataToExport = filteredLeads.map((lead, index) => ({
+      "S.NO": index + 1,
+      "Name": lead.name,
+      "Email": lead.email,
+      "Phone": lead.phone,
+      "Source": lead.source,
+      "Travel Type": lead.travelType,
+      "Budget": lead.budget,
+      "From Location": lead.location,
+      "To Location": lead.searchLocation,
+      "Status": lead.status,
+      "Check In": lead.checkIn ? new Date(lead.checkIn).toLocaleDateString() : 'N/A',
+      "Check Out": lead.checkOut ? new Date(lead.checkOut).toLocaleDateString() : 'N/A',
+      "Adults": lead.adults,
+      "Kids": lead.kids,
+      "Received On": new Date(lead.createdAt).toLocaleDateString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Callback Requests");
+    XLSX.writeFile(workbook, "Callback_Requests.xlsx");
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -259,6 +289,7 @@ const CallbackRequests = () => {
       render: (row) => (
         <select
           value={row.status}
+          disabled={!isSuperAdmin}
           onChange={(e) => handleStatusChange(row._id, e.target.value)}
           className={`h-7 px-1.5 w-[88px] rounded-md text-[9px] font-black uppercase tracking-wider border-2 cursor-pointer transition-all ${
             row.status === "new"
@@ -285,9 +316,11 @@ const CallbackRequests = () => {
                 <button onClick={() => handleViewLead(row)} className="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors rounded">
                     <Eye size={14} />
                 </button>
-                <button onClick={() => handleDeleteLead(row)} className="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 transition-colors rounded">
-                    <Trash2 size={14} />
-                </button>
+                {isSuperAdmin && (
+                  <button onClick={() => handleDeleteLead(row)} className="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 transition-colors rounded">
+                      <Trash2 size={14} />
+                  </button>
+                )}
             </div>
         )
     }
@@ -383,6 +416,12 @@ const CallbackRequests = () => {
                         <option value="resolved">Resolved</option>
                     </select>
                 </div>
+                <button
+                  onClick={exportToExcel}
+                  className="flex items-center gap-2 bg-[#107C41] hover:bg-[#0B5A2F] text-white px-4 py-2 rounded-md text-[11px] font-bold uppercase tracking-wider transition-colors shadow-sm"
+                >
+                  <Download size={14} /> Export
+                </button>
              </div>
           </div>
 
@@ -511,8 +550,9 @@ const CallbackRequests = () => {
                             <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Status</label>
                             <select 
                                 value={selectedLead.status}
+                                disabled={!isSuperAdmin}
                                 onChange={(e) => handleStatusChange(selectedLead._id, e.target.value)}
-                                className="w-full text-xs font-black uppercase tracking-widest border-none bg-transparent p-0 cursor-pointer focus:ring-0 text-slate-800 font-bold"
+                                className="w-full text-xs font-black uppercase tracking-widest border-none bg-transparent p-0 cursor-pointer focus:ring-0 text-slate-800 font-bold disabled:opacity-70"
                             >
                                 <option value="new">New</option>
                                 <option value="pending">Pending</option>

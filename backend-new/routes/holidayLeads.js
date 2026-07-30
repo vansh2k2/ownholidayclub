@@ -15,6 +15,8 @@ const {
   hasOtpExpired,
 } = require("../utils/security");
 const { sendLeadNotificationEmail, sendLeadThankYouEmail } = require("../utils/email");
+const requireCmsAdmin = require("../middleware/requireCmsAdmin");
+const requireSuperAdmin = require("../middleware/requireSuperAdmin");
 
 const router = express.Router();
 
@@ -360,6 +362,7 @@ router.post(
 // @desc    Get all leads (admin)
 router.get(
   "/",
+  requireCmsAdmin,
   asyncHandler(async (req, res) => {
     const leads = await HolidayLead.find().sort({ createdAt: -1 });
     res.json({ success: true, leads });
@@ -370,6 +373,7 @@ router.get(
 // @desc    Delete a lead (admin)
 router.delete(
   "/:id",
+  requireSuperAdmin,
   asyncHandler(async (req, res) => {
     const lead = await HolidayLead.findByIdAndDelete(req.params.id);
     if (!lead) {
@@ -383,6 +387,7 @@ router.delete(
 // @desc    Update lead status (admin)
 router.put(
   "/:id",
+  requireSuperAdmin,
   asyncHandler(async (req, res) => {
     const { status } = req.body;
     const lead = await HolidayLead.findByIdAndUpdate(

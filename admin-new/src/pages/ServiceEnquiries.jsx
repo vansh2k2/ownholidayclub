@@ -15,7 +15,8 @@ import {
   Briefcase,
   IndianRupee,
   Compass,
-  MapPin
+  MapPin,
+  Download
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import api from "../lib/api";
@@ -23,6 +24,7 @@ import Pagination from "../components/Pagination";
 import Table from '../components/table/Table';
 import PageHeader from '../components/PageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as XLSX from 'xlsx';
 import CountUp from '../components/CountUp';
 
 const ServiceEnquiries = () => {
@@ -37,6 +39,9 @@ const ServiceEnquiries = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [serviceFilter, setServiceFilter] = useState("all");
   const [stats, setStats] = useState({ total: 0, new: 0, pending: 0, contacted: 0, resolved: 0 });
+
+  const adminInfo = JSON.parse(localStorage.getItem('adminInfo') || sessionStorage.getItem('adminInfo') || '{}');
+  const isSuperAdmin = adminInfo.role === 'SUPER-ADMIN' || adminInfo.role === 'super-admin';
 
   useEffect(() => {
     fetchEnquiries();
@@ -140,6 +145,34 @@ const ServiceEnquiries = () => {
     
     return matchesSearch && matchesStatus && matchesService;
   });
+
+  const exportToExcel = () => {
+    const dataToExport = filteredEnquiries.map((enq, index) => ({
+      "S.NO": index + 1,
+      "Name": enq.name,
+      "Email": enq.email,
+      "Phone": enq.phone,
+      "Service Name": enq.serviceName,
+      "Sub Event": enq.subEvent,
+      "Travel Type": enq.travelType,
+      "Budget": enq.budget,
+      "From Location": enq.fromLocation,
+      "To Location": enq.toLocation,
+      "Location": enq.location,
+      "Status": enq.status,
+      "Marriage Date": enq.marriageDate ? new Date(enq.marriageDate).toLocaleDateString() : 'N/A',
+      "Preferred Date": enq.checkIn ? new Date(enq.checkIn).toLocaleDateString() : 'N/A',
+      "Alternative Date": enq.checkOut ? new Date(enq.checkOut).toLocaleDateString() : 'N/A',
+      "Adults": enq.adults,
+      "Kids": enq.kids,
+      "Received On": new Date(enq.createdAt).toLocaleDateString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Service Enquiries");
+    XLSX.writeFile(workbook, "Service_Enquiries.xlsx");
+  };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedEnquiries = filteredEnquiries.slice(startIndex, startIndex + itemsPerPage);
@@ -264,6 +297,7 @@ const ServiceEnquiries = () => {
       render: (row) => (
         <select
           value={row.status}
+          disabled={!isSuperAdmin}
           onChange={(e) => handleStatusChange(row._id, e.target.value)}
           className={`h-7 px-1.5 w-[88px] rounded-md text-[9px] font-black uppercase tracking-wider border-2 cursor-pointer transition-all ${
             row.status === "new"
@@ -290,9 +324,11 @@ const ServiceEnquiries = () => {
                 <button onClick={() => handleViewEnquiry(row)} className="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors rounded">
                     <Eye size={14} />
                 </button>
-                <button onClick={() => handleDeleteEnquiry(row)} className="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 transition-colors rounded">
-                    <Trash2 size={14} />
-                </button>
+                {isSuperAdmin && (
+                  <button onClick={() => handleDeleteEnquiry(row)} className="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 transition-colors rounded">
+                      <Trash2 size={14} />
+                  </button>
+                )}
             </div>
         )
     }
@@ -402,6 +438,12 @@ const ServiceEnquiries = () => {
                         <option value="resolved">Resolved</option>
                     </select>
                 </div>
+                <button
+                  onClick={exportToExcel}
+                  className="flex items-center gap-2 bg-[#107C41] hover:bg-[#0B5A2F] text-white px-4 py-2 rounded-md text-[11px] font-bold uppercase tracking-wider transition-colors shadow-sm"
+                >
+                  <Download size={14} /> Export
+                </button>
              </div>
           </div>
 
@@ -539,8 +581,9 @@ const ServiceEnquiries = () => {
                             <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Status</label>
                             <select 
                                 value={selectedEnquiry.status}
+                                disabled={!isSuperAdmin}
                                 onChange={(e) => handleStatusChange(selectedEnquiry._id, e.target.value)}
-                                className="w-full text-xs font-black uppercase tracking-widest border-none bg-transparent p-0 cursor-pointer focus:ring-0"
+                                className="w-full text-xs font-black uppercase tracking-widest border-none bg-transparent p-0 cursor-pointer focus:ring-0 disabled:opacity-70"
                             >
                                 <option value="new">New</option>
                                 <option value="pending">Pending</option>

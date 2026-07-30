@@ -32,6 +32,9 @@ const ManageMembers = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const navigate = useNavigate();
 
+  const adminInfo = JSON.parse(localStorage.getItem('adminInfo') || sessionStorage.getItem('adminInfo') || '{}');
+  const isSuperAdmin = adminInfo.role === 'SUPER-ADMIN' || adminInfo.role === 'super-admin';
+
   useEffect(() => {
     fetchMembers();
   }, []);
@@ -237,13 +240,15 @@ const ManageMembers = () => {
           >
             <Eye size={14} />
           </button>
-          <button
-            onClick={() => handleDeleteMember(row)}
-            className="p-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all rounded"
-            title="Delete Member"
-          >
-            <Trash2 size={14} />
-          </button>
+          {isSuperAdmin && (
+            <button
+              onClick={() => handleDeleteMember(row)}
+              className="p-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all rounded"
+              title="Delete Member"
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
         </div>
       )
     }

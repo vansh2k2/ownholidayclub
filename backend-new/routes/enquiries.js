@@ -92,12 +92,13 @@ router.get(
   })
 );
 
-// @route   PUT /api/enquiries/:id/status
-// @desc    Update enquiry status (admin)
 router.put(
   "/:id/status",
   requireCmsAdmin,
   asyncHandler(async (req, res) => {
+    if (req.cmsAdmin.role !== "super-admin") {
+      return res.status(403).json({ message: "Only super-admins can update status" });
+    }
     const { status } = req.body;
     const enquiry = await DestinationEnquiry.findByIdAndUpdate(
       req.params.id,
@@ -111,12 +112,13 @@ router.put(
   })
 );
 
-// @route   DELETE /api/enquiries/:id
-// @desc    Delete an enquiry (admin)
 router.delete(
   "/:id",
   requireCmsAdmin,
   asyncHandler(async (req, res) => {
+    if (req.cmsAdmin.role !== "super-admin") {
+      return res.status(403).json({ message: "Only super-admins can delete data" });
+    }
     const enquiry = await DestinationEnquiry.findByIdAndDelete(req.params.id);
     if (!enquiry) {
       return res.status(404).json({ success: false, message: "Enquiry not found" });

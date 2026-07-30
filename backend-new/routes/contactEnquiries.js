@@ -7,12 +7,13 @@ const {
   deleteEnquiry,
 } = require("../controllers/contactEnquiryController");
 const requireCmsAdmin = require("../middleware/requireCmsAdmin");
+const requireSuperAdmin = require("../middleware/requireSuperAdmin");
 
 router.post("/", submitEnquiry);
 
 // Admin routes
 router.get("/admin", requireCmsAdmin, getEnquiries);
-router.put("/:id/status", requireCmsAdmin, updateStatus);
-router.delete("/:id", requireCmsAdmin, deleteEnquiry);
+router.put("/:id/status", requireSuperAdmin, updateStatus);
+router.delete("/:id", requireSuperAdmin, deleteEnquiry);
 
 module.exports = router;

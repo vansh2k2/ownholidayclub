@@ -75,7 +75,7 @@ function AdminLogin() {
       await Swal.fire({
         icon: "success",
         title: "Login Successful!",
-        text: `Welcome back, ${admin.name}!`,
+        html: `Welcome back, <span style="color: #2563EB; font-weight: bold; text-transform: capitalize;">${admin.username}</span>!`,
         timer: 1500,
         showConfirmButton: false,
       });

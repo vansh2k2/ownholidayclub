@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const asyncHandler = require("../utils/asyncHandler");
 const requireCmsAdmin = require("../middleware/requireCmsAdmin");
+const requireSuperAdmin = require("../middleware/requireSuperAdmin");
 
 const router = express.Router();
 
@@ -85,7 +86,7 @@ router.get(
 // DELETE MEMBER
 router.get(
   "/delete/:id", // Supporting both GET/DELETE just in case, but standard is DELETE
-  requireCmsAdmin,
+  requireSuperAdmin,
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
@@ -107,7 +108,7 @@ router.get(
 
 router.delete(
   "/:id",
-  requireCmsAdmin,
+  requireSuperAdmin,
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
